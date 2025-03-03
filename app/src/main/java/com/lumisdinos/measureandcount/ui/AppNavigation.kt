@@ -44,7 +44,7 @@ fun Navigation(navController: NavHostController, modifier: Modifier) {
     NavHost(navController, startDestination = Screen.Current.route, modifier = modifier) {
         composable(Screen.Old.route) { OldScreen() }
         composable(Screen.Current.route) { CurrentScreen() }
-        composable(Screen.New.route) { NewScreen() }
+        composable(Screen.New.route) { NewScreen(navController) }
     }
 }
 
