@@ -41,7 +41,7 @@ fun AppNavigation() {
 
 @Composable
 fun Navigation(navController: NavHostController, modifier: Modifier) {
-    NavHost(navController, startDestination = Screen.Current.route, modifier = modifier) {
+    NavHost(navController, startDestination = Screen.New.route, modifier = modifier) {
         composable(Screen.Old.route) { OldScreen() }
         composable(Screen.Current.route) { CurrentScreen() }
         composable(Screen.New.route) { NewScreen(navController) }
