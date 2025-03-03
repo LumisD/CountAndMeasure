@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.lumisdinos.measureandcount.R
+import com.lumisdinos.measureandcount.ui.screens.AddNewItem
 import com.lumisdinos.measureandcount.ui.screens.CurrentScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
 import com.lumisdinos.measureandcount.ui.screens.OldScreen
@@ -27,6 +28,7 @@ sealed class Screen(val route: String, val title: String, val icon: Int) {
     data object Old : Screen("old", "Old", R.drawable.ic_old)
     data object Current : Screen("current", "Current", R.drawable.ic_current)
     data object New : Screen("new", "New", R.drawable.ic_new)
+    data object AddNewItem : Screen("add_new_item", "Add New Item", R.drawable.ic_new)
 }
 
 @Composable
@@ -45,6 +47,7 @@ fun Navigation(navController: NavHostController, modifier: Modifier) {
         composable(Screen.Old.route) { OldScreen() }
         composable(Screen.Current.route) { CurrentScreen() }
         composable(Screen.New.route) { NewScreen(navController) }
+        composable(Screen.AddNewItem.route) { AddNewItem(navController) }
     }
 }
 
