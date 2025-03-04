@@ -65,10 +65,10 @@ fun NewScreenListItem(item: NewScreenType, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, bottom = 16.dp)
             .clickable {
                 navController.navigate(Screen.AddNewItem.route)
-            },
+            }
+            .padding(top = 16.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {

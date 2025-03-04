@@ -1,5 +1,6 @@
 package com.lumisdinos.measureandcount.ui
 
+import AddNewItemScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -20,7 +21,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.lumisdinos.measureandcount.R
-import com.lumisdinos.measureandcount.ui.screens.AddNewItemScreen
 import com.lumisdinos.measureandcount.ui.screens.CurrentScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
 import com.lumisdinos.measureandcount.ui.screens.OldScreen
@@ -56,7 +56,7 @@ fun AppNavigation() {
 
     Scaffold(
         bottomBar = {
-            if (currentDestination?.route in bottomBarRoutes) { // Change this line
+            if (currentDestination?.route in bottomBarRoutes) {
                 BottomNavigationBar(navController, currentDestination)
             }
         }
