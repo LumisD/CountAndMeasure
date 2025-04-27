@@ -29,12 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.lumisdinos.measureandcount.ui.model.NewScreenType
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -67,6 +63,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.Yellowish
@@ -80,7 +77,10 @@ import kotlin.text.toFloatOrNull
 
 
 @Composable
-fun AddNewItemScreen(navController: NavController, viewModel: AddNewItemViewModel = hiltViewModel()) {
+fun AddNewItemScreen(
+    navController: NavController,
+    viewModel: AddNewItemViewModel = hiltViewModel()
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val navigationArg = navBackStackEntry?.arguments?.getString("itemType")
     val itemType = navigationArg?.deserializeNewScreenType() ?: defaultScreenTypes.first()
@@ -119,25 +119,36 @@ fun AddNewItemScreen(navController: NavController, viewModel: AddNewItemViewMode
 
 @Composable
 fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNewItemViewModel) {
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(2f / 3f),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
         ) {
-            WidthLengthFields(type, state.newOrEditChipboard, viewModel::processIntent)
-            if (type.hasColor) {
-                ColorField(state.newOrEditChipboard.color, viewModel::processIntent)
+            Column(
+                modifier = Modifier.fillMaxWidth(2f / 3f),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
+            ) {
+                WidthLengthFields(type, state.newOrEditChipboard, viewModel::processIntent)
+                if (type.hasColor) {
+                    ColorField(state.newOrEditChipboard.color, viewModel::processIntent)
+                }
+                QuantityField(
+                    state.newOrEditChipboard.quantity.toString(),
+                    viewModel::processIntent
+                )
+
             }
-            QuantityField(state.newOrEditChipboard.quantity.toString(), viewModel::processIntent)
+            AddChipboardButton(viewModel::processIntent)
         }
-        AddChipboardButton(viewModel::processIntent)
+        ChipboardAsStringField(state.editingChipboardAsString)
     }
-    ChipboardAsStringField(state.editingChipboardAsString)
+
 }
 
 @Composable
@@ -153,8 +164,10 @@ fun WidthLengthFields(
         ) {
             if (type.directionColumn == index + 1) {
                 UpArrowIcon()
+            } else {
+                Spacer(modifier = Modifier.width(24.dp))
             }
-            Text(text = stringResource(nameResId))
+            //Text(text = stringResource(nameResId))
             val sizeOfDim = getSizeForIndex(index, chipboard).toString()
             NumberEditor(nameResId, sizeOfDim, index + 1, processIntent)
         }
@@ -164,12 +177,14 @@ fun WidthLengthFields(
 @Composable
 fun ColorField(color: String, processIntent: (AddNewItemIntent) -> Unit) {
     val selectedColor = colorList.firstOrNull { it.name == color } ?: colorList.first()
+    Spacer(modifier = Modifier.height(16.dp))
     ColorPickerRow(
         selectedColor = selectedColor,
         onColorSelected = { colorItem ->
             processIntent(AddNewItemIntent.ColorChanged(colorItem.name))
         }
     )
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Composable
@@ -177,7 +192,8 @@ fun QuantityField(quantity: String, processIntent: (AddNewItemIntent) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = stringResource(R.string.quantity))
+        //Text(text = stringResource(R.string.quantity))
+        Spacer(modifier = Modifier.width(24.dp))
         QuantityEditor(R.string.quantity, quantity, processIntent)
     }
 }
@@ -198,10 +214,19 @@ fun AddChipboardButton(processIntent: (AddNewItemIntent) -> Unit) {
 
 @Composable
 fun ChipboardAsStringField(editingChipboardAsString: String) {
-    Text(
-        text = editingChipboardAsString,
-        modifier = Modifier.background(Yellowish)
-    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Yellowish)
+            .padding(12.dp), // padding inside yellow background
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = editingChipboardAsString,
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 @Composable
@@ -339,7 +364,9 @@ fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Uni
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { showColorPicker = !showColorPicker }
+        modifier = Modifier
+            .padding(horizontal = 24.dp)
+            .clickable { showColorPicker = !showColorPicker }
     ) {
         Text(text = stringResource(R.string.color_column))
         Spacer(modifier = Modifier.width(8.dp))
@@ -349,6 +376,7 @@ fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Uni
                 .background(selectedColor.color, shape = CircleShape)
                 .border(1.dp, Color.Gray, CircleShape)
         )
+        Spacer(modifier = Modifier.weight(1f)) // <--- this pushes content to the start and fills remaining space
         DropdownMenu(
             expanded = showColorPicker,
             onDismissRequest = { showColorPicker = false }
@@ -371,6 +399,7 @@ fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Uni
             }
         }
     }
+
 }
 
 @Composable
@@ -482,19 +511,3 @@ fun ShowDeleteDialog(
     }
 
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun AddNewItemScreenPreview() {
-//    val previewViewModel = providePreviewViewModel()
-//    AddNewItemScreen(navController = rememberNavController(), viewModel = previewViewModel)
-//}
-//
-//@Composable
-//fun providePreviewViewModel(): AddNewItemViewModel {
-//    val repository = FakeMeasureAndCountRepository()
-//    val application = androidx.compose.ui.platform.LocalContext.current.applicationContext as Application
-//    return AddNewItemViewModel(repository, application)
-//}
-

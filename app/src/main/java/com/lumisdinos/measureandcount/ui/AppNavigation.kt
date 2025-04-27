@@ -1,6 +1,8 @@
 package com.lumisdinos.measureandcount.ui
 
 import AddNewItemScreen
+import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -10,8 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -76,7 +83,10 @@ fun AppNavigation() {
     val currentDestination = navBackStackEntry?.destination
     val bottomBarRoutes = listOf(Screen.Lists.route, Screen.Count.route, Screen.New.route)
 
+    SetSystemBarColor()
+
     Scaffold(
+        containerColor = MainBg,
         bottomBar = {
             if (currentDestination?.route in bottomBarRoutes) {
                 BottomNavigationBar(navController, currentDestination)
@@ -130,6 +140,14 @@ fun BottomNavigationBar(navController: NavHostController, currentDestination: Na
         }
     }
 }
+
+@Composable
+fun SetSystemBarColor() {
+    val window = (LocalActivity.current as Activity).window
+    window.statusBarColor = MainBg.toArgb()
+    window.navigationBarColor = MainBg.toArgb()
+}
+
 
 @Preview(showBackground = true)
 @Composable
