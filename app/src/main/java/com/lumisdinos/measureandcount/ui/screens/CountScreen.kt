@@ -9,14 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun OldScreen() {
+fun CountScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Old Screen")
+        Text(text = "Current Screen")
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun OldScreenPreview() {
-    OldScreen()
+fun CurrentScreenPreview() {
+    CountScreen()
 }

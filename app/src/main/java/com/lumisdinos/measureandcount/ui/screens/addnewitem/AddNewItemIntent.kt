@@ -1,0 +1,19 @@
+package com.lumisdinos.measureandcount.ui.screens.addnewitem
+
+import com.lumisdinos.measureandcount.ui.model.ChipboardUi
+import com.lumisdinos.measureandcount.ui.model.NewScreenType
+
+sealed interface AddNewItemIntent {
+    data class TitleChanged(val newTitle: String) : AddNewItemIntent
+    data class SizeChanged(val newSize: Float, val dimension: Int) : AddNewItemIntent
+    data class QuantityChanged(val newQuantity: Short) : AddNewItemIntent
+    data class ColorChanged(val newColor: String) : AddNewItemIntent
+    data class EditChipboard(val chipboard: ChipboardUi) : AddNewItemIntent
+    data class SetItemType(val itemType: NewScreenType) : AddNewItemIntent
+    data class DeleteChipboard(val chipboard: ChipboardUi) : AddNewItemIntent
+    data class DeleteChipboardConfirmed(val chipboardId: Int) : AddNewItemIntent
+    data object AddChipboard : AddNewItemIntent
+    data object ToggleAddAreaVisibility : AddNewItemIntent
+    data object Back : AddNewItemIntent
+    //data object ResetNavigateBack : AddNewItemIntent
+}

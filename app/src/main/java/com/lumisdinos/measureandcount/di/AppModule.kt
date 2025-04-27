@@ -2,9 +2,12 @@ package com.lumisdinos.measureandcount.di
 
 import android.content.Context
 import androidx.room.Room
+import com.lumisdinos.measureandcount.data.MeasureAndCountRepositoryImpl
+import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
 import com.lumisdinos.measureandcount.data.db.AppDatabase
 import com.lumisdinos.measureandcount.data.db.ChipboardDao
 import com.lumisdinos.measureandcount.data.db.UnionOfChipboardsDao
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,4 +39,15 @@ object AppModule {
         return appDatabase.chipboardDao()
     }
 
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class AppBindModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindMeasureAndCountRepository(
+        measureAndCountRepository: MeasureAndCountRepositoryImpl
+    ): MeasureAndCountRepository
 }
