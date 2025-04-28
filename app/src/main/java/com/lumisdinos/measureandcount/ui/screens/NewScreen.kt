@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,11 +51,10 @@ fun TopBar() {
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = "Choose a type of measurement",
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally),
+        modifier = Modifier.fillMaxWidth(),
         fontSize = 20.sp,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
     )
     Spacer(modifier = Modifier.height(16.dp))
 }
@@ -121,12 +121,12 @@ fun MiddleContent(type: NewScreenType) {
             if (directionColumn == index + 1) {
                 UpArrowIcon()
             }
-            TextC(stringResource(name))
+            Text(stringResource(name))
             if (index < columnNames.size - 1) {
                 XIcon()
             } else if (hasColor) {
                 XIcon()
-                TextC(stringResource(R.string.color_column))
+                Text(stringResource(R.string.color_column))
             }
         }
     }

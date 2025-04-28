@@ -61,6 +61,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.scale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -110,10 +112,8 @@ fun AddNewItemScreen(
         AnimatedVisibility(visible = state.isAddAreaOpen) {
             AddNewItemArea(itemType, state, viewModel)
         }
-        Box {
-            ExpandHideField(state.isAddAreaOpen, viewModel::processIntent)
-            ListOfNewItems(state.chipboards, viewModel::processIntent)
-        }
+        ExpandHideField(state.isAddAreaOpen, viewModel::processIntent)
+        ListOfNewItems(state.chipboards, viewModel::processIntent)
     }
 }
 
@@ -130,7 +130,7 @@ fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNe
             verticalAlignment = Alignment.Top
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(2f / 3f),
+                modifier = Modifier.fillMaxWidth(0.6f),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start
             ) {
@@ -142,9 +142,12 @@ fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNe
                     state.newOrEditChipboard.quantity.toString(),
                     viewModel::processIntent
                 )
-
             }
-            AddChipboardButton(viewModel::processIntent)
+
+            AddChipboardButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                processIntent = viewModel::processIntent
+            )
         }
         ChipboardAsStringField(state.editingChipboardAsString)
     }
@@ -159,7 +162,6 @@ fun WidthLengthFields(
 ) {
     type.columnNames.forEachIndexed { index, nameResId ->
         Row(
-            //modifier = Modifier.clickable { /* Handle click here, e.g., viewModel.onRowClicked(index) */ },
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (type.directionColumn == index + 1) {
@@ -199,16 +201,26 @@ fun QuantityField(quantity: String, processIntent: (AddNewItemIntent) -> Unit) {
 }
 
 @Composable
-fun AddChipboardButton(processIntent: (AddNewItemIntent) -> Unit) {
-    Button(
-        onClick = { processIntent(AddNewItemIntent.AddChipboard) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-            .height(56.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.7f))
+fun AddChipboardButton(
+    modifier: Modifier = Modifier,
+    processIntent: (AddNewItemIntent) -> Unit
+) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text = stringResource(R.string.add))
+        Button(
+            onClick = { processIntent(AddNewItemIntent.AddChipboard) },
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.7f))
+        ) {
+            Text(
+                text = stringResource(R.string.add),
+                color = Color.White
+            )
+        }
     }
 }
 
@@ -219,12 +231,13 @@ fun ChipboardAsStringField(editingChipboardAsString: String) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Yellowish)
-            .padding(12.dp), // padding inside yellow background
+            .padding(12.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = editingChipboardAsString,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontSize = 18.sp
         )
     }
 }
@@ -232,30 +245,27 @@ fun ChipboardAsStringField(editingChipboardAsString: String) {
 @Composable
 fun ExpandHideField(isAddAreaOpen: Boolean, processIntent: (AddNewItemIntent) -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Transparent)
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         val rotationAngle by animateFloatAsState(
-            targetValue = if (isAddAreaOpen) 180f else 0f,
-            animationSpec = tween(durationMillis = 300),
+            targetValue = if (isAddAreaOpen) 0f else 180f,
+            animationSpec = tween(durationMillis = 600),
             label = "rotation"
         )
-        Spacer(modifier = Modifier.weight(2f))
+
         Icon(
-            imageVector = if (isAddAreaOpen) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+            imageVector = Icons.Filled.KeyboardArrowUp,
             contentDescription = "Expand/Collapse",
             modifier = Modifier
-                .size(32.dp)
+                .size(48.dp)
                 .rotate(rotationAngle)
                 .clickable { processIntent(AddNewItemIntent.ToggleAddAreaVisibility) }
-                .weight(1f, fill = false)
         )
     }
 }
+
 
 @Composable
 fun ListOfNewItems(
@@ -268,13 +278,13 @@ fun ListOfNewItems(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
                     text = chipboard.chipboardAsString,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(2f)
                 )
 
                 IconButton(onClick = {
@@ -286,9 +296,14 @@ fun ListOfNewItems(
                 IconButton(onClick = {
                     processIntent(AddNewItemIntent.DeleteChipboard(chipboard))
                 }) {
-                    Icon(Icons.Filled.Close, contentDescription = "Delete")
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "Delete",
+                        modifier = Modifier.scale(1.3f)
+                    )
                 }
             }
+            HorizontalDivider(thickness = 2.dp, color = Color.Gray)
         }
     }
 }
@@ -314,7 +329,7 @@ fun NumberEditor(
     onSizeChangedIntent: (AddNewItemIntent) -> Unit
 ) {
     OutlinedTextField(
-        modifier = Modifier.widthIn(min = 60.dp, max = 250.dp),
+        modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
         value = sizeOfDim,
         onValueChange = { newValue: String ->
             val filteredValue = newValue.filter { it.isDigit() || it == '.' }
@@ -338,7 +353,7 @@ fun QuantityEditor(
     onQuantityChangedIntent: (AddNewItemIntent) -> Unit
 ) {
     OutlinedTextField(
-        modifier = Modifier.widthIn(min = 60.dp, max = 250.dp),
+        modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
         value = quantity,
         onValueChange = { newValue: String ->
             val filteredValue = newValue.filter { it.isDigit() }
