@@ -251,7 +251,7 @@ fun ExpandHideField(isAddAreaOpen: Boolean, processIntent: (AddNewItemIntent) ->
     ) {
         val rotationAngle by animateFloatAsState(
             targetValue = if (isAddAreaOpen) 0f else 180f,
-            animationSpec = tween(durationMillis = 600),
+            animationSpec = tween(durationMillis = 500),
             label = "rotation"
         )
 
@@ -419,7 +419,6 @@ fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Uni
 
 @Composable
 fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
-    Spacer(modifier = Modifier.height(16.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -435,12 +434,13 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
                 modifier = Modifier.size(32.dp)
             )
         }
+        Spacer(modifier = Modifier.width(16.dp))
         BasicTextField(
             value = title,
             onValueChange = { newTitle ->
                 processIntent(AddNewItemIntent.TitleChanged(newTitle))
             },
-            textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp)
         )
     }
     Spacer(modifier = Modifier.height(8.dp))
