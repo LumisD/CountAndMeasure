@@ -8,9 +8,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -76,37 +79,42 @@ sealed class Screen(val route: String) {
     }
 }
 
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val bottomBarRoutes = listOf(Screen.Lists.route, Screen.Count.route, Screen.New.route)
+    val snackbarHostState = remember { SnackbarHostState() }
 
     SetSystemBarColor()
 
     Scaffold(
         containerColor = MainBg,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             if (currentDestination?.route in bottomBarRoutes) {
                 BottomNavigationBar(navController, currentDestination)
             }
         }
     ) { innerPadding ->
-        Navigation(navController, Modifier.padding(innerPadding))
+        Navigation(navController, snackbarHostState, Modifier.padding(innerPadding))
     }
 }
 
+
 @Composable
-fun Navigation(navController: NavHostController, modifier: Modifier) {
+fun Navigation(navController: NavHostController, snackbarHostState: SnackbarHostState, modifier: Modifier) {
     NavHost(navController, startDestination = Screen.New.route, modifier = modifier) {
         composable(Screen.Lists.route) { ListsScreen() }
         composable(Screen.Count.route) { CountScreen() }
         composable(Screen.New.route) { NewScreen(navController) }
-        composable(Screen.AddNewItem.route) { AddNewItemScreen(navController) }
+        composable(Screen.AddNewItem.route) { AddNewItemScreen(navController, snackbarHostState) }
         composable(Screen.CreateOwnMeasure.route) { CreateOwnMeasureScreen(navController) }
     }
 }
+
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController, currentDestination: NavDestination?) {
@@ -140,6 +148,7 @@ fun BottomNavigationBar(navController: NavHostController, currentDestination: Na
         }
     }
 }
+
 
 @Composable
 fun SetSystemBarColor() {

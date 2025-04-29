@@ -75,6 +75,7 @@ import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemEffect
 @Composable
 fun AddNewItemScreen(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     viewModel: AddNewItemViewModel = hiltViewModel()
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -91,7 +92,7 @@ fun AddNewItemScreen(
     val state by viewModel.state.collectAsState()
     val dialogState = remember { mutableStateOf<ChipboardUi?>(null) }
 
-    collectEffects(dialogState, viewModel, navController)
+    CollectEffects(dialogState, viewModel, navController, snackbarHostState)
     ShowDeleteDialog(dialogState, viewModel::processIntent)
 
     //Actual screen
@@ -110,6 +111,7 @@ fun AddNewItemScreen(
         ListOfNewItems(state.chipboards, viewModel::processIntent)
     }
 }
+
 
 @Composable
 fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNewItemViewModel) {
@@ -148,6 +150,7 @@ fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNe
 
 }
 
+
 @Composable
 fun WidthLengthFields(
     type: NewScreenType,
@@ -170,6 +173,7 @@ fun WidthLengthFields(
     }
 }
 
+
 @Composable
 fun ColorField(color: String, processIntent: (AddNewItemIntent) -> Unit) {
     val selectedColor = colorList.firstOrNull { it.name == color } ?: colorList.first()
@@ -183,6 +187,7 @@ fun ColorField(color: String, processIntent: (AddNewItemIntent) -> Unit) {
     Spacer(modifier = Modifier.height(16.dp))
 }
 
+
 @Composable
 fun QuantityField(quantity: String, processIntent: (AddNewItemIntent) -> Unit) {
     Row(
@@ -193,6 +198,7 @@ fun QuantityField(quantity: String, processIntent: (AddNewItemIntent) -> Unit) {
         QuantityEditor(R.string.quantity, quantity, processIntent)
     }
 }
+
 
 @Composable
 fun AddChipboardButton(
@@ -218,6 +224,7 @@ fun AddChipboardButton(
     }
 }
 
+
 @Composable
 fun ChipboardAsStringField(editingChipboardAsString: String) {
     Spacer(modifier = Modifier.height(16.dp))
@@ -235,6 +242,7 @@ fun ChipboardAsStringField(editingChipboardAsString: String) {
         )
     }
 }
+
 
 @Composable
 fun ExpandHideField(isAddAreaOpen: Boolean, processIntent: (AddNewItemIntent) -> Unit) {
@@ -302,6 +310,7 @@ fun ListOfNewItems(
     }
 }
 
+
 fun getSizeForIndex(index: Int, newOrEditChipboard: ChipboardUi?): String {
     if (newOrEditChipboard == null) return ""
     return when (index) {
@@ -359,6 +368,7 @@ fun QuantityEditor(
     )
 }
 
+
 @Composable
 fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Unit) {
     var showColorPicker by remember { mutableStateOf(false) }
@@ -400,8 +410,8 @@ fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Uni
             }
         }
     }
-
 }
+
 
 @Composable
 fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
@@ -436,10 +446,11 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
 
 
 @Composable
-fun collectEffects(
+fun CollectEffects(
     dialogState: MutableState<ChipboardUi?>,
     viewModel: AddNewItemViewModel,
     navController: NavController,
+    snackbarHostState: SnackbarHostState
 ) {
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -449,7 +460,7 @@ fun collectEffects(
                 }
 
                 is AddNewItemEffect.ShowSnackbar -> {
-                    SnackbarHostState().showSnackbar(effect.message)
+                    snackbarHostState.showSnackbar(effect.message)
                 }
 
                 is AddNewItemEffect.NavigateBack -> {
@@ -510,5 +521,6 @@ fun ShowDeleteDialog(
             }
         )
     }
+
 
 }
