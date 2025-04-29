@@ -56,15 +56,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.scale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lumisdinos.measureandcount.R
@@ -73,9 +70,6 @@ import com.lumisdinos.measureandcount.ui.colorList
 import com.lumisdinos.measureandcount.ui.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.model.ColorItem
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemEffect
-import kotlin.text.filter
-import kotlin.text.isDigit
-import kotlin.text.toFloatOrNull
 
 
 @Composable
@@ -139,7 +133,7 @@ fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNe
                     ColorField(state.newOrEditChipboard.color, viewModel::processIntent)
                 }
                 QuantityField(
-                    state.newOrEditChipboard.quantity.toString(),
+                    state.newOrEditChipboard.quantityAsString,
                     viewModel::processIntent
                 )
             }
@@ -170,7 +164,7 @@ fun WidthLengthFields(
                 Spacer(modifier = Modifier.width(24.dp))
             }
             //Text(text = stringResource(nameResId))
-            val sizeOfDim = getSizeForIndex(index, chipboard).toString()
+            val sizeOfDim = getSizeForIndex(index, chipboard)
             NumberEditor(nameResId, sizeOfDim, index + 1, processIntent)
         }
     }
@@ -308,15 +302,13 @@ fun ListOfNewItems(
     }
 }
 
-fun getSizeForIndex(index: Int, newOrEditChipboard: ChipboardUi?): Float {
-    if (newOrEditChipboard == null) return 0f
+fun getSizeForIndex(index: Int, newOrEditChipboard: ChipboardUi?): String {
+    if (newOrEditChipboard == null) return ""
     return when (index) {
-        0 -> newOrEditChipboard.size1
-        1 -> newOrEditChipboard.size2
-        2 -> newOrEditChipboard.size3
-        3 -> newOrEditChipboard.size4
-        4 -> newOrEditChipboard.size5
-        else -> 0f
+        0 -> newOrEditChipboard.size1AsString
+        1 -> newOrEditChipboard.size2AsString
+        2 -> newOrEditChipboard.size3AsString
+        else -> ""
     }
 }
 
@@ -332,9 +324,7 @@ fun NumberEditor(
         modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
         value = sizeOfDim,
         onValueChange = { newValue: String ->
-            val filteredValue = newValue.filter { it.isDigit() || it == '.' }
-            val floatValue = filteredValue.toFloatOrNull() ?: 0f
-            onSizeChangedIntent(AddNewItemIntent.SizeChanged(floatValue, dimension))
+            onSizeChangedIntent(AddNewItemIntent.SizeChanged(newValue, dimension))
         },
         label = { Text(text = stringResource(id = label)) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -346,6 +336,7 @@ fun NumberEditor(
     )
 }
 
+
 @Composable
 fun QuantityEditor(
     label: Int,
@@ -356,12 +347,7 @@ fun QuantityEditor(
         modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
         value = quantity,
         onValueChange = { newValue: String ->
-            val filteredValue = newValue.filter { it.isDigit() }
-            if (filteredValue != newValue) {
-                return@OutlinedTextField
-            }
-            val shortValue = filteredValue.toShortOrNull() ?: 0
-            onQuantityChangedIntent(AddNewItemIntent.QuantityChanged(shortValue))
+            onQuantityChangedIntent(AddNewItemIntent.QuantityChanged(newValue))
         },
         label = { Text(text = stringResource(id = label)) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

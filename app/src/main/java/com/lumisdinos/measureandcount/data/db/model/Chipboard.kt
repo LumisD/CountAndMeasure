@@ -34,12 +34,8 @@ data class Chipboard(
     val title2: String,
     val size2: Float,
     val title3: String,
-    val size3: Float,
-    val title4: String,
-    val size4: Float,
-    val title5: String,
-    val size5: Float
-    )
+    val size3: Float
+)
 
 fun Chipboard.toChipboardUi(): ChipboardUi {
     return ChipboardUi(
@@ -54,10 +50,6 @@ fun Chipboard.toChipboardUi(): ChipboardUi {
         title2 = title2,
         size2 = size2,
         title3 = title3,
-        size3 = size3,
-        title4 = title4,
-        size4 = size4,
-        title5 = title5,
-        size5 = size5
+        size3 = size3
     )
 }

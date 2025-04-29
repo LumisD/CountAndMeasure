@@ -61,7 +61,8 @@ class AddNewItemViewModel @Inject constructor(
     private fun observeChipboardsForUnion(unionId: Int) {
         viewModelScope.launch {
             chipboardRepository.getChipboardsByUnionIdFlow(unionId).collect { chipboards ->
-                val updatedChipboards = chipboards.map { it.copy(chipboardAsString = getChipboardAsString(it)) }
+                val updatedChipboards =
+                    chipboards.map { it.copy(chipboardAsString = getChipboardAsString(it)) }
                 _state.update { it.copy(chipboards = updatedChipboards) }
             }
         }
@@ -70,13 +71,22 @@ class AddNewItemViewModel @Inject constructor(
     fun processIntent(intent: AddNewItemIntent) {
         when (intent) {
             is AddNewItemIntent.TitleChanged -> updateUnionTitle(intent.newTitle)
-            is AddNewItemIntent.SizeChanged -> updateChipboardSize(intent.newSize, intent.dimension)
+
+            is AddNewItemIntent.SizeChanged -> updateChipboardSize(
+                intent.newSizeAsString,
+                intent.dimension
+            )
+
             is AddNewItemIntent.ColorChanged -> updateColor(intent.newColor)
-            is AddNewItemIntent.QuantityChanged -> updateQuantity(intent.newQuantity)
+
+            is AddNewItemIntent.QuantityChanged -> updateQuantity(intent.newQuantityAsString)
+
             is AddNewItemIntent.AddChipboard -> addChipboard()
+
             AddNewItemIntent.ToggleAddAreaVisibility -> {
                 _state.update { it.copy(isAddAreaOpen = !it.isAddAreaOpen) }
             }
+
             AddNewItemIntent.Back -> {
                 viewModelScope.launch {
                     _effect.send(AddNewItemEffect.NavigateBack)
@@ -90,6 +100,7 @@ class AddNewItemViewModel @Inject constructor(
             is AddNewItemIntent.EditChipboard -> {
                 _state.update { it.copy(newOrEditChipboard = intent.chipboard) }
             }
+
             is AddNewItemIntent.DeleteChipboard -> {
                 viewModelScope.launch {
                     _effect.send(AddNewItemEffect.ShowDeleteConfirmationDialog(intent.chipboard))
@@ -109,11 +120,13 @@ class AddNewItemViewModel @Inject constructor(
             val currentChipboard = currentState.newOrEditChipboard
             val newChipboard = currentChipboard.copy(
                 quantity = 1,
+                quantityAsString = "1",
                 size1 = 0f,
+                size1AsString = "",
                 size2 = 0f,
+                size2AsString = "",
                 size3 = 0f,
-                size4 = 0f,
-                size5 = 0f
+                size3AsString = ""
             )
             currentState.copy(
                 newOrEditChipboard = newChipboard,
@@ -129,15 +142,27 @@ class AddNewItemViewModel @Inject constructor(
         }
     }
 
-    private fun updateChipboardSize(newSize: Float, dimension: Int) {
+    private fun updateChipboardSize(newSizeAsString: String, dimension: Int) {
+        val newSizeAsFloat = newSizeAsString.toFloatOrNull()
+
         _state.update { currentState ->
             val currentChipboard = currentState.newOrEditChipboard
             val updatedChipboard = when (dimension) {
-                1 -> currentChipboard.copy(size1 = newSize)
-                2 -> currentChipboard.copy(size2 = newSize)
-                3 -> currentChipboard.copy(size3 = newSize)
-                4 -> currentChipboard.copy(size4 = newSize)
-                5 -> currentChipboard.copy(size5 = newSize)
+                1 -> currentChipboard.copy(
+                    size1AsString = newSizeAsString,
+                    size1 = newSizeAsFloat ?: currentChipboard.size1
+                )
+
+                2 -> currentChipboard.copy(
+                    size2AsString = newSizeAsString,
+                    size2 = newSizeAsFloat ?: currentChipboard.size2
+                )
+
+                3 -> currentChipboard.copy(
+                    size3AsString = newSizeAsString,
+                    size3 = newSizeAsFloat ?: currentChipboard.size3
+                )
+
                 else -> currentChipboard
             }
             currentState.copy(
@@ -147,9 +172,13 @@ class AddNewItemViewModel @Inject constructor(
         }
     }
 
+
     private fun updateUnionTitle(newTitle: String) {
         viewModelScope.launch {
-            chipboardRepository.updateUnionOfChipboardsTitle(_state.value.newOrEditChipboard.unionId, newTitle)
+            chipboardRepository.updateUnionOfChipboardsTitle(
+                _state.value.newOrEditChipboard.unionId,
+                newTitle
+            )
         }
         _state.update { it.copy(title = newTitle) }
     }
@@ -164,9 +193,13 @@ class AddNewItemViewModel @Inject constructor(
         }
     }
 
-    private fun updateQuantity(newQuantity: Short) {
+    private fun updateQuantity(newQuantityAsString: String) {
+        val newQuantityAsShort = newQuantityAsString.toShortOrNull()
         _state.update { currentState ->
-            val updatedChipboard = currentState.newOrEditChipboard.copy(quantity = newQuantity)
+            val updatedChipboard = currentState.newOrEditChipboard.copy(
+                quantityAsString = newQuantityAsString,
+                quantity = newQuantityAsShort ?: currentState.newOrEditChipboard.quantity
+            )
             currentState.copy(
                 newOrEditChipboard = updatedChipboard,
                 editingChipboardAsString = getChipboardAsString(updatedChipboard)
@@ -185,8 +218,6 @@ class AddNewItemViewModel @Inject constructor(
                 1 -> builder.append(chipboard.size1)
                 2 -> builder.append(chipboard.size2)
                 3 -> builder.append(chipboard.size3)
-                4 -> builder.append(chipboard.size4)
-                5 -> builder.append(chipboard.size5)
             }
             if (i < chipboard.dimensions) {
                 builder.append(" x ")
@@ -214,9 +245,6 @@ class AddNewItemViewModel @Inject constructor(
                 dimensions = dimensions,
                 title1 = titles.getOrElse(0) { "" },
                 title2 = titles.getOrElse(1) { "" },
-                title3 = titles.getOrElse(2) { "" },
-                title4 = titles.getOrElse(3) { "" },
-                title5 = titles.getOrElse(4) { "" }
             )
 
             currentState.copy(

@@ -9,16 +9,16 @@ data class ChipboardUi(
     val color: String = "White",
     val direction: Short = 0, // 0 - no direction, 1 to n - direction column
     val quantity: Short = 1,
+    val quantityAsString: String = "1",
     val title1: String = "",
     val size1: Float = 0f,
+    val size1AsString: String = "",
     val title2: String = "",
     val size2: Float = 0f,
+    val size2AsString: String = "",
     val title3: String = "",
     val size3: Float = 0f,
-    val title4: String = "",
-    val size4: Float = 0f,
-    val title5: String = "",
-    val size5: Float = 0f,
+    val size3AsString: String = "",
     val chipboardAsString: String = "",
 )
 
@@ -35,10 +35,6 @@ fun ChipboardUi.toChipboard(): Chipboard {
         title2 = title2,
         size2 = size2,
         title3 = title3,
-        size3 = size3,
-        title4 = title4,
-        size4 = size4,
-        title5 = title5,
-        size5 = size5
+        size3 = size3
     )
 }
