@@ -8,5 +8,6 @@ data class AddNewItemState(
     val newOrEditChipboard: ChipboardUi = ChipboardUi(),
     val editingChipboardAsString: String = "",
     val isAddAreaOpen: Boolean = true,
+    val isAddButtonAvailable: Boolean = false
     //val navigateBack: Boolean = false
 )

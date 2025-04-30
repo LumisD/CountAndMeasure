@@ -141,8 +141,9 @@ fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNe
             }
 
             AddChipboardButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                processIntent = viewModel::processIntent
+                Modifier.align(Alignment.CenterVertically),
+                state.isAddButtonAvailable,
+                viewModel::processIntent
             )
         }
         ChipboardAsStringField(state.editingChipboardAsString)
@@ -203,6 +204,7 @@ fun QuantityField(quantity: String, processIntent: (AddNewItemIntent) -> Unit) {
 @Composable
 fun AddChipboardButton(
     modifier: Modifier = Modifier,
+    isAddButtonAvailable: Boolean,
     processIntent: (AddNewItemIntent) -> Unit
 ) {
     Box(
@@ -214,6 +216,7 @@ fun AddChipboardButton(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(50.dp),
+            enabled = isAddButtonAvailable,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.7f))
         ) {
             Text(

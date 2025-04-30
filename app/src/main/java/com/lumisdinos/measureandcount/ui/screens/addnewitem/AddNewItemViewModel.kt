@@ -130,7 +130,8 @@ class AddNewItemViewModel @Inject constructor(
             )
             currentState.copy(
                 newOrEditChipboard = newChipboard,
-                editingChipboardAsString = getChipboardAsString(newChipboard)
+                editingChipboardAsString = getChipboardAsString(newChipboard),
+                isAddButtonAvailable = false
             )
         }
     }
@@ -165,9 +166,13 @@ class AddNewItemViewModel @Inject constructor(
 
                 else -> currentChipboard
             }
+            val isAddButnAvailblChange = isAddButtonAvailabilityChange(updatedChipboard)
             currentState.copy(
                 newOrEditChipboard = updatedChipboard,
-                editingChipboardAsString = getChipboardAsString(updatedChipboard)
+                editingChipboardAsString = getChipboardAsString(updatedChipboard),
+                isAddButtonAvailable = if (isAddButnAvailblChange)
+                    !currentState.isAddButtonAvailable
+                else currentState.isAddButtonAvailable
             )
         }
     }
@@ -200,9 +205,13 @@ class AddNewItemViewModel @Inject constructor(
                 quantityAsString = newQuantityAsString,
                 quantity = newQuantityAsShort ?: currentState.newOrEditChipboard.quantity
             )
+            val isAddButnAvailblChange = isAddButtonAvailabilityChange(updatedChipboard)
             currentState.copy(
                 newOrEditChipboard = updatedChipboard,
-                editingChipboardAsString = getChipboardAsString(updatedChipboard)
+                editingChipboardAsString = getChipboardAsString(updatedChipboard),
+                isAddButtonAvailable = if (isAddButnAvailblChange)
+                    !currentState.isAddButtonAvailable
+                else currentState.isAddButtonAvailable
             )
         }
     }
@@ -228,6 +237,27 @@ class AddNewItemViewModel @Inject constructor(
         }
         builder.append(" - ${chipboard.quantity} qty")
         return builder.toString()
+    }
+
+    private fun isAddButtonAvailabilityChange(chipboard: ChipboardUi): Boolean {
+        var isAddButtonAvailable = true
+        for (i in 1..chipboard.dimensions) {
+            when (i) {
+                1 -> {
+                    if (chipboard.size1 == 0f) isAddButtonAvailable = false
+                }
+
+                2 -> {
+                    if (chipboard.size2 == 0f) isAddButtonAvailable = false
+                }
+
+                3 -> {
+                    if (chipboard.size3 == 0f) isAddButtonAvailable = false
+                }
+            }
+            if (chipboard.quantity.toInt() == 0) isAddButtonAvailable = false
+        }
+        if (_state.value.isAddButtonAvailable != isAddButtonAvailable) return true else return false
     }
 
 
