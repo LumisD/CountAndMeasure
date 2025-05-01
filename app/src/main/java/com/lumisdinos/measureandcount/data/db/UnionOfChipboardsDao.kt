@@ -10,13 +10,13 @@ import com.lumisdinos.measureandcount.data.db.model.UnionOfChipboards
 interface UnionOfChipboardsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUnionOfChipboards(unionOfChipboards: UnionOfChipboards): Long// Returns the ID
+    suspend fun insertUnionOfChipboards(unionOfChipboards: UnionOfChipboards): Long
 
     @Query("SELECT * FROM union_of_chipboards WHERE id = :unionId")
     suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards?
 
-    @Query("UPDATE union_of_chipboards SET title = :newTitle WHERE id = :unionId")
-    suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String)
+    @Query("UPDATE union_of_chipboards SET title = :newTitle, updated_at = :updatedAt WHERE id = :unionId")
+    suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long)
 
     @Query("DELETE FROM union_of_chipboards WHERE id = :unionId")
     suspend fun deleteUnionOfChipboardsById(unionId: Int)

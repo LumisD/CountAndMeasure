@@ -62,13 +62,15 @@ class AddNewItemViewModel @Inject constructor(
         viewModelScope.launch {
             chipboardRepository.getChipboardsByUnionIdFlow(unionId).collect { chipboards ->
                 val updatedChipboards =
-                    chipboards.map { it.copy(
-                        quantityAsString = it.quantity.toString(),
-                        size1AsString = it.size1.toString(),
-                        size2AsString = it.size2.toString(),
-                        size3AsString = it.size3.toString(),
-                        chipboardAsString = getChipboardAsString(it)
-                    ) }
+                    chipboards.map {
+                        it.copy(
+                            quantityAsString = it.quantity.toString(),
+                            size1AsString = it.size1.toString(),
+                            size2AsString = it.size2.toString(),
+                            size3AsString = it.size3.toString(),
+                            chipboardAsString = getChipboardAsString(it)
+                        )
+                    }
                 _state.update { it.copy(chipboards = updatedChipboards) }
             }
         }
@@ -134,7 +136,8 @@ class AddNewItemViewModel @Inject constructor(
                 size3 = 0f,
                 size3AsString = ""
             )
-            val newChipboard2 = newChipboard.copy(chipboardAsString = getChipboardAsString(newChipboard))
+            val newChipboard2 =
+                newChipboard.copy(chipboardAsString = getChipboardAsString(newChipboard))
             currentState.copy(
                 newOrEditChipboard = newChipboard2,
                 isAddButtonAvailable = false
@@ -143,11 +146,13 @@ class AddNewItemViewModel @Inject constructor(
     }
 
     private fun editChipboard(chipboard: ChipboardUi) {
-        _state.update { it.copy(
-            isAddAreaOpen = true,
-            isAddButtonAvailable = true,
-            newOrEditChipboard = chipboard
-        ) }
+        _state.update {
+            it.copy(
+                isAddAreaOpen = true,
+                isAddButtonAvailable = true,
+                newOrEditChipboard = chipboard
+            )
+        }
         viewModelScope.launch {
             chipboardRepository.deleteChipboardById(chipboard.id)
             _effect.send(AddNewItemEffect.FlashAddItemArea)
@@ -184,7 +189,8 @@ class AddNewItemViewModel @Inject constructor(
 
                 else -> currentChipboard
             }
-            val updatedChipboard2 = updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
+            val updatedChipboard2 =
+                updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
             val isAddButnAvailblChange = isAddButtonAvailabilityChange(updatedChipboard)
             currentState.copy(
                 newOrEditChipboard = updatedChipboard2,
@@ -200,7 +206,8 @@ class AddNewItemViewModel @Inject constructor(
         viewModelScope.launch {
             chipboardRepository.updateUnionOfChipboardsTitle(
                 _state.value.newOrEditChipboard.unionId,
-                newTitle
+                newTitle,
+                System.currentTimeMillis()
             )
         }
         _state.update { it.copy(title = newTitle) }
@@ -212,7 +219,8 @@ class AddNewItemViewModel @Inject constructor(
                 colorName = newColorName,
                 color = newColor
             )
-            val updatedChipboard2 = updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
+            val updatedChipboard2 =
+                updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
             currentState.copy(
                 newOrEditChipboard = updatedChipboard2,
             )
@@ -226,7 +234,8 @@ class AddNewItemViewModel @Inject constructor(
                 quantityAsString = newQuantityAsString,
                 quantity = newQuantityAsShort
             )
-            val updatedChipboard2 = updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
+            val updatedChipboard2 =
+                updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
             val isAddButnAvailblChange = isAddButtonAvailabilityChange(updatedChipboard)
             currentState.copy(
                 newOrEditChipboard = updatedChipboard2,
@@ -294,7 +303,8 @@ class AddNewItemViewModel @Inject constructor(
                 title1 = titles.getOrElse(0) { "" },
                 title2 = titles.getOrElse(1) { "" },
             )
-            val updatedChipboard2 = updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
+            val updatedChipboard2 =
+                updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
 
             currentState.copy(
                 newOrEditChipboard = updatedChipboard2,

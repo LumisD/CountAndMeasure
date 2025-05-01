@@ -26,8 +26,8 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         return unionOfChipboardsDao.insertUnionOfChipboards(entity).toInt()
     }
 
-    override suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String) {
-        unionOfChipboardsDao.updateUnionOfChipboardsTitle(unionId, newTitle)
+    override suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long) {
+        unionOfChipboardsDao.updateUnionOfChipboardsTitle(unionId, newTitle,  updatedAt)
     }
 
     override fun getChipboardsByUnionIdFlow(unionId: Int): Flow<List<ChipboardUi>> {
