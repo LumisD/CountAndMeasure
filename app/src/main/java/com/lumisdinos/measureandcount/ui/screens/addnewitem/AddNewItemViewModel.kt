@@ -124,6 +124,7 @@ class AddNewItemViewModel @Inject constructor(
         _state.update { currentState ->
             val currentChipboard = currentState.newOrEditChipboard
             val newChipboard = currentChipboard.copy(
+                id = 0,
                 quantity = 1,
                 quantityAsString = "1",
                 size1 = 0f,
