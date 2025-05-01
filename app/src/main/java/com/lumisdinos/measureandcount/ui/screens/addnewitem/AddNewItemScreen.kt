@@ -234,16 +234,21 @@ fun ChipboardAsStringField(editingChipboard: ChipboardUi) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Yellowish)
-            .padding(12.dp)
+        .border(width = 1.dp, color = Color.Black),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = editingChipboard.chipboardAsString,
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentHeight(),
             textAlign = TextAlign.Center,
             fontSize = 18.sp
         )
         Box(
             modifier = Modifier
-                .size(24.dp)
+                .width(36.dp)
+                .height(42.dp)
                 .background(Color(editingChipboard.color))
         )
     }
@@ -285,14 +290,20 @@ fun ListOfNewItems(
         items(chipboards, key = { it.id }) { chipboard ->
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
                     text = chipboard.chipboardAsString,
                     modifier = Modifier.weight(2f)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .width(36.dp)
+                        .height(42.dp)
+                        .background(Color(chipboard.color))
                 )
 
                 IconButton(onClick = {

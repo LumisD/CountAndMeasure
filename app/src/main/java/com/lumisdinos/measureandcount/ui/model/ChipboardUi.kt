@@ -1,5 +1,7 @@
 package com.lumisdinos.measureandcount.ui.model
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.lumisdinos.measureandcount.data.db.model.Chipboard
 
 data class ChipboardUi(
@@ -7,7 +9,7 @@ data class ChipboardUi(
     val unionId: Int = 0,
     val dimensions: Short = 1, // Number of dimensions, starts from 1
     val colorName: String = "White",
-    val color: Int = 0,
+    val color: Int = Color.White.toArgb(),
     val direction: Short = 0, // 0 - no direction, 1 to n - direction column
     val quantity: Short = 1,
     val quantityAsString: String = "1",

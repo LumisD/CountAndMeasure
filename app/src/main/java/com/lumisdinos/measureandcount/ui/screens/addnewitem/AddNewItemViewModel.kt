@@ -220,7 +220,7 @@ class AddNewItemViewModel @Inject constructor(
     }
 
     private fun getChipboardAsString(chipboard: ChipboardUi): String {
-        //↑12.5 x 54.0 x Blue - 3qty
+        //↑12.5 x 54.0 - 3
         val builder = StringBuilder()
         for (i in 1..chipboard.dimensions) {
             if (chipboard.direction.toInt() == i) {
@@ -235,10 +235,7 @@ class AddNewItemViewModel @Inject constructor(
                 builder.append(" x ")
             }
         }
-        if (chipboard.colorName.isNotEmpty()) {
-            builder.append(" ${chipboard.colorName}")
-        }
-        builder.append(" - ${chipboard.quantity} qty")
+        builder.append(" - ${chipboard.quantity}")
         return builder.toString()
     }
 
