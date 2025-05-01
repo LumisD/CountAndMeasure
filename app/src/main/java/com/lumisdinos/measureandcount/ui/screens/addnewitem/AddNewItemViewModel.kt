@@ -77,7 +77,7 @@ class AddNewItemViewModel @Inject constructor(
                 intent.dimension
             )
 
-            is AddNewItemIntent.ColorChanged -> updateColor(intent.newColor)
+            is AddNewItemIntent.ColorChanged -> updateColor(intent.newColorName, intent.newColor)
 
             is AddNewItemIntent.QuantityChanged -> updateQuantity(intent.newQuantityAsString)
 
@@ -128,9 +128,9 @@ class AddNewItemViewModel @Inject constructor(
                 size3 = 0f,
                 size3AsString = ""
             )
+            val newChipboard2 = newChipboard.copy(chipboardAsString = getChipboardAsString(newChipboard))
             currentState.copy(
-                newOrEditChipboard = newChipboard,
-                editingChipboardAsString = getChipboardAsString(newChipboard),
+                newOrEditChipboard = newChipboard2,
                 isAddButtonAvailable = false
             )
         }
@@ -166,10 +166,10 @@ class AddNewItemViewModel @Inject constructor(
 
                 else -> currentChipboard
             }
+            val updatedChipboard2 = updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
             val isAddButnAvailblChange = isAddButtonAvailabilityChange(updatedChipboard)
             currentState.copy(
-                newOrEditChipboard = updatedChipboard,
-                editingChipboardAsString = getChipboardAsString(updatedChipboard),
+                newOrEditChipboard = updatedChipboard2,
                 isAddButtonAvailable = if (isAddButnAvailblChange)
                     !currentState.isAddButtonAvailable
                 else currentState.isAddButtonAvailable
@@ -188,12 +188,15 @@ class AddNewItemViewModel @Inject constructor(
         _state.update { it.copy(title = newTitle) }
     }
 
-    private fun updateColor(newColor: String) {
+    private fun updateColor(newColorName: String, newColor: Int) {
         _state.update { currentState ->
-            val updatedChipboard = currentState.newOrEditChipboard.copy(color = newColor)
+            val updatedChipboard = currentState.newOrEditChipboard.copy(
+                colorName = newColorName,
+                color = newColor
+            )
+            val updatedChipboard2 = updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
             currentState.copy(
-                newOrEditChipboard = updatedChipboard,
-                editingChipboardAsString = getChipboardAsString(updatedChipboard)
+                newOrEditChipboard = updatedChipboard2,
             )
         }
     }
@@ -205,10 +208,10 @@ class AddNewItemViewModel @Inject constructor(
                 quantityAsString = newQuantityAsString,
                 quantity = newQuantityAsShort ?: currentState.newOrEditChipboard.quantity
             )
+            val updatedChipboard2 = updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
             val isAddButnAvailblChange = isAddButtonAvailabilityChange(updatedChipboard)
             currentState.copy(
-                newOrEditChipboard = updatedChipboard,
-                editingChipboardAsString = getChipboardAsString(updatedChipboard),
+                newOrEditChipboard = updatedChipboard2,
                 isAddButtonAvailable = if (isAddButnAvailblChange)
                     !currentState.isAddButtonAvailable
                 else currentState.isAddButtonAvailable
@@ -232,8 +235,8 @@ class AddNewItemViewModel @Inject constructor(
                 builder.append(" x ")
             }
         }
-        if (chipboard.color.isNotEmpty()) {
-            builder.append(" ${chipboard.color}")
+        if (chipboard.colorName.isNotEmpty()) {
+            builder.append(" ${chipboard.colorName}")
         }
         builder.append(" - ${chipboard.quantity} qty")
         return builder.toString()
@@ -276,10 +279,10 @@ class AddNewItemViewModel @Inject constructor(
                 title1 = titles.getOrElse(0) { "" },
                 title2 = titles.getOrElse(1) { "" },
             )
+            val updatedChipboard2 = updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
 
             currentState.copy(
-                newOrEditChipboard = updatedChipboard,
-                editingChipboardAsString = getChipboardAsString(updatedChipboard)
+                newOrEditChipboard = updatedChipboard2,
             )
         }
     }

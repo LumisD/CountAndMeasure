@@ -6,8 +6,6 @@ data class AddNewItemState(
     val title: String = "",
     val chipboards: List<ChipboardUi> = emptyList(),
     val newOrEditChipboard: ChipboardUi = ChipboardUi(),
-    val editingChipboardAsString: String = "",
     val isAddAreaOpen: Boolean = true,
     val isAddButtonAvailable: Boolean = false
-    //val navigateBack: Boolean = false
 )

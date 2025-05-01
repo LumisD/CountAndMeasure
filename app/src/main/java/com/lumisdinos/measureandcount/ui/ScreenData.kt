@@ -1,6 +1,7 @@
 package com.lumisdinos.measureandcount.ui
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.model.ColorItem
 import com.lumisdinos.measureandcount.ui.model.NewScreenType
@@ -29,25 +30,25 @@ val defaultScreenTypes = listOf(
 )
 
 val colorList = listOf(
-    ColorItem("White", Color.White),
-    ColorItem("Black", Color.Black),
-    ColorItem("Red", Color.Red),
-    ColorItem("Green", Color.Green),
-    ColorItem("Blue", Color.Blue),
-    ColorItem("Yellow", Color.Yellow),
-    ColorItem("Cyan", Color.Cyan),
-    ColorItem("Magenta", Color.Magenta),
-    ColorItem("Gray", Color.Gray),
-    ColorItem("Dark Gray", Color.DarkGray),
-    ColorItem("Light Gray", Color.LightGray),
-    ColorItem("Orange", Color(0xFFFF9800)),
-    ColorItem("Purple", Color(0xFF9C27B0)),
-    ColorItem("Pink", Color(0xFFE91E63)),
-    ColorItem("Brown", Color(0xFF795548)),
-    ColorItem("Teal", Color(0xFF009688)),
-    ColorItem("Lime", Color(0xFFCDDC39)),
-    ColorItem("Indigo", Color(0xFF3F51B5)),
-    ColorItem("Amber", Color(0xFFFFC107)),
-    ColorItem("Deep Orange", Color(0xFFFF5722))
+    ColorItem("White", Color.White.toArgb()),
+    ColorItem("Black", Color.Black.toArgb()),
+    ColorItem("Red", Color.Red.toArgb()),
+    ColorItem("Green", Color.Green.toArgb()),
+    ColorItem("Blue", Color.Blue.toArgb()),
+    ColorItem("Yellow", Color.Yellow.toArgb()),
+    ColorItem("Cyan", Color.Cyan.toArgb()),
+    ColorItem("Magenta", Color.Magenta.toArgb()),
+    ColorItem("Gray", Color.Gray.toArgb()),
+    ColorItem("Dark Gray", Color.DarkGray.toArgb()),
+    ColorItem("Light Gray", Color.LightGray.toArgb()),
+    ColorItem("Orange", Color(0xFFFF9800).toArgb()),
+    ColorItem("Purple", Color(0xFF9C27B0).toArgb()),
+    ColorItem("Pink", Color(0xFFE91E63).toArgb()),
+    ColorItem("Brown", Color(0xFF795548).toArgb()),
+    ColorItem("Teal", Color(0xFF009688).toArgb()),
+    ColorItem("Lime", Color(0xFFCDDC39).toArgb()),
+    ColorItem("Indigo", Color(0xFF3F51B5).toArgb()),
+    ColorItem("Amber", Color(0xFFFFC107).toArgb()),
+    ColorItem("Deep Orange", Color(0xFFFF5722).toArgb())
 )
 

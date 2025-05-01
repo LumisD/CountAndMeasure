@@ -26,7 +26,8 @@ data class Chipboard(
     @ColumnInfo(name = "union_id")
     val unionId: Int,
     val dimensions: Short,//qty of dimensions starts from 1
-    val color: String,
+    val colorName: String,
+    val color: Int,
     val direction: Short,//0 - no direction, 1 to n - direction column
     val quantity: Short,
     val title1: String,
@@ -42,6 +43,7 @@ fun Chipboard.toChipboardUi(): ChipboardUi {
         id = id,
         unionId = unionId,
         dimensions = dimensions,
+        colorName = colorName,
         color = color,
         direction = direction,
         quantity = quantity,

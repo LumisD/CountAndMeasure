@@ -34,7 +34,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import com.lumisdinos.measureandcount.ui.model.deserializeNewScreenType
@@ -132,7 +131,7 @@ fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNe
             ) {
                 WidthLengthFields(type, state.newOrEditChipboard, viewModel::processIntent)
                 if (type.hasColor) {
-                    ColorField(state.newOrEditChipboard.color, viewModel::processIntent)
+                    ColorField(state.newOrEditChipboard.colorName, viewModel::processIntent)
                 }
                 QuantityField(
                     state.newOrEditChipboard.quantityAsString,
@@ -146,7 +145,7 @@ fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNe
                 viewModel::processIntent
             )
         }
-        ChipboardAsStringField(state.editingChipboardAsString)
+        ChipboardAsStringField(state.newOrEditChipboard)
     }
 
 }
@@ -182,7 +181,7 @@ fun ColorField(color: String, processIntent: (AddNewItemIntent) -> Unit) {
     ColorPickerRow(
         selectedColor = selectedColor,
         onColorSelected = { colorItem ->
-            processIntent(AddNewItemIntent.ColorChanged(colorItem.name))
+            processIntent(AddNewItemIntent.ColorChanged(colorItem.name, colorItem.color))
         }
     )
     Spacer(modifier = Modifier.height(16.dp))
@@ -229,19 +228,23 @@ fun AddChipboardButton(
 
 
 @Composable
-fun ChipboardAsStringField(editingChipboardAsString: String) {
+fun ChipboardAsStringField(editingChipboard: ChipboardUi) {
     Spacer(modifier = Modifier.height(16.dp))
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Yellowish)
-            .padding(12.dp),
-        contentAlignment = Alignment.Center
+            .padding(12.dp)
     ) {
         Text(
-            text = editingChipboardAsString,
+            text = editingChipboard.chipboardAsString,
             textAlign = TextAlign.Center,
             fontSize = 18.sp
+        )
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .background(Color(editingChipboard.color))
         )
     }
 }
@@ -387,7 +390,7 @@ fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Uni
         Box(
             modifier = Modifier
                 .size(24.dp)
-                .background(selectedColor.color, shape = CircleShape)
+                .background(Color(selectedColor.color), shape = CircleShape)
                 .border(1.dp, Color.Gray, CircleShape)
         )
         Spacer(modifier = Modifier.weight(1f)) // <--- this pushes content to the start and fills remaining space
@@ -406,7 +409,7 @@ fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Uni
                         Box(
                             modifier = Modifier
                                 .size(24.dp)
-                                .background(colorItem.color, shape = CircleShape)
+                                .background(Color(colorItem.color), shape = CircleShape)
                         )
                     }
                 )
