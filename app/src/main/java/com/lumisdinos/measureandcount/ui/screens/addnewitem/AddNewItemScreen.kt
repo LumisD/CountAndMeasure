@@ -245,6 +245,12 @@ fun ChipboardAsStringField(editingChipboard: ChipboardUi) {
             textAlign = TextAlign.Center,
             fontSize = 18.sp
         )
+        VerticalDivider(
+            modifier = Modifier
+                .height(42.dp)
+                .width(1.dp),
+            color = Color.Black
+        )
         Box(
             modifier = Modifier
                 .width(36.dp)
@@ -304,6 +310,7 @@ fun ListOfNewItems(
                         .width(36.dp)
                         .height(42.dp)
                         .background(Color(chipboard.color))
+                        .border(width = 1.dp, color = Color.Black)
                 )
 
                 IconButton(onClick = {
