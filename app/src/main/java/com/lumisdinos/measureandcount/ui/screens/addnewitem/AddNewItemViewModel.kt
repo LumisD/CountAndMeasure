@@ -97,9 +97,8 @@ class AddNewItemViewModel @Inject constructor(
 //                _state.update { it.copy(navigateBack = false) }
 //            }
             is AddNewItemIntent.SetItemType -> setChipboardMainData(intent.itemType)
-            is AddNewItemIntent.EditChipboard -> {
-                _state.update { it.copy(newOrEditChipboard = intent.chipboard) }
-            }
+
+            is AddNewItemIntent.EditChipboard -> editChipboard(intent.chipboard)
 
             is AddNewItemIntent.DeleteChipboard -> {
                 viewModelScope.launch {
@@ -133,6 +132,17 @@ class AddNewItemViewModel @Inject constructor(
                 newOrEditChipboard = newChipboard2,
                 isAddButtonAvailable = false
             )
+        }
+    }
+
+    private fun editChipboard(chipboard: ChipboardUi) {
+        _state.update { it.copy(
+            isAddAreaOpen = true,
+            newOrEditChipboard = chipboard
+        ) }
+        viewModelScope.launch {
+            chipboardRepository.deleteChipboardById(chipboard.id)
+            _effect.send(AddNewItemEffect.FlashAddItemArea)
         }
     }
 

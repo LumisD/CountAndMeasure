@@ -1,6 +1,11 @@
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -69,6 +74,7 @@ import com.lumisdinos.measureandcount.ui.colorList
 import com.lumisdinos.measureandcount.ui.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.model.ColorItem
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemEffect
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -90,8 +96,9 @@ fun AddNewItemScreen(
 
     val state by viewModel.state.collectAsState()
     val dialogState = remember { mutableStateOf<ChipboardUi?>(null) }
+    val shouldFlash = remember { mutableStateOf(false) }
 
-    CollectEffects(dialogState, viewModel, navController, snackbarHostState)
+    CollectEffects(dialogState, shouldFlash, viewModel, navController, snackbarHostState)
     ShowDeleteDialog(dialogState, viewModel::processIntent)
 
     //Actual screen
@@ -104,18 +111,42 @@ fun AddNewItemScreen(
     ) {
         TopBar(state.title, viewModel::processIntent)
         AnimatedVisibility(visible = state.isAddAreaOpen) {
-            AddNewItemArea(itemType, state, viewModel)
+            AddNewItemArea(itemType, state, shouldFlash, viewModel)
         }
         ExpandHideField(state.isAddAreaOpen, viewModel::processIntent)
         ListOfNewItems(state.chipboards, viewModel::processIntent)
     }
 }
 
-
 @Composable
-fun AddNewItemArea(type: NewScreenType, state: AddNewItemState, viewModel: AddNewItemViewModel) {
+fun AddNewItemArea(
+    type: NewScreenType,
+    state: AddNewItemState,
+    shouldFlash: MutableState<Boolean>,
+    viewModel: AddNewItemViewModel
+) {
+    val transition = rememberInfiniteTransition(label = "flashTransition")
+    val animatedFloat by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 400, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = "flashColor"
+    )
+    val flashColor = if (animatedFloat < 0.5f) Color.Transparent else Color.Blue.copy(alpha = 0.5f)
+    val backgroundColor = if (shouldFlash.value) flashColor else Color.Transparent
+    LaunchedEffect(key1 = shouldFlash.value) {
+        if (shouldFlash.value) {
+            delay(1200)
+            shouldFlash.value = false
+        }
+    }
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor)
+            .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
@@ -234,7 +265,7 @@ fun ChipboardAsStringField(editingChipboard: ChipboardUi) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Yellowish)
-        .border(width = 1.dp, color = Color.Black),
+            .border(width = 1.dp, color = Color.Black),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -472,6 +503,7 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
 @Composable
 fun CollectEffects(
     dialogState: MutableState<ChipboardUi?>,
+    shouldFlash: MutableState<Boolean>,
     viewModel: AddNewItemViewModel,
     navController: NavController,
     snackbarHostState: SnackbarHostState
@@ -485,6 +517,11 @@ fun CollectEffects(
 
                 is AddNewItemEffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(effect.message)
+                }
+
+
+                is AddNewItemEffect.FlashAddItemArea -> {
+                    shouldFlash.value = true
                 }
 
                 is AddNewItemEffect.NavigateBack -> {
