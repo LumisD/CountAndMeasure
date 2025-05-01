@@ -1,11 +1,7 @@
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -123,19 +119,14 @@ fun AddNewItemArea(
     type: NewScreenType,
     state: AddNewItemState,
     shouldFlash: MutableState<Boolean>,
-    viewModel: AddNewItemViewModel
+    viewModel: AddNewItemViewModel,
 ) {
-    val transition = rememberInfiniteTransition(label = "flashTransition")
-    val animatedFloat by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 400, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = "flashColor"
+    val animatedColor by animateColorAsState(
+        targetValue = if (shouldFlash.value) Color.Blue.copy(alpha = 0.5f) else Color.Transparent,
+        animationSpec = tween(durationMillis = 600),
+        label = "backgroundColor"
     )
-    val flashColor = if (animatedFloat < 0.5f) Color.Transparent else Color.Blue.copy(alpha = 0.5f)
-    val backgroundColor = if (shouldFlash.value) flashColor else Color.Transparent
+
     LaunchedEffect(key1 = shouldFlash.value) {
         if (shouldFlash.value) {
             delay(1200)
@@ -145,11 +136,12 @@ fun AddNewItemArea(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(backgroundColor)
+            .background(animatedColor)
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

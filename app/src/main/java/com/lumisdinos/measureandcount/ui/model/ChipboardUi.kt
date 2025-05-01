@@ -12,17 +12,18 @@ data class ChipboardUi(
     val color: Int = Color.White.toArgb(),
     val direction: Short = 0, // 0 - no direction, 1 to n - direction column
     val quantity: Short = 1,
-    val quantityAsString: String = "1",
     val title1: String = "",
     val size1: Float = 0f,
-    val size1AsString: String = "",
     val title2: String = "",
     val size2: Float = 0f,
-    val size2AsString: String = "",
     val title3: String = "",
     val size3: Float = 0f,
+
+    val quantityAsString: String = "1",
+    val size1AsString: String = "",
+    val size2AsString: String = "",
     val size3AsString: String = "",
-    val chipboardAsString: String = "",
+    val chipboardAsString: String = ""
 )
 
 fun ChipboardUi.toChipboard(): Chipboard {
