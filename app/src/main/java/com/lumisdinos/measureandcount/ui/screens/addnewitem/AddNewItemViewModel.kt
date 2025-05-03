@@ -106,7 +106,11 @@ class AddNewItemViewModel @Inject constructor(
 //            }
             is AddNewItemIntent.SetItemType -> setChipboardMainData(intent.itemType)
 
-            is AddNewItemIntent.EditChipboard -> editChipboard(intent.chipboard)
+            is AddNewItemIntent.EditChipboard -> {
+                viewModelScope.launch {
+                    _effect.send(AddNewItemEffect.ShowEditConfirmationDialog(intent.chipboard))
+                }
+            }
 
             is AddNewItemIntent.DeleteChipboard -> {
                 viewModelScope.launch {
@@ -115,6 +119,8 @@ class AddNewItemViewModel @Inject constructor(
             }
 
             is AddNewItemIntent.DeleteChipboardConfirmed -> deleteChipboard(intent.chipboardId)
+
+            is AddNewItemIntent.EditChipboardConfirmed -> editChipboard(intent.chipboard)
         }
     }
 

@@ -11,9 +11,9 @@ sealed interface AddNewItemIntent {
     data class EditChipboard(val chipboard: ChipboardUi) : AddNewItemIntent
     data class SetItemType(val itemType: NewScreenType) : AddNewItemIntent
     data class DeleteChipboard(val chipboard: ChipboardUi) : AddNewItemIntent
+    data class EditChipboardConfirmed(val chipboard: ChipboardUi) : AddNewItemIntent
     data class DeleteChipboardConfirmed(val chipboardId: Int) : AddNewItemIntent
     data object AddChipboard : AddNewItemIntent
     data object ToggleAddAreaVisibility : AddNewItemIntent
     data object Back : AddNewItemIntent
-    //data object ResetNavigateBack : AddNewItemIntent
 }

@@ -11,7 +11,10 @@
     <string name="add">Add</string>
     <string name="item_deleted">Item deleted</string>
     <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
     <string name="cancel">Cancel</string>
     <string name="confirm_deletion">Confirm deletion</string>
-    <string name="are_you_sure_delete">Are you sure you want to delete %1$s?</string>
+    <string name="confirm_editing">Confirm editing</string>
+    <string name="are_you_sure_delete">Are you sure you want to delete \n%1$s (%2$s)?</string>
+    <string name="are_you_sure_edit">Are you sure you want to edit \n%1$s (%2$s)?\n(Item will be deleted from the list)</string>
 </resources>

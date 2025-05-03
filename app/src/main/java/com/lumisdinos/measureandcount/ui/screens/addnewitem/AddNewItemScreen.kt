@@ -69,6 +69,7 @@ import com.lumisdinos.measureandcount.ui.Yellowish
 import com.lumisdinos.measureandcount.ui.colorList
 import com.lumisdinos.measureandcount.ui.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.model.ColorItem
+import com.lumisdinos.measureandcount.ui.model.DialogType
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemEffect
 import kotlinx.coroutines.delay
 
@@ -91,11 +92,11 @@ fun AddNewItemScreen(
     }
 
     val state by viewModel.state.collectAsState()
-    val dialogState = remember { mutableStateOf<ChipboardUi?>(null) }
+    val dialogState = remember { mutableStateOf<DialogType>(DialogType.None) }
     val shouldFlash = remember { mutableStateOf(false) }
 
     CollectEffects(dialogState, shouldFlash, viewModel, navController, snackbarHostState)
-    ShowDeleteDialog(dialogState, viewModel::processIntent)
+    ChooseDialogType(dialogState, viewModel::processIntent)
 
     //Actual screen
     Column(
@@ -319,27 +320,27 @@ fun ListOfNewItems(
         items(chipboards, key = { it.id }) { chipboard ->
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                    .clickable { processIntent(AddNewItemIntent.EditChipboard(chipboard)) },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Text(
-                    text = chipboard.chipboardAsString,
-                    modifier = Modifier.weight(2f)
-                )
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = chipboard.chipboardAsString,
+                        modifier = Modifier.weight(1f)
+                    )
 
-                Box(
-                    modifier = Modifier
-                        .width(36.dp)
-                        .height(42.dp)
-                        .background(Color(chipboard.color))
-                        .border(width = 1.dp, color = Color.Black)
-                )
-
-                IconButton(onClick = {
-                    processIntent(AddNewItemIntent.EditChipboard(chipboard))
-                }) {
-                    Icon(Icons.Filled.Edit, contentDescription = "Edit")
+                    Box(
+                        modifier = Modifier
+                            .width(36.dp)
+                            .height(42.dp)
+                            .background(Color(chipboard.color))
+                            .border(width = 1.dp, color = Color.Black)
+                    )
                 }
 
                 IconButton(onClick = {
@@ -494,7 +495,7 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
 
 @Composable
 fun CollectEffects(
-    dialogState: MutableState<ChipboardUi?>,
+    dialogState: MutableState<DialogType>,
     shouldFlash: MutableState<Boolean>,
     viewModel: AddNewItemViewModel,
     navController: NavController,
@@ -503,8 +504,13 @@ fun CollectEffects(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
+
+                is AddNewItemEffect.ShowEditConfirmationDialog -> {
+                    dialogState.value = DialogType.Edit(effect.chipboard)
+                }
+
                 is AddNewItemEffect.ShowDeleteConfirmationDialog -> {
-                    dialogState.value = effect.chipboard
+                    dialogState.value = DialogType.Delete(effect.chipboard)
                 }
 
                 is AddNewItemEffect.ShowSnackbar -> {
@@ -532,6 +538,7 @@ fun CollectEffects(
 //            }
                     navController.popBackStack()
                 }
+
             }
         }
     }
@@ -539,41 +546,76 @@ fun CollectEffects(
 
 
 @Composable
-fun ShowDeleteDialog(
-    dialogState: MutableState<ChipboardUi?>,
+fun ChooseDialogType(
+    dialogState: MutableState<DialogType>,
     processIntent: (AddNewItemIntent) -> Unit
 ) {
-    dialogState.value?.let { chipboard ->
-        AlertDialog(
-            onDismissRequest = { dialogState.value = null },
-            confirmButton = {
-                TextButton(onClick = {
-                    processIntent(
-                        AddNewItemIntent.DeleteChipboardConfirmed(
-                            chipboard.id
-                        )
-                    )
-                    dialogState.value = null
-                }) {
-                    Text(stringResource(R.string.delete))
+    when (val dialog = dialogState.value) {
+        is DialogType.Delete -> {
+            ShowDialog(
+                title = stringResource(R.string.confirm_deletion),
+                text = stringResource(
+                    R.string.are_you_sure_delete,
+                    dialog.chipboard.chipboardAsString,
+                    dialog.chipboard.colorName
+                ),
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onDismiss = { dialogState.value = DialogType.None },
+                onConfirm = {
+                    processIntent(AddNewItemIntent.DeleteChipboardConfirmed(dialog.chipboard.id))
+                    dialogState.value = DialogType.None
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { dialogState.value = null }) {
-                    Text("Cancel")
+            )
+        }
+
+        is DialogType.Edit -> {
+            ShowDialog(
+                title = stringResource(R.string.confirm_editing),
+                text = stringResource(
+                    R.string.are_you_sure_edit,
+                    dialog.chipboard.chipboardAsString,
+                    dialog.chipboard.colorName
+                ),
+                confirmText = stringResource(R.string.edit),
+                dismissText = stringResource(R.string.cancel),
+                onDismiss = { dialogState.value = DialogType.None },
+                onConfirm = {
+                    processIntent(AddNewItemIntent.EditChipboardConfirmed(dialog.chipboard))
+                    dialogState.value = DialogType.None
                 }
-            },
-            title = { Text(stringResource(R.string.confirm_deletion)) },
-            text = {
-                Text(
-                    stringResource(
-                        R.string.are_you_sure_delete,
-                        chipboard.chipboardAsString
-                    )
-                )
-            }
-        )
+            )
+        }
+
+        DialogType.None -> {}
     }
+}
 
 
+@Composable
+fun ShowDialog(
+    title: String,
+    text: String,
+    confirmText: String,
+    dismissText: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(confirmText)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(dismissText)
+            }
+        },
+        title = { Text(title) },
+        text = {
+            Text(text)
+        }
+    )
 }
