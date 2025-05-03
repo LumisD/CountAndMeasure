@@ -2,38 +2,30 @@ package com.lumisdinos.measureandcount.data
 
 import com.lumisdinos.measureandcount.data.db.ChipboardDao
 import com.lumisdinos.measureandcount.data.db.UnionOfChipboardsDao
-import com.lumisdinos.measureandcount.data.db.model.toChipboardUi
+import com.lumisdinos.measureandcount.data.db.model.Chipboard
+import com.lumisdinos.measureandcount.data.db.model.UnionOfChipboards
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import com.lumisdinos.measureandcount.ui.model.ChipboardUi
-import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
-import com.lumisdinos.measureandcount.ui.model.toChipboard
-import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboards
 
 class MeasureAndCountRepositoryImpl @Inject constructor(
     private val unionOfChipboardsDao: UnionOfChipboardsDao,
     private val chipboardDao: ChipboardDao
 ) : MeasureAndCountRepository {
 
-    override suspend fun insertChipboard(chipboardUi: ChipboardUi) {
-        val entity = chipboardUi.toChipboard()
-        chipboardDao.insertChipboard(entity)
+    override suspend fun insertChipboard(chipboard: Chipboard) {
+        chipboardDao.insertChipboard(chipboard)
     }
 
-    override suspend fun insertUnionOfChipboards(unionOfChipboardsUI: UnionOfChipboardsUI): Int {
-        val entity = unionOfChipboardsUI.toUnionOfChipboards()
-        return unionOfChipboardsDao.insertUnionOfChipboards(entity).toInt()
+    override suspend fun insertUnionOfChipboards(unionOfChipboards: UnionOfChipboards): Int {
+        return unionOfChipboardsDao.insertUnionOfChipboards(unionOfChipboards).toInt()
     }
 
     override suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long) {
         unionOfChipboardsDao.updateUnionOfChipboardsTitle(unionId, newTitle,  updatedAt)
     }
 
-    override fun getChipboardsByUnionIdFlow(unionId: Int): Flow<List<ChipboardUi>> {
-        return chipboardDao.getChipboardsFlowByUnionId(unionId).map { chipboardEntities ->
-            chipboardEntities.map { it.toChipboardUi() }
-        }
+    override fun getChipboardsByUnionIdFlow(unionId: Int): Flow<List<Chipboard>> {
+        return chipboardDao.getChipboardsFlowByUnionId(unionId)
     }
 
     override suspend fun deleteChipboardById(chipboardId: Int) {

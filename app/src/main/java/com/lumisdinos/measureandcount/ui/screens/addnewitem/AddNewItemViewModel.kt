@@ -5,9 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
+import com.lumisdinos.measureandcount.data.db.model.toChipboardUi
 import com.lumisdinos.measureandcount.ui.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.model.NewScreenType
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
+import com.lumisdinos.measureandcount.ui.model.toChipboard
+import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboards
 import com.lumisdinos.measureandcount.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,7 +40,8 @@ class AddNewItemViewModel @Inject constructor(
 
     private fun createNewUnion() {
         viewModelScope.launch {
-            val newUnion = UnionOfChipboardsUI(createdAt = System.currentTimeMillis())
+            val newUnion =
+                UnionOfChipboardsUI(createdAt = System.currentTimeMillis()).toUnionOfChipboards()
             val unionId = chipboardRepository.insertUnionOfChipboards(newUnion)
 
             if (unionId != null) {
@@ -62,15 +66,17 @@ class AddNewItemViewModel @Inject constructor(
         viewModelScope.launch {
             chipboardRepository.getChipboardsByUnionIdFlow(unionId).collect { chipboards ->
                 val updatedChipboards =
-                    chipboards.map {
-                        it.copy(
-                            quantityAsString = it.quantity.toString(),
-                            size1AsString = it.size1.toString(),
-                            size2AsString = it.size2.toString(),
-                            size3AsString = it.size3.toString(),
-                            chipboardAsString = getChipboardAsString(it)
-                        )
-                    }
+                    chipboards
+                        .sortedByDescending { it.id }
+                        .map {
+                            it.toChipboardUi().copy(
+                                quantityAsString = it.quantity.toString(),
+                                size1AsString = it.size1.toString(),
+                                size2AsString = it.size2.toString(),
+                                size3AsString = it.size3.toString(),
+                                chipboardAsString = getChipboardAsString(it.toChipboardUi())
+                            )
+                        }
                 _state.update { it.copy(chipboards = updatedChipboards) }
             }
         }
@@ -126,7 +132,7 @@ class AddNewItemViewModel @Inject constructor(
 
     private fun addChipboard() {
         viewModelScope.launch {
-            chipboardRepository.insertChipboard(_state.value.newOrEditChipboard)
+            chipboardRepository.insertChipboard(_state.value.newOrEditChipboard.toChipboard())
             _effect.send(AddNewItemEffect.ShowSnackbar(context.getString(R.string.new_item_added)))
         }
         _state.update { currentState ->

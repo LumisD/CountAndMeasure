@@ -1,14 +1,14 @@
 package com.lumisdinos.measureandcount.data
 
-import com.lumisdinos.measureandcount.ui.model.ChipboardUi
-import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
+import com.lumisdinos.measureandcount.data.db.model.Chipboard
+import com.lumisdinos.measureandcount.data.db.model.UnionOfChipboards
 import kotlinx.coroutines.flow.Flow
 
 interface MeasureAndCountRepository {
 
-    suspend fun insertChipboard(chipboardUi: ChipboardUi)
+    suspend fun insertChipboard(chipboard: Chipboard)
 
-    suspend fun insertUnionOfChipboards(unionOfChipboardsUI: UnionOfChipboardsUI): Int
+    suspend fun insertUnionOfChipboards(unionOfChipboards: UnionOfChipboards): Int
 
     suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long)
 
@@ -18,6 +18,6 @@ interface MeasureAndCountRepository {
 
     suspend fun deleteUnionOfChipboards(unionId: Int)
 
-    fun getChipboardsByUnionIdFlow(unionId: Int): Flow<List<ChipboardUi>>
+    fun getChipboardsByUnionIdFlow(unionId: Int): Flow<List<Chipboard>>
 
 }
