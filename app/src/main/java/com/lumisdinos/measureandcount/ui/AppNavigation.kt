@@ -15,13 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -34,9 +30,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lumisdinos.measureandcount.R
-//import com.lumisdinos.measureandcount.ui.model.AddNewItemOrigin
 import com.lumisdinos.measureandcount.ui.screens.CreateOwnMeasureScreen
-import com.lumisdinos.measureandcount.ui.screens.CountScreen
+import com.lumisdinos.measureandcount.ui.screens.count.CountScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
 import com.lumisdinos.measureandcount.ui.screens.ListsScreen
 
