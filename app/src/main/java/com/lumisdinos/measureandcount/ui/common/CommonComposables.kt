@@ -1,5 +1,14 @@
 package com.lumisdinos.measureandcount.ui.common
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -9,11 +18,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.style.TextAlign
+import com.lumisdinos.measureandcount.ui.Yellowish
+import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
+import com.lumisdinos.measureandcount.ui.screens.count.CountIntent
 
 @Composable
 fun UpArrowIcon(modifier: Modifier = Modifier) {
@@ -24,6 +48,7 @@ fun UpArrowIcon(modifier: Modifier = Modifier) {
     )
 }
 
+
 @Composable
 fun XIcon() {
     Icon(
@@ -33,15 +58,160 @@ fun XIcon() {
     )
 }
 
+
 @Composable
-fun TextC(text: String) {
-    Text(
-        text = text,
-        style = TextStyle(
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp,
-            color = Color.Blue
+fun CommonButton(
+    text: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.7f))
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth(0.8f)
+            .height(50.dp),
+        enabled = enabled,
+        colors = colors
+    ) {
+        Text(
+            text = text,
+            color = Color.White
         )
+    }
+}
+
+
+@Composable
+fun ChipboardAsStringField(chipboardAsString: String, color: Int) {
+    Spacer(modifier = Modifier.height(16.dp))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Yellowish)
+            .border(width = 1.dp, color = Color.Black),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = chipboardAsString,
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentHeight(),
+            textAlign = TextAlign.Center,
+            fontSize = 18.sp
+        )
+        VerticalDivider(
+            modifier = Modifier
+                .height(42.dp)
+                .width(1.dp),
+            color = Color.Black
+        )
+        Box(
+            modifier = Modifier
+                .width(36.dp)
+                .height(42.dp)
+                .background(Color(color))
+        )
+    }
+}
+
+
+@Composable
+fun ShowDialog(
+    title: String,
+    text: String,
+    confirmText: String,
+    dismissText: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(confirmText)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(dismissText)
+            }
+        },
+        title = { Text(title) },
+        text = {
+            Text(text)
+        }
     )
 }
+
+
+@Composable
+fun ShowDialog(
+    title: String,
+    text: String,
+    confirmText: String,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(confirmText)
+            }
+        },
+        title = { Text(title) },
+        text = {
+            Text(text)
+        }
+    )
+}
+
+@Composable
+private fun <T> ExpandHideFieldInternal(
+    isAreaOpen: Boolean,
+    processIntent: (T) -> Unit,
+    intentFactory: () -> T
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val rotationAngle by animateFloatAsState(
+            targetValue = if (isAreaOpen) 0f else 180f,
+            animationSpec = tween(durationMillis = 500),
+            label = "rotation"
+        )
+
+        Icon(
+            imageVector = Icons.Filled.KeyboardArrowUp,
+            contentDescription = "Expand/Collapse",
+            modifier = Modifier
+                .size(48.dp)
+                .rotate(rotationAngle)
+                .clickable { processIntent(intentFactory()) }
+        )
+    }
+}
+
+
+@Composable
+fun ExpandHideNewItemField(isAddAreaOpen: Boolean, processIntent: (AddNewItemIntent) -> Unit) {
+    ExpandHideFieldInternal(
+        isAddAreaOpen,
+        processIntent,
+        intentFactory = { AddNewItemIntent.ToggleAddAreaVisibility }
+    )
+}
+
+
+@Composable
+fun ExpandHideCountField(isFindAreaOpen: Boolean, processIntent: (CountIntent) -> Unit) {
+    ExpandHideFieldInternal(
+        isFindAreaOpen,
+        processIntent,
+        intentFactory = { CountIntent.ToggleFindAreaVisibility }
+    )
+}
+

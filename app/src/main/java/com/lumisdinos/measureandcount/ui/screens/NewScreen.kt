@@ -30,7 +30,6 @@ import com.lumisdinos.measureandcount.ui.model.serialize
 import com.lumisdinos.measureandcount.ui.Screen
 import com.lumisdinos.measureandcount.ui.common.UpArrowIcon
 import com.lumisdinos.measureandcount.ui.common.XIcon
-import com.lumisdinos.measureandcount.ui.common.TextC
 import com.lumisdinos.measureandcount.ui.defaultScreenTypes
 
 @Composable

@@ -1,4 +1,4 @@
-package com.lumisdinos.measureandcount.ui.model
+package com.lumisdinos.measureandcount.ui.screens.addnewitem.model
 
 sealed class DialogType {
     data class Delete(val chipboard: ChipboardUi) : DialogType()

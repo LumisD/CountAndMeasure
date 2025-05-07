@@ -1,7 +1,6 @@
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
@@ -30,19 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.lumisdinos.measureandcount.ui.model.NewScreenType
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import com.lumisdinos.measureandcount.ui.model.deserializeNewScreenType
 import com.lumisdinos.measureandcount.ui.common.UpArrowIcon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.material3.Button
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import com.lumisdinos.measureandcount.ui.defaultScreenTypes
@@ -52,23 +44,23 @@ import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lumisdinos.measureandcount.R
-import com.lumisdinos.measureandcount.ui.Yellowish
-import com.lumisdinos.measureandcount.ui.colorList
-import com.lumisdinos.measureandcount.ui.model.ChipboardUi
-import com.lumisdinos.measureandcount.ui.model.ColorItem
-import com.lumisdinos.measureandcount.ui.model.DialogType
+import com.lumisdinos.measureandcount.ui.common.AddItemColorField
+import com.lumisdinos.measureandcount.ui.common.ChipboardAsStringField
+import com.lumisdinos.measureandcount.ui.common.CommonButton
+import com.lumisdinos.measureandcount.ui.common.ExpandHideNewItemField
+import com.lumisdinos.measureandcount.ui.common.NewItemOutlinedEditor
+import com.lumisdinos.measureandcount.ui.common.QuantityNewItemOutlinedEditor
+import com.lumisdinos.measureandcount.ui.common.ShowDialog
+import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ChipboardUi
+import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.DialogType
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemEffect
 import kotlinx.coroutines.delay
 
@@ -79,8 +71,8 @@ fun AddNewItemScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: AddNewItemViewModel = hiltViewModel()
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val navigationArg = navBackStackEntry?.arguments?.getString("itemType")
+    val navigationArg =
+        navController.currentBackStackEntryAsState().value?.arguments?.getString("itemType")
     val itemType = navigationArg?.deserializeNewScreenType() ?: defaultScreenTypes.first()
     //val originString = navBackStackEntry?.arguments?.getString("origin")
     //val origin = originString?.let { AddNewItemOrigin.valueOf(it) }
@@ -105,12 +97,12 @@ fun AddNewItemScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        TopBar(state.title, viewModel::processIntent)
+        TopBar(state.titleOfUnion, viewModel::processIntent)
         AnimatedVisibility(visible = state.isAddAreaOpen) {
             AddNewItemArea(itemType, state, shouldFlash, viewModel)
         }
-        ExpandHideField(state.isAddAreaOpen, viewModel::processIntent)
-        ListOfNewItems(state.chipboards, viewModel::processIntent)
+        ExpandHideNewItemField(state.isAddAreaOpen, viewModel::processIntent)
+        ListOfNewItems(state.createdChipboards, viewModel::processIntent)
     }
 }
 
@@ -137,7 +129,7 @@ fun AddNewItemArea(
         modifier = Modifier
             .fillMaxWidth()
             .background(animatedColor)
-            .padding(16.dp),
+            .padding(top = 0.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
@@ -154,7 +146,7 @@ fun AddNewItemArea(
             ) {
                 WidthLengthFields(type, state.newOrEditChipboard, viewModel::processIntent)
                 if (type.hasColor) {
-                    ColorField(state.newOrEditChipboard.colorName, viewModel::processIntent)
+                    AddItemColorField(state.newOrEditChipboard.colorName, viewModel::processIntent)
                 }
                 QuantityField(
                     state.newOrEditChipboard.quantityAsString,
@@ -168,7 +160,10 @@ fun AddNewItemArea(
                 viewModel::processIntent
             )
         }
-        ChipboardAsStringField(state.newOrEditChipboard)
+        ChipboardAsStringField(
+            state.newOrEditChipboard.chipboardAsString,
+            state.newOrEditChipboard.color
+        )
     }
 
 }
@@ -182,7 +177,10 @@ fun WidthLengthFields(
 ) {
     type.columnNames.forEachIndexed { index, nameResId ->
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                //.background(Color.Gray)
         ) {
             if (type.directionColumn == index + 1) {
                 UpArrowIcon()
@@ -198,27 +196,18 @@ fun WidthLengthFields(
 
 
 @Composable
-fun ColorField(color: String, processIntent: (AddNewItemIntent) -> Unit) {
-    val selectedColor = colorList.firstOrNull { it.name == color } ?: colorList.first()
-    Spacer(modifier = Modifier.height(16.dp))
-    ColorPickerRow(
-        selectedColor = selectedColor,
-        onColorSelected = { colorItem ->
-            processIntent(AddNewItemIntent.ColorChanged(colorItem.name, colorItem.color))
-        }
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-}
-
-
-@Composable
 fun QuantityField(quantity: String, processIntent: (AddNewItemIntent) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         //Text(text = stringResource(R.string.quantity))
         Spacer(modifier = Modifier.width(24.dp))
-        QuantityEditor(R.string.quantity, quantity, processIntent)
+        QuantityNewItemOutlinedEditor(
+            label = stringResource(R.string.quantity),
+            value = quantity,
+            onQuantityChanged = processIntent
+        )
+        //QuantityEditor(R.string.quantity, quantity, processIntent)
     }
 }
 
@@ -233,77 +222,10 @@ fun AddChipboardButton(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        Button(
-            onClick = { processIntent(AddNewItemIntent.AddChipboard) },
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .height(50.dp),
-            enabled = isAddButtonAvailable,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.7f))
-        ) {
-            Text(
-                text = stringResource(R.string.add),
-                color = Color.White
-            )
-        }
-    }
-}
-
-
-@Composable
-fun ChipboardAsStringField(editingChipboard: ChipboardUi) {
-    Spacer(modifier = Modifier.height(16.dp))
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Yellowish)
-            .border(width = 1.dp, color = Color.Black),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = editingChipboard.chipboardAsString,
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentHeight(),
-            textAlign = TextAlign.Center,
-            fontSize = 18.sp
-        )
-        VerticalDivider(
-            modifier = Modifier
-                .height(42.dp)
-                .width(1.dp),
-            color = Color.Black
-        )
-        Box(
-            modifier = Modifier
-                .width(36.dp)
-                .height(42.dp)
-                .background(Color(editingChipboard.color))
-        )
-    }
-}
-
-
-@Composable
-fun ExpandHideField(isAddAreaOpen: Boolean, processIntent: (AddNewItemIntent) -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        val rotationAngle by animateFloatAsState(
-            targetValue = if (isAddAreaOpen) 0f else 180f,
-            animationSpec = tween(durationMillis = 500),
-            label = "rotation"
-        )
-
-        Icon(
-            imageVector = Icons.Filled.KeyboardArrowUp,
-            contentDescription = "Expand/Collapse",
-            modifier = Modifier
-                .size(48.dp)
-                .rotate(rotationAngle)
-                .clickable { processIntent(AddNewItemIntent.ToggleAddAreaVisibility) }
+        CommonButton(
+            stringResource(R.string.add),
+            !isAddButtonAvailable,
+            { processIntent(AddNewItemIntent.AddChipboardToDb) },
         )
     }
 }
@@ -319,7 +241,7 @@ fun ListOfNewItems(
         items(chipboards, key = { it.id }) { chipboard ->
             Row(
                 modifier = Modifier
-                    .clickable { processIntent(AddNewItemIntent.EditChipboard(chipboard)) },
+                    .clickable { processIntent(AddNewItemIntent.AskEditChipboard(chipboard)) },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -343,7 +265,7 @@ fun ListOfNewItems(
                 }
 
                 IconButton(onClick = {
-                    processIntent(AddNewItemIntent.DeleteChipboard(chipboard))
+                    processIntent(AddNewItemIntent.AskDeleteChipboard(chipboard))
                 }) {
                     Icon(
                         Icons.Filled.Close,
@@ -376,88 +298,55 @@ fun NumberEditor(
     dimension: Int,
     onSizeChangedIntent: (AddNewItemIntent) -> Unit
 ) {
-    OutlinedTextField(
-        modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
+    NewItemOutlinedEditor(
+        label = stringResource(id = label),
         value = sizeOfDim,
-        onValueChange = { newValue: String ->
-            onSizeChangedIntent(AddNewItemIntent.SizeChanged(newValue, dimension))
-        },
-        label = { Text(text = stringResource(id = label)) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color.Transparent,
-            focusedContainerColor = Color.Transparent,
-            disabledContainerColor = Color.Transparent,
-        )
+        dimension = dimension,
+        onSizeChanged = onSizeChangedIntent
     )
+//    OutlinedTextField(
+//        modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
+//        value = sizeOfDim,
+//        onValueChange = { newValue: String ->
+//            onSizeChangedIntent(AddNewItemIntent.SizeChanged(newValue, dimension))
+//        },
+//        label = { Text(text = stringResource(id = label)) },
+//        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//        colors = TextFieldDefaults.colors(
+//            unfocusedContainerColor = Color.Transparent,
+//            focusedContainerColor = Color.Transparent,
+//            disabledContainerColor = Color.Transparent,
+//        )
+//    )
 }
 
 
-@Composable
-fun QuantityEditor(
-    label: Int,
-    quantity: String,
-    onQuantityChangedIntent: (AddNewItemIntent) -> Unit
-) {
-    OutlinedTextField(
-        modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
-        value = quantity,
-        onValueChange = { newValue: String ->
-            onQuantityChangedIntent(AddNewItemIntent.QuantityChanged(newValue))
-        },
-        label = { Text(text = stringResource(id = label)) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color.Transparent,
-            focusedContainerColor = Color.Transparent,
-            disabledContainerColor = Color.Transparent,
-        )
-    )
-}
-
-
-@Composable
-fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Unit) {
-    var showColorPicker by remember { mutableStateOf(false) }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(horizontal = 24.dp)
-            .clickable { showColorPicker = !showColorPicker }
-    ) {
-        Text(text = stringResource(R.string.color_column))
-        Spacer(modifier = Modifier.width(8.dp))
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .background(Color(selectedColor.color), shape = CircleShape)
-                .border(1.dp, Color.Gray, CircleShape)
-        )
-        Spacer(modifier = Modifier.weight(1f)) // <--- this pushes content to the start and fills remaining space
-        DropdownMenu(
-            expanded = showColorPicker,
-            onDismissRequest = { showColorPicker = false }
-        ) {
-            colorList.forEach { colorItem ->
-                DropdownMenuItem(
-                    text = { Text(text = colorItem.name) },
-                    onClick = {
-                        onColorSelected(colorItem)
-                        showColorPicker = false
-                    },
-                    leadingIcon = {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .background(Color(colorItem.color), shape = CircleShape)
-                        )
-                    }
-                )
-            }
-        }
-    }
-}
+//@Composable
+//fun QuantityEditor(
+//    label: Int,
+//    quantity: String,
+//    onQuantityChangedIntent: (AddNewItemIntent) -> Unit
+//) {
+//    OutlinedEditor(
+//        label = stringResource(id = label),
+//        value = quantity,
+//        onQuantityChanged = onQuantityChangedIntent
+//    )
+////    OutlinedTextField(
+////        modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
+////        value = quantity,
+////        onValueChange = { newValue: String ->
+////            onQuantityChangedIntent(AddNewItemIntent.QuantityChanged(newValue))
+////        },
+////        label = { Text(text = stringResource(id = label)) },
+////        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+////        colors = TextFieldDefaults.colors(
+////            unfocusedContainerColor = Color.Transparent,
+////            focusedContainerColor = Color.Transparent,
+////            disabledContainerColor = Color.Transparent,
+////        )
+////    )
+//}
 
 
 @Composable
@@ -481,7 +370,7 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
         BasicTextField(
             value = title,
             onValueChange = { newTitle ->
-                processIntent(AddNewItemIntent.TitleChanged(newTitle))
+                processIntent(AddNewItemIntent.TitleOfUnionChanged(newTitle))
             },
             textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp)
         )
@@ -588,33 +477,4 @@ fun ChooseDialogType(
 
         DialogType.None -> {}
     }
-}
-
-
-@Composable
-fun ShowDialog(
-    title: String,
-    text: String,
-    confirmText: String,
-    dismissText: String,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(confirmText)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(dismissText)
-            }
-        },
-        title = { Text(title) },
-        text = {
-            Text(text)
-        }
-    )
 }

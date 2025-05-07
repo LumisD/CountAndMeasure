@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
-import com.lumisdinos.measureandcount.data.db.model.toChipboardUi
-import com.lumisdinos.measureandcount.ui.model.ChipboardUi
+import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.model.NewScreenType
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
-import com.lumisdinos.measureandcount.ui.model.toChipboard
+import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.toChipboard
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboards
+import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.toChipboardUi
 import com.lumisdinos.measureandcount.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -48,7 +48,7 @@ class AddNewItemViewModel @Inject constructor(
                 _state.update { currentState ->
                     val titleTemplate = context.getString(R.string.chipboard_sheet_list_title)
                     currentState.copy(
-                        title = String.format(titleTemplate, getCurrentDateTime()),
+                        titleOfUnion = String.format(titleTemplate, getCurrentDateTime()),
                         newOrEditChipboard = currentState.newOrEditChipboard.copy(unionId = unionId)
                     )
                 }
@@ -77,25 +77,25 @@ class AddNewItemViewModel @Inject constructor(
                                 chipboardAsString = getChipboardAsString(it.toChipboardUi())
                             )
                         }
-                _state.update { it.copy(chipboards = updatedChipboards) }
+                _state.update { it.copy(createdChipboards = updatedChipboards) }
             }
         }
     }
 
     fun processIntent(intent: AddNewItemIntent) {
         when (intent) {
-            is AddNewItemIntent.TitleChanged -> updateUnionTitle(intent.newTitle)
+            is AddNewItemIntent.TitleOfUnionChanged -> updateUnionTitle(intent.newTitle)
 
             is AddNewItemIntent.SizeChanged -> updateChipboardSize(
                 intent.newSizeAsString,
                 intent.dimension
             )
 
-            is AddNewItemIntent.ColorChanged -> updateColor(intent.newColorName, intent.newColor)
+            is AddNewItemIntent.ColorChanged -> updateChipboardColor(intent.newColorName, intent.newColor)
 
-            is AddNewItemIntent.QuantityChanged -> updateQuantity(intent.newQuantityAsString)
+            is AddNewItemIntent.QuantityChanged -> updateChipboardQuantity(intent.newQuantityAsString)
 
-            is AddNewItemIntent.AddChipboard -> addChipboard()
+            is AddNewItemIntent.AddChipboardToDb -> addChipboardToDb()
 
             AddNewItemIntent.ToggleAddAreaVisibility -> {
                 _state.update { it.copy(isAddAreaOpen = !it.isAddAreaOpen) }
@@ -110,27 +110,27 @@ class AddNewItemViewModel @Inject constructor(
 //            AddNewItemIntent.ResetNavigateBack -> {
 //                _state.update { it.copy(navigateBack = false) }
 //            }
-            is AddNewItemIntent.SetItemType -> setChipboardMainData(intent.itemType)
+            is AddNewItemIntent.SetItemType -> setInitialCharacteristicsOfChipboard(intent.itemType)
 
-            is AddNewItemIntent.EditChipboard -> {
+            is AddNewItemIntent.AskEditChipboard -> {
                 viewModelScope.launch {
                     _effect.send(AddNewItemEffect.ShowEditConfirmationDialog(intent.chipboard))
                 }
             }
 
-            is AddNewItemIntent.DeleteChipboard -> {
+            is AddNewItemIntent.AskDeleteChipboard -> {
                 viewModelScope.launch {
                     _effect.send(AddNewItemEffect.ShowDeleteConfirmationDialog(intent.chipboard))
                 }
             }
 
-            is AddNewItemIntent.DeleteChipboardConfirmed -> deleteChipboard(intent.chipboardId)
+            is AddNewItemIntent.DeleteChipboardConfirmed -> deleteChipboardFromDb(intent.chipboardId)
 
-            is AddNewItemIntent.EditChipboardConfirmed -> editChipboard(intent.chipboard)
+            is AddNewItemIntent.EditChipboardConfirmed -> editChipboardInAddAreaAndRemoveFromDb(intent.chipboard)
         }
     }
 
-    private fun addChipboard() {
+    private fun addChipboardToDb() {
         viewModelScope.launch {
             chipboardRepository.insertChipboard(_state.value.newOrEditChipboard.toChipboard())
             _effect.send(AddNewItemEffect.ShowSnackbar(context.getString(R.string.new_item_added)))
@@ -157,7 +157,7 @@ class AddNewItemViewModel @Inject constructor(
         }
     }
 
-    private fun editChipboard(chipboard: ChipboardUi) {
+    private fun editChipboardInAddAreaAndRemoveFromDb(chipboard: ChipboardUi) {
         _state.update {
             it.copy(
                 isAddAreaOpen = true,
@@ -171,7 +171,7 @@ class AddNewItemViewModel @Inject constructor(
         }
     }
 
-    private fun deleteChipboard(chipboardId: Int) {
+    private fun deleteChipboardFromDb(chipboardId: Int) {
         viewModelScope.launch {
             chipboardRepository.deleteChipboardById(chipboardId)
             _effect.send(AddNewItemEffect.ShowSnackbar(context.getString(R.string.item_deleted)))
@@ -203,12 +203,10 @@ class AddNewItemViewModel @Inject constructor(
             }
             val updatedChipboard2 =
                 updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
-            val isAddButnAvailblChange = isAddButtonAvailabilityChange(updatedChipboard)
+            val setAddButnAvailbl = setAddButtonAvailability(updatedChipboard)
             currentState.copy(
                 newOrEditChipboard = updatedChipboard2,
-                isAddButtonAvailable = if (isAddButnAvailblChange)
-                    !currentState.isAddButtonAvailable
-                else currentState.isAddButtonAvailable
+                isAddButtonAvailable = setAddButnAvailbl
             )
         }
     }
@@ -222,10 +220,10 @@ class AddNewItemViewModel @Inject constructor(
                 System.currentTimeMillis()
             )
         }
-        _state.update { it.copy(title = newTitle) }
+        _state.update { it.copy(titleOfUnion = newTitle) }
     }
 
-    private fun updateColor(newColorName: String, newColor: Int) {
+    private fun updateChipboardColor(newColorName: String, newColor: Int) {
         _state.update { currentState ->
             val updatedChipboard = currentState.newOrEditChipboard.copy(
                 colorName = newColorName,
@@ -239,7 +237,7 @@ class AddNewItemViewModel @Inject constructor(
         }
     }
 
-    private fun updateQuantity(newQuantityAsString: String) {
+    private fun updateChipboardQuantity(newQuantityAsString: String) {
         val newQuantityAsShort = newQuantityAsString.toShortOrNull() ?: 0
         _state.update { currentState ->
             val updatedChipboard = currentState.newOrEditChipboard.copy(
@@ -248,12 +246,10 @@ class AddNewItemViewModel @Inject constructor(
             )
             val updatedChipboard2 =
                 updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
-            val isAddButnAvailblChange = isAddButtonAvailabilityChange(updatedChipboard)
+            val setAddButnAvailbl = setAddButtonAvailability(updatedChipboard)
             currentState.copy(
                 newOrEditChipboard = updatedChipboard2,
-                isAddButtonAvailable = if (isAddButnAvailblChange)
-                    !currentState.isAddButtonAvailable
-                else currentState.isAddButtonAvailable
+                isAddButtonAvailable = setAddButnAvailbl
             )
         }
     }
@@ -278,7 +274,7 @@ class AddNewItemViewModel @Inject constructor(
         return builder.toString()
     }
 
-    private fun isAddButtonAvailabilityChange(chipboard: ChipboardUi): Boolean {
+    private fun setAddButtonAvailability(chipboard: ChipboardUi): Boolean {
         var isAddButtonAvailable = true
         for (i in 1..chipboard.dimensions) {
             when (i) {
@@ -296,11 +292,11 @@ class AddNewItemViewModel @Inject constructor(
             }
             if (chipboard.quantity.toInt() == 0) isAddButtonAvailable = false
         }
-        if (_state.value.isAddButtonAvailable != isAddButtonAvailable) return true else return false
+        return isAddButtonAvailable
     }
 
 
-    private fun setChipboardMainData(itemType: NewScreenType) {
+    private fun setInitialCharacteristicsOfChipboard(itemType: NewScreenType) {
         _state.update { currentState ->
             val currentChipboard = currentState.newOrEditChipboard
 
