@@ -75,11 +75,9 @@ import kotlinx.coroutines.delay
 fun CountScreen(
     navController: NavController,
     snackbarHostState: SnackbarHostState,
+    unionId: Int? = null,
     viewModel: CountViewModel = hiltViewModel()
 ) {
-//    val navBackStackEntry by navController.currentBackStackEntryAsState()
-//    val unionId = navBackStackEntry?.arguments?.getInt("unionId")
-    val unionId = navController.currentBackStackEntryAsState().value?.arguments?.getInt("unionId")
     Log.d("CountScreen", "unionId: $unionId")
 
     LaunchedEffect(key1 = unionId) {
@@ -95,7 +93,15 @@ fun CountScreen(
 
     //Actual screen
     if (state.isNoLists) {
-        Text(stringResource(R.string.press_new_screen_create_chipboard_sheet_list))
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.press_new_screen_create_chipboard_sheet_list),
+                textAlign = TextAlign.Center
+            )
+        }
     } else {
         Column(
             modifier = Modifier
@@ -442,7 +448,7 @@ fun TopBar(unionOfChipboards: UnionOfChipboardsUI, processIntent: (CountIntent) 
             }
 
             Icon(
-                Icons.Filled.Done,
+                icon,
                 contentDescription = contentDescription,
                 modifier = Modifier.size(32.dp)
             )
