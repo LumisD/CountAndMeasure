@@ -9,21 +9,12 @@ import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 data class UnionOfChipboards(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val id: Int? = null,
+    val id: Int,
     val title: String,
+    @ColumnInfo(name = "is_finished")
     val isFinished: Boolean,
     @ColumnInfo(name = "created_at")
     val createdAt: Long,
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long
 )
-
-fun UnionOfChipboards.toUnionOfChipboardsUI(): UnionOfChipboardsUI {
-    return UnionOfChipboardsUI(
-        id = id,
-        title = title,
-        isFinished = isFinished,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
-}

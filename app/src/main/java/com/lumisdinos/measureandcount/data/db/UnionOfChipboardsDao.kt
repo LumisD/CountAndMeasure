@@ -18,6 +18,23 @@ interface UnionOfChipboardsDao {
     @Query("UPDATE union_of_chipboards SET title = :newTitle, updated_at = :updatedAt WHERE id = :unionId")
     suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long)
 
+    @Query("UPDATE union_of_chipboards SET is_finished = :isFinished, updated_at = :updatedAt WHERE id = :unionId")
+    suspend fun setUnionOfChipboardsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)
+
+    @Query(
+    """
+    SELECT * FROM union_of_chipboards
+    WHERE is_finished = 0
+    ORDER BY 
+        CASE 
+            WHEN updated_at > created_at THEN updated_at
+            ELSE created_at
+        END DESC
+    LIMIT 1
+    """
+    )
+    suspend fun getLastUnFinishedUnionOfChipboards(): UnionOfChipboards?
+
     @Query("DELETE FROM union_of_chipboards WHERE id = :unionId")
     suspend fun deleteUnionOfChipboardsById(unionId: Int)
 
