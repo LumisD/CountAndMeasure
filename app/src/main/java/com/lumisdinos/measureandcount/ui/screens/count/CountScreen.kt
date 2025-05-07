@@ -73,7 +73,6 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun CountScreen(
-    navController: NavController,
     snackbarHostState: SnackbarHostState,
     unionId: Int? = null,
     viewModel: CountViewModel = hiltViewModel()

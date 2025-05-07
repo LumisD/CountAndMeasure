@@ -106,7 +106,6 @@ fun Navigation(
 
         composable(Screen.Count.baseRoute) {
             CountScreen(
-                navController,
                 snackbarHostState,
                 unionId = null
             )
@@ -117,7 +116,7 @@ fun Navigation(
             arguments = listOf(navArgument("unionId") { type = NavType.IntType })
         ) { backStackEntry ->
             val unionId = backStackEntry.arguments?.getInt("unionId")
-            CountScreen(navController, snackbarHostState, unionId)
+            CountScreen(snackbarHostState, unionId)
         }
 
         composable(Screen.New.baseRoute) {
