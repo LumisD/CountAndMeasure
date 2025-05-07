@@ -224,7 +224,7 @@ fun AddChipboardButton(
     ) {
         CommonButton(
             stringResource(R.string.add),
-            !isAddButtonAvailable,
+            isAddButtonAvailable,
             { processIntent(AddNewItemIntent.AddChipboardToDb) },
         )
     }

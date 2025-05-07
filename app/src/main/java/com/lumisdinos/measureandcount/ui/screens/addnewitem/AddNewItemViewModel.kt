@@ -300,8 +300,8 @@ class AddNewItemViewModel @Inject constructor(
         _state.update { currentState ->
             val currentChipboard = currentState.newOrEditChipboard
 
-            val dimensions = minOf(itemType.columnNames.size, 5).toShort()
-            val directionColumn = minOf(itemType.directionColumn, 5).toShort()
+            val dimensions = minOf(itemType.columnNames.size, 3).toShort()
+            val directionColumn = minOf(itemType.directionColumn, 3).toShort()
 
             val titles = itemType.columnNames.map { context.getString(it) }
 
@@ -310,6 +310,7 @@ class AddNewItemViewModel @Inject constructor(
                 dimensions = dimensions,
                 title1 = titles.getOrElse(0) { "" },
                 title2 = titles.getOrElse(1) { "" },
+                title3 = titles.getOrElse(2) { "" }
             )
             val updatedChipboard2 =
                 updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
