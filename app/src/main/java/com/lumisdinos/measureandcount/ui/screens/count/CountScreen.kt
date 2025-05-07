@@ -429,15 +429,17 @@ fun TopBar(unionOfChipboards: UnionOfChipboardsUI, processIntent: (CountIntent) 
     ) {
         Text(
             text = unionOfChipboards.title,
-            style = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp)
+            style = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp)
         )
-        Spacer(modifier = Modifier.width(16.dp))
         IconButton(
             onClick = { processIntent(CountIntent.SetListDone) },
             modifier = Modifier.size(32.dp)
         ) {
             val icon = if (unionOfChipboards.isFinished) {
-                Icons.AutoMirrored.Filled.Undo // Or Icons.Filled.Refresh, Icons.Filled.Replay
+                Icons.AutoMirrored.Filled.Undo
             } else {
                 Icons.Filled.Done
             }
