@@ -40,15 +40,22 @@ class AddNewItemViewModel @Inject constructor(
 
     private fun createNewUnion() {
         viewModelScope.launch {
+            val titleTemplate = String.format(
+                context.getString(R.string.chipboard_sheet_list_title),
+                getCurrentDateTime()
+            )
             val newUnion =
-                UnionOfChipboardsUI(createdAt = System.currentTimeMillis()).toUnionOfChipboards()
+                UnionOfChipboardsUI(
+                    title = titleTemplate,
+                    isFinished = false,
+                    createdAt = System.currentTimeMillis()
+                ).toUnionOfChipboards()
             val unionId = chipboardRepository.insertUnionOfChipboards(newUnion)
 
             if (unionId != null) {
                 _state.update { currentState ->
-                    val titleTemplate = context.getString(R.string.chipboard_sheet_list_title)
                     currentState.copy(
-                        titleOfUnion = String.format(titleTemplate, getCurrentDateTime()),
+                        titleOfUnion = titleTemplate,
                         newOrEditChipboard = currentState.newOrEditChipboard.copy(unionId = unionId)
                     )
                 }
@@ -91,7 +98,10 @@ class AddNewItemViewModel @Inject constructor(
                 intent.dimension
             )
 
-            is AddNewItemIntent.ColorChanged -> updateChipboardColor(intent.newColorName, intent.newColor)
+            is AddNewItemIntent.ColorChanged -> updateChipboardColor(
+                intent.newColorName,
+                intent.newColor
+            )
 
             is AddNewItemIntent.QuantityChanged -> updateChipboardQuantity(intent.newQuantityAsString)
 
@@ -126,7 +136,9 @@ class AddNewItemViewModel @Inject constructor(
 
             is AddNewItemIntent.DeleteChipboardConfirmed -> deleteChipboardFromDb(intent.chipboardId)
 
-            is AddNewItemIntent.EditChipboardConfirmed -> editChipboardInAddAreaAndRemoveFromDb(intent.chipboard)
+            is AddNewItemIntent.EditChipboardConfirmed -> editChipboardInAddAreaAndRemoveFromDb(
+                intent.chipboard
+            )
         }
     }
 
