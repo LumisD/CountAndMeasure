@@ -141,7 +141,7 @@ fun FindArea(
         modifier = Modifier
             .fillMaxWidth()
             .background(animatedColor)
-            .padding(16.dp),
+            .padding(top = 8.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
@@ -238,7 +238,8 @@ fun NumberEditor(
             label = name,
             value = size,
             dimension = dimension,
-            onSizeChanged = onSizeChangedIntent
+            onSizeChanged = onSizeChangedIntent,
+            width = 80.dp
         )
         CountOutlinedEditor(
             label = "Difference",
@@ -355,25 +356,23 @@ fun ListOfItems(
                                 color = Color.Red.copy(alpha = 0.5f),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center, // Center text within its bounds
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
-                                    .align(Alignment.Center) // Center the text in the Box
-                                    .rotate(-30f) // Rotate 30 degrees counterclockwise
-                                    //.padding(8.dp) // Add padding around the text
+                                    .align(Alignment.Center)
+                                    .rotate(-10f)
                                     .border(
                                         2.dp, Color.Red.copy(alpha = 0.5f),
                                         RoundedCornerShape(8.dp)
-                                    ) // Add a border to look like a seal
-                                    .padding(4.dp) // Inner padding for the border
+                                    )
+                                    .padding(4.dp)
                             )
                         }
                         Text(
                             text = chipboard.allDiffsAsString,
                             color = Color.Red.copy(alpha = 0.5f),
-                            //textAlign = TextAlign.Justify // TextAlign.Justify is for horizontal alignment
                             modifier = Modifier
-                                .align(Alignment.BottomCenter) // Align to the bottom-start of the Box
-                                .padding(top = 4.dp) // Add a little padding above the text
+                                .align(Alignment.BottomCenter)
+                                .padding(top = 4.dp)
                         )
                     }
 
