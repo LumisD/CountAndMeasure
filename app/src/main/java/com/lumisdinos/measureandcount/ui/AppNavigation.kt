@@ -46,9 +46,15 @@ sealed class Screen(val route: String) {
         override val title: String = "Lists"
         override val icon: Int = R.drawable.ic_old
     }
-    data object Count : Screen("count"), BottomBarDestination {
+    data object Count : Screen("count/{unionId}"), BottomBarDestination {
         override val title: String = "Count"
         override val icon: Int = R.drawable.ic_current
+
+        fun createRoute(unionId: Int): String = "count/$unionId"
+
+//        val arguments = listOf(
+//            navArgument("unionId") { type = NavType.IntType }
+//        )
     }
     data object New : Screen("new"), BottomBarDestination {
         override val title: String = "New"
@@ -65,10 +71,10 @@ sealed class Screen(val route: String) {
             return "add_new_item/$itemType"//?origin=${origin.name}
         }
 
-        val arguments: List<NamedNavArgument> = listOf(
-            navArgument("itemType") { type = NavType.StringType },
-            //navArgument("origin") { type = NavType.StringType }
-        )
+//        val arguments: List<NamedNavArgument> = listOf(
+//            navArgument("itemType") { type = NavType.StringType },
+//            //navArgument("origin") { type = NavType.StringType }
+//        )
     }
     data object CreateOwnMeasure : Screen("create_own_measure") {
     }
@@ -103,7 +109,7 @@ fun AppNavigation() {
 fun Navigation(navController: NavHostController, snackbarHostState: SnackbarHostState, modifier: Modifier) {
     NavHost(navController, startDestination = Screen.New.route, modifier = modifier) {
         composable(Screen.Lists.route) { ListsScreen() }
-        composable(Screen.Count.route) { CountScreen() }
+        composable(Screen.Count.route) { CountScreen(navController, snackbarHostState) }
         composable(Screen.New.route) { NewScreen(navController) }
         composable(Screen.AddNewItem.route) { AddNewItemScreen(navController, snackbarHostState) }
         composable(Screen.CreateOwnMeasure.route) { CreateOwnMeasureScreen(navController) }
