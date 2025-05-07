@@ -24,8 +24,8 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         unionOfChipboardsDao.updateUnionOfChipboardsTitle(unionId, newTitle, updatedAt)
     }
 
-    override suspend fun setUnionOfChipboardsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long) {
-        unionOfChipboardsDao.setUnionOfChipboardsFinished(unionId, isFinished, updatedAt)
+    override suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long) {
+        unionOfChipboardsDao.setUnionOfChipboardsIsFinished(unionId, isFinished, updatedAt)
     }
 
     override suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards? {

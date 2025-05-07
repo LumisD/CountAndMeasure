@@ -10,7 +10,7 @@ interface MeasureAndCountRepository {
 
     suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long)
 
-    suspend fun setUnionOfChipboardsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)
+    suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)
 
     suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards?
 

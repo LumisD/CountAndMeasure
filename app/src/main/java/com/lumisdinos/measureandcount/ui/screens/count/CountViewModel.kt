@@ -73,7 +73,7 @@ class CountViewModel @Inject constructor(
                 _state.update { it.copy(isFoundAreaOpen = !it.isFoundAreaOpen) }
             }
 
-            is CountIntent.SetListDone -> setListDone()
+            is CountIntent.SetListDone -> setListDoneOrUnDone()
 
         }
     }
@@ -442,28 +442,29 @@ class CountViewModel @Inject constructor(
     }
 
 
-    private fun setListDone() {
-        //set unionOfChipboards.isFinished = true
+    private fun setListDoneOrUnDone() {
+        //set unionOfChipboards.isFinished to opposite of current value
         //set updatedAt = System.currentTimeMillis()
         //save unionOfChipboards in db
         //update state with new unionOfChipboards
 
         viewModelScope.launch {
             _state.value.unionOfChipboards.let { currentUnion ->
-                val finishedUnion = currentUnion.copy(
-                    isFinished = true,
+
+                val updatedUnion = currentUnion.copy(
+                    isFinished = !currentUnion.isFinished,
                     updatedAt = System.currentTimeMillis()
                 )
 
-                chipboardRepository.setUnionOfChipboardsFinished(
+                chipboardRepository.setUnionOfChipboardsIsFinished(
                     currentUnion.id,
-                    true,
+                    !currentUnion.isFinished,
                     currentUnion.updatedAt
                 )
 
                 _state.update { currentState ->
                     currentState.copy(
-                        unionOfChipboards = finishedUnion
+                        unionOfChipboards = updatedUnion
                     )
                 }
             }
