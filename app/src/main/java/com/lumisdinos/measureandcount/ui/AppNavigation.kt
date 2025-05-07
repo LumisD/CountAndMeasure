@@ -18,9 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -30,53 +27,45 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lumisdinos.measureandcount.R
-import com.lumisdinos.measureandcount.ui.screens.CreateOwnMeasureScreen
 import com.lumisdinos.measureandcount.ui.screens.count.CountScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
 import com.lumisdinos.measureandcount.ui.screens.ListsScreen
 
 interface BottomBarDestination {
-    val route: String
+    val baseRoute: String
     val title: String
     val icon: Int
 }
 
 sealed class Screen(val route: String) {
     data object Lists : Screen("lists"), BottomBarDestination {
-        override val title: String = "Lists"
-        override val icon: Int = R.drawable.ic_old
+        override val baseRoute = "lists"
+        override val title = "Lists"
+        override val icon = R.drawable.ic_old
     }
-    data object Count : Screen("count/{unionId}"), BottomBarDestination {
-        override val title: String = "Count"
-        override val icon: Int = R.drawable.ic_current
 
-        fun createRoute(unionId: Int): String = "count/$unionId"
+    data object Count : Screen("count"), BottomBarDestination {
+        override val baseRoute = "count"
+        override val title = "Count"
+        override val icon = R.drawable.ic_current
 
-//        val arguments = listOf(
-//            navArgument("unionId") { type = NavType.IntType }
-//        )
+        fun routeWithArgs(unionId: Int) = "count/$unionId"
     }
+
     data object New : Screen("new"), BottomBarDestination {
-        override val title: String = "New"
-        override val icon: Int = R.drawable.ic_new
+        override val baseRoute = "new"
+        override val title = "New"
+        override val icon = R.drawable.ic_new
     }
-//    data object AddNewItem : Screen("add_new_item/{itemType}") {
-//        fun createRoute(serializedItem: String): String = "add_new_item/${serializedItem}"
-////        val arguments: List<NamedNavArgument> = listOf(
-////            navArgument("itemType") { type = NavType.StringType }
-////        )
-//    }
-    data object AddNewItem : Screen("add_new_item/{itemType}?origin={origin}") {
-        fun createRoute(itemType: String): String {
-            return "add_new_item/$itemType"//?origin=${origin.name}
-        }
 
-//        val arguments: List<NamedNavArgument> = listOf(
-//            navArgument("itemType") { type = NavType.StringType },
-//            //navArgument("origin") { type = NavType.StringType }
-//        )
-    }
-    data object CreateOwnMeasure : Screen("create_own_measure") {
+    data object AddNewItem : Screen("add_new_item") {
+        fun routeWithArgs(itemType: String, origin: String? = null): String {
+            return if (origin != null) {
+                "add_new_item/$itemType?origin=$origin"
+            } else {
+                "add_new_item/$itemType"
+            }
+        }
     }
 }
 
@@ -85,8 +74,9 @@ sealed class Screen(val route: String) {
 fun AppNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-    val bottomBarRoutes = listOf(Screen.Lists.route, Screen.Count.route, Screen.New.route)
+    val currentRoute = navBackStackEntry?.destination?.route?.substringBefore("/")
+
+    val bottomBarScreens = listOf(Screen.Lists, Screen.Count, Screen.New)
     val snackbarHostState = remember { SnackbarHostState() }
 
     SetSystemBarColor()
@@ -95,8 +85,8 @@ fun AppNavigation() {
         containerColor = MainBg,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            if (currentDestination?.route in bottomBarRoutes) {
-                BottomNavigationBar(navController, currentDestination)
+            if (bottomBarScreens.any { it.baseRoute == currentRoute }) {
+                BottomNavigationBar(navController, currentRoute)
             }
         }
     ) { innerPadding ->
@@ -106,27 +96,58 @@ fun AppNavigation() {
 
 
 @Composable
-fun Navigation(navController: NavHostController, snackbarHostState: SnackbarHostState, modifier: Modifier) {
-    NavHost(navController, startDestination = Screen.New.route, modifier = modifier) {
-        composable(Screen.Lists.route) { ListsScreen() }
-        composable(Screen.Count.route) { CountScreen(navController, snackbarHostState) }
-        composable(Screen.New.route) { NewScreen(navController) }
-        composable(Screen.AddNewItem.route) { AddNewItemScreen(navController, snackbarHostState) }
-        composable(Screen.CreateOwnMeasure.route) { CreateOwnMeasureScreen(navController) }
+fun Navigation(
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
+    modifier: Modifier
+) {
+    NavHost(navController, startDestination = Screen.New.baseRoute, modifier = modifier) {
+        composable(Screen.Lists.baseRoute) { ListsScreen() }
+
+        composable(Screen.Count.baseRoute) {
+            CountScreen(
+                navController,
+                snackbarHostState,
+                unionId = null
+            )
+        }
+
+        composable(
+            route = "count/{unionId}",
+            arguments = listOf(navArgument("unionId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val unionId = backStackEntry.arguments?.getInt("unionId")
+            CountScreen(navController, snackbarHostState, unionId)
+        }
+
+        composable(Screen.New.baseRoute) {
+            NewScreen(navController)
+        }
+
+        composable(
+            route = "add_new_item/{itemType}?origin={origin}",
+            arguments = listOf(
+                navArgument("itemType") { type = NavType.StringType },
+                navArgument("origin") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) {
+            AddNewItemScreen(navController, snackbarHostState)
+        }
+
     }
 }
 
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController, currentDestination: NavDestination?) {
-    val screens = listOf(
-        Screen.Lists,
-        Screen.Count,
-        Screen.New
-    )
+fun BottomNavigationBar(navController: NavHostController, currentRoute: String?) {
+    val items = listOf(Screen.Lists, Screen.Count, Screen.New)
 
     NavigationBar {
-        screens.forEach { screen ->
+        items.forEach { screen ->
             NavigationBarItem(
                 icon = {
                     Icon(
@@ -135,9 +156,9 @@ fun BottomNavigationBar(navController: NavHostController, currentDestination: Na
                     )
                 },
                 label = { Text(screen.title) },
-                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                selected = screen.baseRoute == currentRoute,
                 onClick = {
-                    navController.navigate(screen.route) {
+                    navController.navigate(screen.baseRoute) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
