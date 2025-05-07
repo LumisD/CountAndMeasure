@@ -84,7 +84,7 @@ fun ListItem(item: NewScreenType, navController: NavController, isLast: Boolean 
                 val serializedItem = item.serialize()
                 Log.d("NewScreen", "serializedItem: $serializedItem")
                 navController.navigate(
-                    Screen.AddNewItem.createRoute(
+                    Screen.AddNewItem.routeWithArgs(
                         itemType = serializedItem,
                         //origin = AddNewItemOrigin.NEW_SCREEN
                     )
