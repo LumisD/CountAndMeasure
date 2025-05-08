@@ -146,16 +146,17 @@ fun FindArea(
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().background(Color.LightGray),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(0.6f),
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.Cyan),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start
             ) {
-                WidthLengthFields(state.chipboardToFind, viewModel::processIntent)
                 if (state.chipboardToFind.color != 0) {
                     AddCountColorField(state.chipboardToFind.colorName, viewModel::processIntent)
                 }
@@ -164,17 +165,18 @@ fun FindArea(
                     viewModel::processIntent
                 )
             }
+
             Column(
-                modifier = Modifier.fillMaxWidth(0.4f),
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
             ) {
                 Buttons(
                     state.isFoundButtonAvailable,
                     viewModel::processIntent
                 )
             }
-
 
         }
         ChipboardAsStringField(state.chipboardToFind.chipboardAsString, state.chipboardToFind.color)
@@ -189,6 +191,7 @@ fun WidthLengthFields(
 ) {
     for (i in 1..chipboard.dimensions) {
         Row(
+            modifier = Modifier.background(Color.Cyan),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (chipboard.direction.toInt() == i) {
@@ -206,16 +209,22 @@ fun WidthLengthFields(
             val diffOfDim = getDiffForIndex(i, chipboard)
             NumberEditor(name, sizeOfDim, diffOfDim, i, processIntent)
             if (i == 1) {
+                Spacer(modifier = Modifier.width(8.dp))
                 IconButton(onClick = {
                     processIntent(CountIntent.ShowWhatIs(QuestionType.Difference))
-                }) {
+                },
+                    modifier = Modifier.size(48.dp)
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                        contentDescription = "What is difference?"
+                        contentDescription = "What is difference?",
+                        modifier = Modifier.size(36.dp)
                     )
                 }
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
+
     }
 }
 
@@ -237,7 +246,7 @@ fun NumberEditor(
             value = size,
             dimension = dimension,
             onSizeChanged = onSizeChangedIntent,
-            width = 80.dp,
+            //width = 80.dp,
             height = 60.dp
         )
         DiffCountOutlinedEditor(
@@ -246,7 +255,7 @@ fun NumberEditor(
             dimension = dimension,
             onSizeChanged = onSizeChangedIntent,
             width = 80.dp,
-            height = 60.dp
+            height = 40.dp
         )
     }
 }
@@ -282,13 +291,18 @@ fun Buttons(
         Spacer(modifier = Modifier.width(8.dp))
         IconButton(onClick = {
             processIntent(CountIntent.ShowWhatIs(QuestionType.Found))
-        }) {
+        },
+            modifier = Modifier.size(48.dp)
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                contentDescription = "What is difference?"
+                contentDescription = "What is Found?",
+                modifier = Modifier.size(36.dp)
             )
         }
     }
+
+    Spacer(modifier = Modifier.height(8.dp))
 
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -301,10 +315,13 @@ fun Buttons(
         Spacer(modifier = Modifier.width(8.dp))
         IconButton(onClick = {
             processIntent(CountIntent.ShowWhatIs(QuestionType.Unknown))
-        }) {
+        },
+            modifier = Modifier.size(48.dp)
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                contentDescription = "What is difference?"
+                contentDescription = "What is Unknown?",
+                modifier = Modifier.size(36.dp)
             )
         }
     }

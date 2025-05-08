@@ -70,7 +70,6 @@ fun CommonButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .fillMaxWidth(0.8f)
             .height(50.dp),
         enabled = enabled,
         colors = colors
