@@ -1,6 +1,7 @@
 package com.lumisdinos.measureandcount.ui.screens.count
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
@@ -516,9 +517,9 @@ class CountViewModel @Inject constructor(
             difference3 = 0f,
 
             quantityAsString = "1",
-            size1AsString = "0.0",
-            size2AsString = "0.0",
-            size3AsString = "0.0",
+            size1AsString = "",
+            size2AsString = "",
+            size3AsString = "",
             diff1AsString = "",
             diff2AsString = "",
             diff3AsString = "",

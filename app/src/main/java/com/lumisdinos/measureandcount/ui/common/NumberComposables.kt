@@ -71,7 +71,7 @@ private fun <T> OutlinedEditorInternal(
 }
 
 @Composable
-fun CountOutlinedEditor(
+fun SizeCountOutlinedEditor(
     label: String,
     value: String,
     dimension: Int,
@@ -85,6 +85,24 @@ fun CountOutlinedEditor(
         intentFactory = { vl, dim -> CountIntent.SizeChanged(vl, dim) }
     )
 }
+
+
+@Composable
+fun DiffCountOutlinedEditor(
+    label: String,
+    value: String,
+    dimension: Int,
+    onSizeChanged: (CountIntent) -> Unit,
+    width: Dp = 150.dp,
+    height: Dp = 60.dp
+) {
+    OutlinedEditorInternal(
+        width, height, label, value, dimension,
+        onSizeChanged,
+        intentFactory = { vl, dim -> CountIntent.DifferenceChanged(vl, dim) }
+    )
+}
+
 
 @Composable
 fun NewItemOutlinedEditor(

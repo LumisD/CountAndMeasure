@@ -50,8 +50,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.Grayish
 import com.lumisdinos.measureandcount.ui.Greenish
@@ -59,10 +57,11 @@ import com.lumisdinos.measureandcount.ui.Yellowish
 import com.lumisdinos.measureandcount.ui.common.AddCountColorField
 import com.lumisdinos.measureandcount.ui.common.ChipboardAsStringField
 import com.lumisdinos.measureandcount.ui.common.CommonButton
-import com.lumisdinos.measureandcount.ui.common.CountOutlinedEditor
+import com.lumisdinos.measureandcount.ui.common.DiffCountOutlinedEditor
 import com.lumisdinos.measureandcount.ui.common.ExpandHideCountField
 import com.lumisdinos.measureandcount.ui.common.QuantityCountOutlinedEditor
 import com.lumisdinos.measureandcount.ui.common.ShowDialog
+import com.lumisdinos.measureandcount.ui.common.SizeCountOutlinedEditor
 import com.lumisdinos.measureandcount.ui.common.UpArrowIcon
 import com.lumisdinos.measureandcount.ui.model.QuestionType
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
@@ -230,24 +229,24 @@ fun NumberEditor(
     onSizeChangedIntent: (CountIntent) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Bottom
     ) {
-        CountOutlinedEditor(
+        SizeCountOutlinedEditor(
             label = name,
             value = size,
             dimension = dimension,
             onSizeChanged = onSizeChangedIntent,
-            width = 80.dp
+            width = 80.dp,
+            height = 60.dp
         )
-        CountOutlinedEditor(
-            label = "Difference",
+        DiffCountOutlinedEditor(
+            label = "Err",
             value = diff,
             dimension = dimension,
             onSizeChanged = onSizeChangedIntent,
-            width = 60.dp,
-            height = 40.dp
+            width = 80.dp,
+            height = 60.dp
         )
     }
 }
@@ -606,9 +605,9 @@ fun ChooseDialogType(
 fun getSizeForIndex(index: Int, chipboard: ChipboardUi?): String {
     if (chipboard == null) return ""
     return when (index) {
-        0 -> chipboard.size1AsString
-        1 -> chipboard.size2AsString
-        2 -> chipboard.size3AsString
+        1 -> chipboard.size1AsString
+        2 -> chipboard.size2AsString
+        3 -> chipboard.size3AsString
         else -> ""
     }
 }
@@ -617,9 +616,9 @@ fun getSizeForIndex(index: Int, chipboard: ChipboardUi?): String {
 fun getDiffForIndex(index: Int, chipboard: ChipboardUi?): String {
     if (chipboard == null) return ""
     return when (index) {
-        0 -> chipboard.diff1AsString
-        1 -> chipboard.diff2AsString
-        2 -> chipboard.diff3AsString
+        1 -> chipboard.diff1AsString
+        2 -> chipboard.diff2AsString
+        3 -> chipboard.diff3AsString
         else -> ""
     }
 }
