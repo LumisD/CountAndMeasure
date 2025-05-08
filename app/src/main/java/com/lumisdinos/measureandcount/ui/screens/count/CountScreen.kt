@@ -145,6 +145,8 @@ fun FindArea(
         horizontalAlignment = Alignment.Start
     ) {
 
+        WidthLengthFields(state.chipboardToFind, viewModel::processIntent)
+
         Row(
             modifier = Modifier.fillMaxWidth().background(Color.LightGray),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -207,7 +209,35 @@ fun WidthLengthFields(
             }
             val sizeOfDim = getSizeForIndex(i, chipboard)
             val diffOfDim = getDiffForIndex(i, chipboard)
-            NumberEditor(name, sizeOfDim, diffOfDim, i, processIntent)
+            Log.d(
+                "CountScreen",
+                "WidthLengthFields name: $name, sizeOfDim: $sizeOfDim, diffOfDim: $diffOfDim, i: $i, diff1AsString: ${chipboard.diff1AsString}"
+            )
+            //NumberEditor(name, sizeOfDim, diffOfDim, i, processIntent)
+
+            Row(
+                // Align the content of this nested Row to the bottom
+                modifier = Modifier.background(Color.LightGray),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                SizeCountOutlinedEditor(
+                    label = name,
+                    value = sizeOfDim,
+                    dimension = i,
+                    onSizeChanged = processIntent,
+                    width = 150.dp,
+                    height = 60.dp
+                )
+                DiffCountOutlinedEditor(
+                    label = "Err",
+                    value = diffOfDim,
+                    dimension = i,
+                    onSizeChanged = processIntent,
+                    width = 80.dp,
+                    height = 40.dp
+                )
+            }
+
             if (i == 1) {
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(onClick = {
