@@ -51,22 +51,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lumisdinos.measureandcount.R
-import com.lumisdinos.measureandcount.ui.Grayish
-import com.lumisdinos.measureandcount.ui.Greenish
-import com.lumisdinos.measureandcount.ui.Yellowish
 import com.lumisdinos.measureandcount.ui.common.AddCountColorField
 import com.lumisdinos.measureandcount.ui.common.ChipboardAsStringField
+import com.lumisdinos.measureandcount.ui.common.ChooseDialogType
 import com.lumisdinos.measureandcount.ui.common.CommonButton
-import com.lumisdinos.measureandcount.ui.common.DiffCountOutlinedEditor
+import com.lumisdinos.measureandcount.ui.common.DisabledOverlay
+import com.lumisdinos.measureandcount.ui.common.RealSizeInput
 import com.lumisdinos.measureandcount.ui.common.ExpandHideCountField
 import com.lumisdinos.measureandcount.ui.common.QuantityCountOutlinedEditor
-import com.lumisdinos.measureandcount.ui.common.ShowDialog
 import com.lumisdinos.measureandcount.ui.common.SizeCountOutlinedEditor
 import com.lumisdinos.measureandcount.ui.common.UpArrowIcon
-import com.lumisdinos.measureandcount.ui.model.QuestionType
+import com.lumisdinos.measureandcount.ui.common.WhatIsIconButton
+import com.lumisdinos.measureandcount.ui.screens.count.model.QuestionType
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.screens.count.model.DialogType
+import com.lumisdinos.measureandcount.ui.theme.Grayish
+import com.lumisdinos.measureandcount.ui.theme.Greenish
+import com.lumisdinos.measureandcount.ui.theme.Yellowish
 import kotlinx.coroutines.delay
 
 
@@ -125,7 +127,7 @@ fun FindArea(
     viewModel: CountViewModel,
 ) {
     val animatedColor by animateColorAsState(
-        targetValue = if (shouldFlash.value) Color.Blue.copy(alpha = 0.5f) else Color.Transparent,
+        targetValue = if (shouldFlash.value) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent,
         animationSpec = tween(durationMillis = 600),
         label = "backgroundColor"
     )
@@ -148,24 +150,41 @@ fun FindArea(
         WidthLengthFields(state.chipboardToFind, viewModel::processIntent)
 
         Row(
-            modifier = Modifier.fillMaxWidth().background(Color.LightGray),
+            modifier = Modifier
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .background(Color.Cyan),
+                    .weight(1f),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start
             ) {
                 if (state.chipboardToFind.color != 0) {
-                    AddCountColorField(state.chipboardToFind.colorName, viewModel::processIntent)
+                    DisabledOverlay(
+                        isEnabled = !state.chipboardToFind.isUnderReview,
+                        onDisabledClick = { viewModel.processIntent(CountIntent.FieldDisabled) },
+                        content = {
+                            AddCountColorField(
+                                state.chipboardToFind.colorName,
+                                viewModel::processIntent
+                            )
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                QuantityField(
-                    state.chipboardToFind.quantityAsString,
-                    viewModel::processIntent
-                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(24.dp))
+                    QuantityCountOutlinedEditor(
+                        label = stringResource(R.string.quantity),
+                        value = state.chipboardToFind.quantityAsString,
+                        onQuantityChanged = viewModel::processIntent
+                    )
+                }
             }
 
             Column(
@@ -175,7 +194,8 @@ fun FindArea(
                 horizontalAlignment = Alignment.Start
             ) {
                 Buttons(
-                    state.isFoundButtonAvailable,
+                    state.chipboardToFind.isUnderReview,
+                    state.isUnknownButtonAvailable,
                     viewModel::processIntent
                 )
             }
@@ -186,6 +206,7 @@ fun FindArea(
 
 }
 
+
 @Composable
 fun WidthLengthFields(
     chipboard: ChipboardUi,
@@ -193,7 +214,6 @@ fun WidthLengthFields(
 ) {
     for (i in 1..chipboard.dimensions) {
         Row(
-            modifier = Modifier.background(Color.Cyan),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (chipboard.direction.toInt() == i) {
@@ -211,46 +231,45 @@ fun WidthLengthFields(
             val diffOfDim = getDiffForIndex(i, chipboard)
             Log.d(
                 "CountScreen",
-                "WidthLengthFields name: $name, sizeOfDim: $sizeOfDim, diffOfDim: $diffOfDim, i: $i, diff1AsString: ${chipboard.diff1AsString}"
+                "WidthLengthFields name: $name, sizeOfDim: $sizeOfDim, diffOfDim: $diffOfDim, i: $i, diff1AsString: ${chipboard.real1AsString}"
             )
-            //NumberEditor(name, sizeOfDim, diffOfDim, i, processIntent)
 
             Row(
-                // Align the content of this nested Row to the bottom
-                modifier = Modifier.background(Color.LightGray),
                 verticalAlignment = Alignment.Bottom
             ) {
-                SizeCountOutlinedEditor(
-                    label = name,
-                    value = sizeOfDim,
-                    dimension = i,
-                    onSizeChanged = processIntent,
-                    width = 150.dp,
-                    height = 60.dp
+
+                DisabledOverlay(
+                    isEnabled = !chipboard.isUnderReview,
+                    onDisabledClick = { processIntent(CountIntent.FieldDisabled) },
+                    content = {
+                        SizeCountOutlinedEditor(
+                            label = name,
+                            value = sizeOfDim,
+                            dimension = i,
+                            onSizeChanged = processIntent,
+                            width = 150.dp,
+                            height = 60.dp
+                        )
+                    }
                 )
-                DiffCountOutlinedEditor(
-                    label = "Err",
+
+                RealSizeInput(
                     value = diffOfDim,
+                    label = stringResource(R.string.real_size),
                     dimension = i,
-                    onSizeChanged = processIntent,
-                    width = 80.dp,
-                    height = 40.dp
+                    isEnabled = chipboard.isUnderReview,
+                    onValueChange = processIntent,
+                    intentFactory = { value, dim -> CountIntent.RealSizeChanged(value, dim) }
                 )
             }
 
             if (i == 1) {
                 Spacer(modifier = Modifier.width(8.dp))
-                IconButton(onClick = {
-                    processIntent(CountIntent.ShowWhatIs(QuestionType.Difference))
-                },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                        contentDescription = "What is difference?",
-                        modifier = Modifier.size(36.dp)
-                    )
-                }
+                WhatIsIconButton(
+                    questionType = QuestionType.RealSize,
+                    processIntent = processIntent,
+                    contentDescription = stringResource(R.string.what_is_diff_question)
+                )
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -260,54 +279,9 @@ fun WidthLengthFields(
 
 
 @Composable
-fun NumberEditor(
-    name: String,
-    size: String,
-    diff: String,
-    dimension: Int,
-    onSizeChangedIntent: (CountIntent) -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.Bottom
-    ) {
-        SizeCountOutlinedEditor(
-            label = name,
-            value = size,
-            dimension = dimension,
-            onSizeChanged = onSizeChangedIntent,
-            //width = 80.dp,
-            height = 60.dp
-        )
-        DiffCountOutlinedEditor(
-            label = "Err",
-            value = diff,
-            dimension = dimension,
-            onSizeChanged = onSizeChangedIntent,
-            width = 80.dp,
-            height = 40.dp
-        )
-    }
-}
-
-@Composable
-fun QuantityField(quantity: String, processIntent: (CountIntent) -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Spacer(modifier = Modifier.width(24.dp))
-        QuantityCountOutlinedEditor(
-            label = stringResource(R.string.quantity),
-            value = quantity,
-            onQuantityChanged = processIntent
-        )
-    }
-}
-
-
-@Composable
 fun Buttons(
     isFoundButtonAvailable: Boolean,
+    isUnknownButtonAvailable: Boolean,
     processIntent: (CountIntent) -> Unit
 ) {
     Row(
@@ -319,17 +293,11 @@ fun Buttons(
             enabled = isFoundButtonAvailable
         )
         Spacer(modifier = Modifier.width(8.dp))
-        IconButton(onClick = {
-            processIntent(CountIntent.ShowWhatIs(QuestionType.Found))
-        },
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                contentDescription = "What is Found?",
-                modifier = Modifier.size(36.dp)
-            )
-        }
+        WhatIsIconButton(
+            questionType = QuestionType.Found,
+            processIntent = processIntent,
+            contentDescription = stringResource(R.string.what_is_found_question)
+        )
     }
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -340,20 +308,14 @@ fun Buttons(
         CommonButton(
             stringResource(R.string.unknown),
             onClick = { processIntent(CountIntent.CreateUnknownChipboard) },
-            enabled = !isFoundButtonAvailable
+            enabled = isUnknownButtonAvailable
         )
         Spacer(modifier = Modifier.width(8.dp))
-        IconButton(onClick = {
-            processIntent(CountIntent.ShowWhatIs(QuestionType.Unknown))
-        },
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                contentDescription = "What is Unknown?",
-                modifier = Modifier.size(36.dp)
-            )
-        }
+        WhatIsIconButton(
+            questionType = QuestionType.Unknown,
+            processIntent = processIntent,
+            contentDescription = stringResource(R.string.what_is_unknown_question)
+        )
     }
 
 }
@@ -414,7 +376,7 @@ fun ListOfItems(
                             )
                         }
                         Text(
-                            text = chipboard.allDiffsAsString,
+                            text = chipboard.allRealsAsString,
                             color = Color.Red.copy(alpha = 0.5f),
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
@@ -545,106 +507,11 @@ fun CollectEffects(
                     shouldFlash.value = true
                 }
 
+                CountEffect.ShowFieldDisabled -> {
+                    dialogState.value = DialogType.FieldDisabled
+                }
             }
         }
-    }
-}
-
-
-@Composable
-fun ChooseDialogType(
-    dialogState: MutableState<DialogType>,
-    processIntent: (CountIntent) -> Unit
-) {
-    when (val dialog = dialogState.value) {
-        is DialogType.Uncheck -> {
-            ShowDialog(
-                title = stringResource(R.string.confirm_uncheck),
-                text = stringResource(
-                    R.string.are_you_sure_uncheck,
-                    dialog.chipboard.chipboardAsString,
-                    dialog.chipboard.colorName
-                ),
-                confirmText = stringResource(R.string.uncheck),
-                dismissText = stringResource(R.string.cancel),
-                onDismiss = { dialogState.value = DialogType.None },
-                onConfirm = {
-                    processIntent(CountIntent.UncheckChipboardConfirmed(dialog.chipboard))
-                    dialogState.value = DialogType.None
-                }
-            )
-        }
-
-        is DialogType.SelectNotFoundToFindArea -> {
-            ShowDialog(
-                title = stringResource(R.string.confirm_selection),
-                text = stringResource(
-                    R.string.are_you_sure_select_not_found,
-                    dialog.chipboard.chipboardAsString,
-                    dialog.chipboard.colorName
-                ),
-                confirmText = stringResource(R.string.select),
-                dismissText = stringResource(R.string.cancel),
-                onDismiss = { dialogState.value = DialogType.None },
-                onConfirm = {
-                    processIntent(CountIntent.SelectNotFoundToFindAreaConfirmed(dialog.chipboard))
-                    dialogState.value = DialogType.None
-                }
-            )
-        }
-
-        is DialogType.RemoveNotFoundFromFindArea -> {
-            ShowDialog(
-                title = stringResource(R.string.confirm_selection),
-                text = stringResource(
-                    R.string.are_you_sure_remove_not_found,
-                    dialog.chipboard.chipboardAsString,
-                    dialog.chipboard.colorName
-                ),
-                confirmText = stringResource(R.string.remove),
-                dismissText = stringResource(R.string.cancel),
-                onDismiss = { dialogState.value = DialogType.None },
-                onConfirm = {
-                    processIntent(CountIntent.RemoveNotFoundFromFindAreaConfirmed(dialog.chipboard))
-                    dialogState.value = DialogType.None
-                }
-            )
-        }
-
-        is DialogType.SelectUnknownToFindArea -> {
-            ShowDialog(
-                title = stringResource(R.string.confirm_selection),
-                text = stringResource(
-                    R.string.are_you_sure_select_unknown,
-                    dialog.chipboard.chipboardAsString,
-                    dialog.chipboard.colorName
-                ),
-                confirmText = stringResource(R.string.select),
-                dismissText = stringResource(R.string.cancel),
-                onDismiss = { dialogState.value = DialogType.None },
-                onConfirm = {
-                    processIntent(CountIntent.SelectNotFoundToFindAreaConfirmed(dialog.chipboard))
-                    dialogState.value = DialogType.None
-                }
-            )
-        }
-
-        is DialogType.WhatIs -> {
-            val text = when (dialog.questionType) {
-                QuestionType.Found -> stringResource(R.string.what_is_found)
-                QuestionType.Unknown -> stringResource(R.string.what_is_unknown)
-                QuestionType.Difference -> stringResource(R.string.what_is_difference)
-
-            }
-            ShowDialog(
-                title = stringResource(R.string.what_is),
-                text = text,
-                confirmText = stringResource(R.string.ok),
-                onDismiss = { dialogState.value = DialogType.None }
-            )
-        }
-
-        DialogType.None -> {}
     }
 }
 
@@ -663,9 +530,9 @@ fun getSizeForIndex(index: Int, chipboard: ChipboardUi?): String {
 fun getDiffForIndex(index: Int, chipboard: ChipboardUi?): String {
     if (chipboard == null) return ""
     return when (index) {
-        1 -> chipboard.diff1AsString
-        2 -> chipboard.diff2AsString
-        3 -> chipboard.diff3AsString
+        1 -> chipboard.real1AsString
+        2 -> chipboard.real2AsString
+        3 -> chipboard.real3AsString
         else -> ""
     }
 }

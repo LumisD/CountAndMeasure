@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboardsUI
+import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ConfirmationType
 import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.screens.count.model.toChipboard
 import com.lumisdinos.measureandcount.ui.screens.count.model.toChipboardUi
@@ -46,7 +47,7 @@ class CountViewModel @Inject constructor(
             is CountIntent.QuantityChanged -> sortByQuantity(intent.newQuantityAsString)
             is CountIntent.ColorChanged -> sortByColor(intent.colorName, intent.color)
 
-            is CountIntent.DifferenceChanged -> updateDifferenceForSize(
+            is CountIntent.RealSizeChanged -> updateRealSizeForSize(
                 intent.newDiffAsString,
                 intent.dimension
             )
@@ -59,23 +60,31 @@ class CountViewModel @Inject constructor(
                 _effect.send(CountEffect.ShowWhatIsDialog(intent.questionType))
             }
 
-//            is CountIntent.AskUncheckChipboard -> viewModelScope.launch {
-//                _effect.send(CountEffect.ShowUncheckConfirmationDialog(intent.chipboard))
-//            }
+            is CountIntent.ActionConfirmed -> {
+                when (val confirmationType = intent.confirmationType) {
+                    is ConfirmationType.UncheckChipboardConfirmed -> {
+                        setChipboardAsNotFound(confirmationType.chipboard)
+                    }
+                    is ConfirmationType.SelectNotFoundToFindAreaConfirmed -> {
+                        setChipboardInFindArea(confirmationType.chipboard)
+                    }
+                    is ConfirmationType.RemoveNotFoundFromFindAreaConfirmed -> {
+                        removeNotFoundChipboardFromFindArea(confirmationType.chipboard)
+                    }
 
-            is CountIntent.UncheckChipboardConfirmed -> setChipboardAsNotFound(intent.chipboard)
-//            is CountIntent.AskSelectToFindArea -> viewModelScope.launch {
-//                _effect.send(CountEffect.ShowSelectToFindAreaConfirmationDialog(intent.chipboard))
-//            }
+                    is ConfirmationType.SelectUnknownToFindAreaConfirmed -> setChipboardInFindArea(confirmationType.chipboard)
+                }
+            }
 
-            is CountIntent.SelectNotFoundToFindAreaConfirmed -> setChipboardInFindArea(intent.chipboard)
-            is CountIntent.RemoveNotFoundFromFindAreaConfirmed -> removeNotFoundChipboardFromFindArea(intent.chipboard)
             is CountIntent.ToggleFindAreaVisibility -> {
                 _state.update { it.copy(isFoundAreaOpen = !it.isFoundAreaOpen) }
             }
 
             is CountIntent.SetListDone -> setListDoneOrUnDone()
 
+            CountIntent.FieldDisabled ->  viewModelScope.launch {
+                _effect.send(CountEffect.ShowFieldDisabled)
+            }
         }
     }
 
@@ -136,31 +145,33 @@ class CountViewModel @Inject constructor(
     }
 
 
-    private fun updateDifferenceForSize(newDiffAsString: String, dimension: Int) {
+    private fun updateRealSizeForSize(newDiffAsString: String, dimension: Int) {
         val newDiffAsFloat = newDiffAsString.toFloatOrNull() ?: 0f
 
         _state.update { currentState ->
             val currentChipboard = currentState.chipboardToFind
             val updatedChipboard = when (dimension) {
                 1 -> currentChipboard.copy(
-                    diff1AsString = newDiffAsString,
-                    difference1 = newDiffAsFloat
+                    real1AsString = newDiffAsString,
+                    realSize1 = newDiffAsFloat
                 )
 
                 2 -> currentChipboard.copy(
-                    diff2AsString = newDiffAsString,
-                    difference2 = newDiffAsFloat
+                    real2AsString = newDiffAsString,
+                    realSize2 = newDiffAsFloat
                 )
 
                 3 -> currentChipboard.copy(
-                    diff3AsString = newDiffAsString,
-                    difference3 = newDiffAsFloat
+                    real3AsString = newDiffAsString,
+                    realSize3 = newDiffAsFloat
                 )
 
                 else -> currentChipboard
             }
-            val allDiffsAsString = getAllDiffsAsString(updatedChipboard)
-            currentState.copy(chipboardToFind = updatedChipboard.copy(allDiffsAsString = allDiffsAsString))
+            val allRealsAsString = getAllRealsAsString(updatedChipboard)
+            val updatedChipboard2  = updatedChipboard.copy(allRealsAsString = allRealsAsString)
+            Log.d("CountViewModel", "updateRealSizeForSize updated chipboardToFind: $updatedChipboard2")
+            currentState.copy(chipboardToFind = updatedChipboard2)
         }
     }
 
@@ -169,7 +180,6 @@ class CountViewModel @Inject constructor(
         //logic for chipboard with state = 0 - not found
         //set in the chipboard isUnderReview = true (also in the list)
         //set chipboard in state.chipboardToFind
-        //set state.isFoundButtonAvailable = true
         //set state.isFoundAreaOpen = true
         //FlashFindItemArea as _effect.send(AddNewItemEffect.FlashFindItemArea)
 
@@ -177,7 +187,7 @@ class CountViewModel @Inject constructor(
         //set chipboard isUnderReview = false in the list for all chipboards
         //set chipboard in state.chipboardToFind
         //delete chipboard from db
-        //set state.isFoundButtonAvailable = false, and state.isUnknownButtonAvailable = true
+        // state.isUnknownButtonAvailable = true
         //set state.isFoundAreaOpen = true
         //FlashFindItemArea as _effect.send(AddNewItemEffect.FlashFindItemArea)
 
@@ -200,13 +210,11 @@ class CountViewModel @Inject constructor(
 
                 }
 
-                val isFoundButtonAvailable = chipboard.state == 0
                 val isUnknownButtonAvailable = chipboard.state == 2
 
                 currentState.copy(
                     chipboards = updatedChipboards,
                     chipboardToFind = chipboard.copy(isUnderReview = chipboard.state == 0),
-                    isFoundButtonAvailable = isFoundButtonAvailable,
                     isUnknownButtonAvailable = isUnknownButtonAvailable,
                     isFoundAreaOpen = true
                 )
@@ -224,7 +232,6 @@ class CountViewModel @Inject constructor(
     private fun removeNotFoundChipboardFromFindArea(chipboard: ChipboardUi) {
         //find chipboard in the list and set chipboard.isUnderReview = false
         //set chipboard default values in state.chipboardToFind
-        //set state.isFoundButtonAvailable = false
         //set state.isUnknownButtonAvailable = false
 
         _state.update { currentState ->
@@ -241,7 +248,6 @@ class CountViewModel @Inject constructor(
             currentState.copy(
                 chipboards = updatedChipboards,
                 chipboardToFind = defaultChipboardToFind,
-                isFoundButtonAvailable = false,
                 isUnknownButtonAvailable = false
             )
         }
@@ -295,6 +301,8 @@ class CountViewModel @Inject constructor(
 
 
     private fun setFound() {
+        //save chipboardToFind in db
+        //set chipboardToFind to initial values and characteristics, also isUnderReview = false to disable Found button
         viewModelScope.launch {
             _state.value.chipboardToFind.let { chipboardToFind ->
                 chipboardRepository.updateChipboardState(chipboardToFind.id, 1)
@@ -305,7 +313,6 @@ class CountViewModel @Inject constructor(
                         chipboardToFind = getChipboardWithInitialValuesAndCharacteristics(
                             currentChipboard
                         ),
-                        isFoundButtonAvailable = false,
                         isUnknownButtonAvailable = false
                     )
 
@@ -473,28 +480,6 @@ class CountViewModel @Inject constructor(
     }
 
 
-    private fun setUnknownButtonAvailability(chipboard: ChipboardUi): Boolean {
-        var isUnknownButtonAvailable = true
-        for (i in 1..chipboard.dimensions) {
-            when (i) {
-                1 -> {
-                    if (chipboard.size1 == 0f) isUnknownButtonAvailable = false
-                }
-
-                2 -> {
-                    if (chipboard.size2 == 0f) isUnknownButtonAvailable = false
-                }
-
-                3 -> {
-                    if (chipboard.size3 == 0f) isUnknownButtonAvailable = false
-                }
-            }
-            if (chipboard.quantity.toInt() == 0) isUnknownButtonAvailable = false
-        }
-        return isUnknownButtonAvailable
-    }
-
-
     private fun getChipboardWithInitialValuesAndCharacteristics(chipboard: ChipboardUi?): ChipboardUi {
         if (chipboard == null) return ChipboardUi()
         //set chipboardToFind characteristics taken from chipboard:
@@ -510,20 +495,22 @@ class CountViewModel @Inject constructor(
             state = 0,
             quantity = 1,
             size1 = 0f,
-            difference1 = 0f,
+            realSize1 = 0f,
             size2 = 0f,
-            difference2 = 0f,
+            realSize2 = 0f,
             size3 = 0f,
-            difference3 = 0f,
+            realSize3 = 0f,
 
             quantityAsString = "1",
             size1AsString = "",
             size2AsString = "",
             size3AsString = "",
-            diff1AsString = "",
-            diff2AsString = "",
-            diff3AsString = "",
-            chipboardAsString = ""
+            real1AsString = "",
+            real2AsString = "",
+            real3AsString = "",
+            chipboardAsString = "",
+
+            isUnderReview = false
         )
 
         return newChipboardToFind.copy(
@@ -553,7 +540,7 @@ class CountViewModel @Inject constructor(
     }
 
 
-    private fun getAllDiffsAsString(chipboard: ChipboardUi): String {
+    private fun getAllRealsAsString(chipboard: ChipboardUi): String {
         //↑12.5 x 54.0 - 3 - chipboard as String
         // 12.7   53.8    - diffs as string
         //        53.8   - diffs as string
@@ -574,9 +561,9 @@ class CountViewModel @Inject constructor(
             }
 
             val difference = when (i) {
-                1 -> chipboard.difference1
-                2 -> chipboard.difference2
-                3 -> chipboard.difference3
+                1 -> chipboard.realSize1
+                2 -> chipboard.realSize2
+                3 -> chipboard.realSize3
                 else -> 0f
             }
 
@@ -602,5 +589,28 @@ class CountViewModel @Inject constructor(
             builder.toString()
         }
     }
+
+
+    private fun setUnknownButtonAvailability(chipboard: ChipboardUi): Boolean {
+        var isUnknownButtonAvailable = true
+        for (i in 1..chipboard.dimensions) {
+            when (i) {
+                1 -> {
+                    if (chipboard.size1 == 0f) isUnknownButtonAvailable = false
+                }
+
+                2 -> {
+                    if (chipboard.size2 == 0f) isUnknownButtonAvailable = false
+                }
+
+                3 -> {
+                    if (chipboard.size3 == 0f) isUnknownButtonAvailable = false
+                }
+            }
+            if (chipboard.quantity.toInt() == 0) isUnknownButtonAvailable = false
+        }
+        return isUnknownButtonAvailable
+    }
+
 
 }
