@@ -40,5 +40,5 @@
     <string name="are_you_sure_select_not_found">Are you sure you want to select\n%1$s (%2$s)?\nto Find Area?\n(The item will remain in the list)</string>
     <string name="are_you_sure_remove_not_found">Are you sure you want to remove\n%1$s (%2$s)?\nfrom Find Area?\n(The item will remain in the list)</string>
     <string name="are_you_sure_select_unknown">Are you sure you want to select\n%1$s (%2$s)?\nto Find Area?\n(The item will be deleted from the list)</string>
-    <string name="are_you_sure_uncheck">Are you sure you want to set\n%1$s (%2$s)?\nas not found yet?\n(The item will remain in the list)</string>
+    <string name="are_you_sure_uncheck">Are you sure you want to set\n%1$s (%2$s)?\nas not found yet?\n(The item will remain in the list\nReal sizes will be empty)</string>
 </resources>

@@ -33,6 +33,7 @@ class CountViewModel @Inject constructor(
     private val _effect = Channel<CountEffect>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
+    private var isInitialChipboardSetForCurrentUnion: Boolean = false
     //private var unionOfChipboards: UnionOfChipboardsUI = UnionOfChipboardsUI()
 
 
@@ -48,6 +49,7 @@ class CountViewModel @Inject constructor(
                 sortByQuantity(intent.newQuantityAsString)
                 updateChipboardQuantity(intent.newQuantityAsString)
             }
+
             is CountIntent.ColorChanged -> {
                 sortByColor(intent.colorName, intent.color)
                 updateChipboardColor(intent.colorName, intent.color)
@@ -99,6 +101,7 @@ class CountViewModel @Inject constructor(
 
 
     private fun setUnionOfChipboardsAndRelatedChipboards(unionId: Int?) {
+        isInitialChipboardSetForCurrentUnion = false
         viewModelScope.launch {
             if (unionId == null) {
                 val unionOfChip = chipboardRepository.getLastUnFinishedUnionOfChipboards()
@@ -136,51 +139,70 @@ class CountViewModel @Inject constructor(
                         size1AsString = it.size1.toString(),
                         size2AsString = it.size2.toString(),
                         size3AsString = it.size3.toString(),
-                        chipboardAsString = getChipboardAsString(it.toChipboardUi())
+                        real1AsString = it.realSize1.toString(),
+                        real2AsString = it.realSize2.toString(),
+                        real3AsString = it.realSize3.toString(),
+                        chipboardAsString = getChipboardAsString(it.toChipboardUi()),
+                        allRealsAsString = getAllRealsAsString(it.toChipboardUi())
                     )
                 }
 
-                val initialChipboard =
-                    getChipboardWithInitialValuesAndCharacteristics(updatedChipboards.firstOrNull())
+
                 _state.update {
-                    it.copy(
+                    val updatedState = it.copy(
                         isNoLists = updatedChipboards.isEmpty(),
                         chipboards = updatedChipboards,
-                        chipboardToFind = initialChipboard
-
                     )
+                    if (!isInitialChipboardSetForCurrentUnion) {
+                        val initialChipboard =
+                            getChipboardWithInitialValuesAndCharacteristics(updatedChipboards.firstOrNull())
+                        isInitialChipboardSetForCurrentUnion = true
+                        updatedState.copy(chipboardToFind = initialChipboard)
+                    } else {
+                        updatedState
+                    }
                 }
             }
+
     }
 
 
-    private fun updateRealSizeForSize(newDiffAsString: String, dimension: Int) {
-        val newDiffAsFloat = newDiffAsString.toFloatOrNull() ?: 0f
+    private fun updateRealSizeForSize(newRealSizeAsString: String, dimension: Int) {
+        val newRealSizeAsFloat = newRealSizeAsString.toFloatOrNull() ?: 0f
 
-        _state.update { currentState ->
-            val currentChipboard = currentState.chipboardToFind
-            val updatedChipboard = when (dimension) {
-                1 -> currentChipboard.copy(
-                    real1AsString = newDiffAsString,
-                    realSize1 = newDiffAsFloat
-                )
+        var updatedChipboard2: ChipboardUi? = null
 
-                2 -> currentChipboard.copy(
-                    real2AsString = newDiffAsString,
-                    realSize2 = newDiffAsFloat
-                )
+        viewModelScope.launch {
+            _state.update { currentState ->
+                val currentChipboard = currentState.chipboardToFind
+                if (currentState.chipboardToFind.state != 0) return@update currentState
+                val updatedChipboard = when (dimension) {
+                    1 -> currentChipboard.copy(
+                        real1AsString = newRealSizeAsString,
+                        realSize1 = newRealSizeAsFloat
+                    )
 
-                3 -> currentChipboard.copy(
-                    real3AsString = newDiffAsString,
-                    realSize3 = newDiffAsFloat
-                )
+                    2 -> currentChipboard.copy(
+                        real2AsString = newRealSizeAsString,
+                        realSize2 = newRealSizeAsFloat
+                    )
 
-                else -> currentChipboard
+                    3 -> currentChipboard.copy(
+                        real3AsString = newRealSizeAsString,
+                        realSize3 = newRealSizeAsFloat
+                    )
+
+                    else -> currentChipboard
+                }
+                val allRealsAsString = getAllRealsAsString(updatedChipboard)
+                updatedChipboard2 = updatedChipboard.copy(allRealsAsString = allRealsAsString)
+                currentState.copy(chipboardToFind = updatedChipboard2!!)
             }
-            val allRealsAsString = getAllRealsAsString(updatedChipboard)
-            val updatedChipboard2  = updatedChipboard.copy(allRealsAsString = allRealsAsString)
-            Log.d("CountViewModel", "updateRealSizeForSize updated chipboardToFind: $updatedChipboard2")
-            currentState.copy(chipboardToFind = updatedChipboard2)
+
+            updatedChipboard2?.let {
+                chipboardRepository.insertChipboard(it.toChipboard())
+            }
+
         }
     }
 
@@ -218,7 +240,8 @@ class CountViewModel @Inject constructor(
                     }
                 }
 
-                val chipboardsWithUnderReviewOnTop = setItemWhichUnderReviewOnTopOfList(updatedChipboards)
+                val chipboardsWithUnderReviewOnTop =
+                    setItemWhichUnderReviewOnTopOfList(updatedChipboards)
 
                 val isUnknownButtonAvailable = chipboard.state == 2
 
@@ -279,17 +302,40 @@ class CountViewModel @Inject constructor(
 
     private fun setChipboardAsNotFound(chipboard: ChipboardUi) {
         //find chipboard in the list and set chipboard.state = 0
-        //update state.chipboards
+        //update state.chipboards and real sizes
+        //update chipboard in db
 
-        _state.update { currentState ->
-            val updatedChipboards = currentState.chipboards.map {
-                if (it.id == chipboard.id) {
-                    it.copy(state = 0)
-                } else {
-                    it
+        viewModelScope.launch {
+            _state.update { currentState ->
+                val updatedChipboards = currentState.chipboards.map {
+                    if (it.id == chipboard.id) {
+                        it.copy(
+                            state = 0,
+                            realSize1 = 0f,
+                            realSize2 = 0f,
+                            realSize3 = 0f,
+                            real1AsString = "",
+                            real2AsString = "",
+                            real3AsString = ""
+                        )
+                    } else {
+                        it
+                    }
                 }
+                currentState.copy(chipboards = updatedChipboards)
             }
-            currentState.copy(chipboards = updatedChipboards)
+
+            chipboardRepository.insertChipboard(
+                chipboard.copy(
+                    state = 0,
+                    realSize1 = 0f,
+                    realSize2 = 0f,
+                    realSize3 = 0f,
+                    real1AsString = "",
+                    real2AsString = "",
+                    real3AsString = ""
+                ).toChipboard()
+            )
         }
     }
 
@@ -648,7 +694,7 @@ class CountViewModel @Inject constructor(
         //        53.8   - diffs as string
         // 12.7          - diffs as string
         val builder = StringBuilder()
-        var isAllDiffsEmpty = true
+        var isAllRealsEmpty = true
 
         for (i in 1..chipboard.dimensions) {
             if (chipboard.direction.toInt() == i) {
@@ -662,30 +708,30 @@ class CountViewModel @Inject constructor(
                 else -> ""
             }
 
-            val difference = when (i) {
+            val realSize = when (i) {
                 1 -> chipboard.realSize1
                 2 -> chipboard.realSize2
                 3 -> chipboard.realSize3
                 else -> 0f
             }
 
-            if (difference != 0f) {
-                isAllDiffsEmpty = false
-                val diffString = difference.toString()
-                builder.append(diffString)
-                if (sizeString.length > diffString.length) {
-                    builder.append(" ".repeat(sizeString.length - diffString.length))
+            if (realSize != 0f) {
+                isAllRealsEmpty = false
+                val realSizeString = realSize.toString()
+                builder.append(realSizeString)
+                if (sizeString.length > realSizeString.length) {
+                    builder.append(" ".repeat(sizeString.length - realSizeString.length))
                 }
             } else {
                 builder.append(" ".repeat(sizeString.length))
             }
 
             if (i < chipboard.dimensions) {
-                builder.append("   ")
+                builder.append("    ")
             }
         }
 
-        return if (isAllDiffsEmpty) {
+        return if (isAllRealsEmpty) {
             ""
         } else {
             builder.toString()

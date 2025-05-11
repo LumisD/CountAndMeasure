@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -129,7 +130,6 @@ fun FindArea(
     shouldFlash: MutableState<Boolean>,
     viewModel: CountViewModel,
 ) {
-    Log.d("CountScreen", "FindArea")
     val animatedColor by animateColorAsState(
         targetValue = if (shouldFlash.value) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent,
         animationSpec = tween(durationMillis = 600),
@@ -232,7 +232,7 @@ fun WidthLengthFields(
                 else -> ""
             }
             val sizeOfDim = getSizeForIndex(i, chipboard)
-            val diffOfDim = getDiffForIndex(i, chipboard)
+            val realSizeOfDim = getRealSizeForIndex(i, chipboard)
             Log.d(
                 "CountScreen",
                 "WidthLengthFields name: $name, sizeOfDim: $sizeOfDim, diffOfDim: $diffOfDim, i: $i, diff1AsString: ${chipboard.real1AsString}"
@@ -257,14 +257,23 @@ fun WidthLengthFields(
                     }
                 )
 
-                RealSizeInput(
-                    value = diffOfDim,
-                    label = stringResource(R.string.real_size),
-                    dimension = i,
+                DisabledOverlay(
                     isEnabled = chipboard.isUnderReview,
-                    onValueChange = processIntent,
-                    intentFactory = { value, dim -> CountIntent.RealSizeChanged(value, dim) }
+                    onDisabledClick = { processIntent(CountIntent.FieldDisabled) },
+                    content = {
+                        RealSizeInput(
+                            value = realSizeOfDim,
+                            label = stringResource(R.string.real_size),
+                            dimension = i,
+                            isEnabled = chipboard.isUnderReview,
+                            onValueChange = processIntent,
+                            intentFactory = { value, dim ->
+                                CountIntent.RealSizeChanged(value, dim)
+                            }
+                        )
+                    }
                 )
+
             }
 
             if (i == 1) {
@@ -343,7 +352,7 @@ fun ListOfItems(
                 modifier = Modifier
                     .clickable { processIntent(CountIntent.PressOnItemInList(chipboard)) }
                     .background(backgroundColor)
-                    .padding(start = 16.dp, end = 16.dp,top = 0.dp, bottom = 0.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 0.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -359,7 +368,6 @@ fun ListOfItems(
 
                         Text(
                             text = chipboard.chipboardAsString,
-                            //modifier = Modifier.weight(1f)
                         )
 
                         if (chipboard.isUnderReview) {
@@ -381,10 +389,12 @@ fun ListOfItems(
                         }
                         Text(
                             text = chipboard.allRealsAsString,
-                            color = Color.Red.copy(alpha = 0.5f),
+                            color = Color.Red,
+                            fontSize = 14.sp,
+                            fontStyle = FontStyle.Italic,
                             modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(top = 4.dp)
+                                .align(Alignment.BottomStart)
+                                .padding(top = 16.dp)
                         )
                     }
 
@@ -529,7 +539,7 @@ fun getSizeForIndex(index: Int, chipboard: ChipboardUi?): String {
 }
 
 
-fun getDiffForIndex(index: Int, chipboard: ChipboardUi?): String {
+fun getRealSizeForIndex(index: Int, chipboard: ChipboardUi?): String {
     if (chipboard == null) return ""
     return when (index) {
         1 -> chipboard.real1AsString
