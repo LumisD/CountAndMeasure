@@ -13,25 +13,27 @@ data class ChipboardUi(
     val color: Int = 0,
     val title1: String = "",
     val size1: Float = 0f,
-    val difference1: Float = 0f,//diff between real measured size and size1
+    val realSize1: Float = 0f,//diff between real measured size and size1
     val title2: String = "",
     val size2: Float = 0f,
-    val difference2: Float = 0f,
+    val realSize2: Float = 0f,
     val title3: String = "",
     val size3: Float = 0f,
-    val difference3: Float = 0f,
+    val realSize3: Float = 0f,
 
     val quantityAsString: String = "1",
     val size1AsString: String = "",
-    val diff1AsString: String = "",
+    val real1AsString: String = "",
     val size2AsString: String = "",
-    val diff2AsString: String = "",
+    val real2AsString: String = "",
     val size3AsString: String = "",
-    val diff3AsString: String = "",
+    val real3AsString: String = "",
     val chipboardAsString: String = "",
-    val allDiffsAsString: String = "",
+    val allRealsAsString: String = "",
 
-    val isUnderReview: Boolean = false
+    val isUnderReview: Boolean = false//if true - enable: Found button, "real size" editors
+                                      // AND disable: Unknown button,size editors, quantity editor, color editor
+                                      //if false - all opposite
 )
 
 fun ChipboardUi.toChipboard(): Chipboard {
@@ -46,13 +48,13 @@ fun ChipboardUi.toChipboard(): Chipboard {
         color = color,
         title1 = title1,
         size1 = size1,
-        difference1 = difference1,
+        realSize1 = realSize1,
         title2 = title2,
         size2 = size2,
-        difference2 = difference2,
+        realSize2 = realSize2,
         title3 = title3,
         size3 = size3,
-        difference3 = difference3
+        realSize3 = realSize3
     )
 }
 
@@ -67,13 +69,13 @@ fun Chipboard.toChipboardUi(): ChipboardUi {
         quantity = quantity,
         title1 = title1,
         size1 = size1,
-        difference1 = difference1,
+        realSize1 = realSize1,
         title2 = title2,
         size2 = size2,
-        difference2 = difference2,
+        realSize2 = realSize2,
         title3 = title3,
         size3 = size3,
-        difference3 = difference3
+        realSize3 = realSize3
 
     )
 }

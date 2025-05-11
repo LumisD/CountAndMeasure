@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ChipboardUi
 
 @Entity(
     tableName = "chipboard",
@@ -33,12 +32,12 @@ data class Chipboard(
     val color: Int,
     val title1: String,
     val size1: Float,
-    val difference1: Float = 0f,//diff between real measured size and size1
+    val realSize1: Float = 0f,//diff between real measured size and size1
     val title2: String,
     val size2: Float,
-    val difference2: Float = 0f,
+    val realSize2: Float = 0f,
     val title3: String,
     val size3: Float,
-    val difference3: Float = 0f
+    val realSize3: Float = 0f
 )
 
