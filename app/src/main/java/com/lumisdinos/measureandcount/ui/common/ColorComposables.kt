@@ -29,6 +29,7 @@ import com.lumisdinos.measureandcount.ui.colorList
 import com.lumisdinos.measureandcount.ui.model.ColorItem
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
 import com.lumisdinos.measureandcount.ui.screens.count.CountIntent
+import com.lumisdinos.measureandcount.ui.screens.count.CountState
 
 @Composable
 private fun <T> ColorFieldInternal(
@@ -56,6 +57,30 @@ fun AddItemColorField(color: String, processIntent: (AddNewItemIntent) -> Unit) 
         intentFactory = { name, value -> AddNewItemIntent.ColorChanged(name, value) }
     )
 }
+
+
+@Composable
+fun CountColorField(
+    state: CountState,
+    processIntent: (CountIntent) -> Unit
+) {
+    Box {
+        AddCountColorField(
+            state.chipboardToFind.colorName,
+            processIntent
+        )
+
+        if (state.chipboardToFind.isUnderReview) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Transparent)
+                    .clickable(enabled = false) { }
+            )
+        }
+    }
+}
+
 
 @Composable
 fun AddCountColorField(color: String, processIntent: (CountIntent) -> Unit) {
