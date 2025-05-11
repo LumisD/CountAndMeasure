@@ -62,6 +62,7 @@ import com.lumisdinos.measureandcount.ui.common.QuantityNewItemOutlinedEditor
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.DialogType
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemEffect
+import com.lumisdinos.measureandcount.ui.theme.Purple80
 import kotlinx.coroutines.delay
 
 
@@ -274,7 +275,7 @@ fun ListOfNewItems(
                     )
                 }
             }
-            HorizontalDivider(thickness = 2.dp, color = Color.Gray)
+            HorizontalDivider(thickness = 4.dp, color = Purple80)
         }
     }
 }

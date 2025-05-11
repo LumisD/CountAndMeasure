@@ -13,7 +13,7 @@ val Pink40 = Color(0xFF7D5260)
 // custom colors
 val Yellowish = Color(0xFFFFFACD)
 val Greenish = Color(0xFF90EE90)
-val Grayish = Color(0xFFD3D3D3)
+val Grayish = Color(0xFFE0E0E0)
 val MainBg = Color(0xFFEFF7FF)
 
 // main blue color
