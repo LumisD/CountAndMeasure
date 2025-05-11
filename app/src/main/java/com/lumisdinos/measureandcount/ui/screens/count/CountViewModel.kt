@@ -39,19 +39,24 @@ class CountViewModel @Inject constructor(
     fun processIntent(intent: CountIntent) {
         when (intent) {
             is CountIntent.SetUnionId -> setUnionOfChipboardsAndRelatedChipboards(intent.unionId)
-            is CountIntent.SizeChanged -> sortBySize(
-                intent.newSizeAsString,
-                intent.dimension
-            )
+            is CountIntent.SizeChanged -> {
+                sortBySize(intent.newSizeAsString, intent.dimension)
+                updateChipboardSize(intent.newSizeAsString, intent.dimension)
+            }
 
-            is CountIntent.QuantityChanged -> sortByQuantity(intent.newQuantityAsString)
-            is CountIntent.ColorChanged -> sortByColor(intent.colorName, intent.color)
+            is CountIntent.QuantityChanged -> {
+                sortByQuantity(intent.newQuantityAsString)
+                updateChipboardQuantity(intent.newQuantityAsString)
+            }
+            is CountIntent.ColorChanged -> {
+                sortByColor(intent.colorName, intent.color)
+                updateChipboardColor(intent.colorName, intent.color)
+            }
 
             is CountIntent.RealSizeChanged -> updateRealSizeForSize(
                 intent.newDiffAsString,
                 intent.dimension
             )
-
 
             CountIntent.SetFoundChipboard -> setFound()
             CountIntent.CreateUnknownChipboard -> createUnknownAndSaveInDb()
@@ -65,14 +70,18 @@ class CountViewModel @Inject constructor(
                     is ConfirmationType.UncheckChipboardConfirmed -> {
                         setChipboardAsNotFound(confirmationType.chipboard)
                     }
+
                     is ConfirmationType.SelectNotFoundToFindAreaConfirmed -> {
                         setChipboardInFindArea(confirmationType.chipboard)
                     }
+
                     is ConfirmationType.RemoveNotFoundFromFindAreaConfirmed -> {
                         removeNotFoundChipboardFromFindArea(confirmationType.chipboard)
                     }
 
-                    is ConfirmationType.SelectUnknownToFindAreaConfirmed -> setChipboardInFindArea(confirmationType.chipboard)
+                    is ConfirmationType.SelectUnknownToFindAreaConfirmed -> setChipboardInFindArea(
+                        confirmationType.chipboard
+                    )
                 }
             }
 
@@ -82,7 +91,7 @@ class CountViewModel @Inject constructor(
 
             is CountIntent.SetListDone -> setListDoneOrUnDone()
 
-            CountIntent.FieldDisabled ->  viewModelScope.launch {
+            CountIntent.FieldDisabled -> viewModelScope.launch {
                 _effect.send(CountEffect.ShowFieldDisabled)
             }
         }
@@ -196,7 +205,7 @@ class CountViewModel @Inject constructor(
                 val updatedChipboards = currentState.chipboards.map {
                     if (it.isUnderReview) {
                         it.copy(isUnderReview = false)
-                    } else{
+                    } else {
                         if (it.id == chipboard.id) {
                             if (chipboard.state == 0) {
                                 chipboard.copy(isUnderReview = true)
@@ -207,13 +216,14 @@ class CountViewModel @Inject constructor(
                             it
                         }
                     }
-
                 }
+
+                val chipboardsWithUnderReviewOnTop = setItemWhichUnderReviewOnTopOfList(updatedChipboards)
 
                 val isUnknownButtonAvailable = chipboard.state == 2
 
                 currentState.copy(
-                    chipboards = updatedChipboards,
+                    chipboards = chipboardsWithUnderReviewOnTop,
                     chipboardToFind = chipboard.copy(isUnderReview = chipboard.state == 0),
                     isUnknownButtonAvailable = isUnknownButtonAvailable,
                     isFoundAreaOpen = true
@@ -225,6 +235,19 @@ class CountViewModel @Inject constructor(
             }
 
             _effect.send(CountEffect.FlashFindItemArea)
+        }
+    }
+
+
+    private fun setItemWhichUnderReviewOnTopOfList(chipboards: List<ChipboardUi>): List<ChipboardUi> {
+        val underReviewItem = chipboards.find { it.isUnderReview }
+        return if (underReviewItem != null) {
+            val mutableList = chipboards.toMutableList()
+            mutableList.remove(underReviewItem)
+            mutableList.add(0, underReviewItem)
+            mutableList.toList()
+        } else {
+            chipboards
         }
     }
 
@@ -276,9 +299,17 @@ class CountViewModel @Inject constructor(
             0 -> { // Not found
                 viewModelScope.launch {
                     if (chipboard.isUnderReview) {
-                        _effect.send(CountEffect.ShowRemoveNotFoundFromFindAreaConfirmationDialog(chipboard))
+                        _effect.send(
+                            CountEffect.ShowRemoveNotFoundFromFindAreaConfirmationDialog(
+                                chipboard
+                            )
+                        )
                     } else {
-                        _effect.send(CountEffect.ShowSelectNotFoundToFindAreaConfirmationDialog(chipboard))
+                        _effect.send(
+                            CountEffect.ShowSelectNotFoundToFindAreaConfirmationDialog(
+                                chipboard
+                            )
+                        )
                     }
                 }
             }
@@ -302,7 +333,8 @@ class CountViewModel @Inject constructor(
 
     private fun setFound() {
         //save chipboardToFind in db
-        //set chipboardToFind to initial values and characteristics, also isUnderReview = false to disable Found button
+        //set chipboardToFind to initial values and characteristics,
+        //also isUnderReview = false (in getChipboardWithInitialValuesAndCharacteristics) to disable Found button
         viewModelScope.launch {
             _state.value.chipboardToFind.let { chipboardToFind ->
                 chipboardRepository.updateChipboardState(chipboardToFind.id, 1)
@@ -450,6 +482,76 @@ class CountViewModel @Inject constructor(
     }
 
 
+    private fun updateChipboardSize(newSizeAsString: String, dimension: Int) {
+        val newSizeAsFloat = newSizeAsString.toFloatOrNull() ?: 0f
+
+        _state.update { currentState ->
+            if (currentState.chipboardToFind.state != 2) return@update currentState
+
+            val currentChipboard = currentState.chipboardToFind
+            val updatedChipboard = when (dimension) {
+                1 -> currentChipboard.copy(
+                    size1AsString = newSizeAsString,
+                    size1 = newSizeAsFloat
+                )
+
+                2 -> currentChipboard.copy(
+                    size2AsString = newSizeAsString,
+                    size2 = newSizeAsFloat
+                )
+
+                3 -> currentChipboard.copy(
+                    size3AsString = newSizeAsString,
+                    size3 = newSizeAsFloat
+                )
+
+                else -> currentChipboard
+            }
+            val updatedChipboard2 =
+                updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
+            val setUnknownButnAvailbl = setUnknownButtonAvailability(updatedChipboard)
+            currentState.copy(
+                chipboardToFind = updatedChipboard2,
+                isUnknownButtonAvailable = setUnknownButnAvailbl
+            )
+        }
+    }
+
+
+    private fun updateChipboardColor(newColorName: String, newColor: Int) {
+        _state.update { currentState ->
+            if (currentState.chipboardToFind.state != 2) return@update currentState
+            val updatedChipboard = currentState.chipboardToFind.copy(
+                colorName = newColorName,
+                color = newColor
+            )
+            val updatedChipboard2 =
+                updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
+            currentState.copy(
+                chipboardToFind = updatedChipboard2,
+            )
+        }
+    }
+
+    private fun updateChipboardQuantity(newQuantityAsString: String) {
+        val newQuantityAsShort = newQuantityAsString.toShortOrNull() ?: 0
+        _state.update { currentState ->
+            //if (currentState.chipboardToFind.state != 2) return@update currentState
+            val updatedChipboard = currentState.chipboardToFind.copy(
+                quantityAsString = newQuantityAsString,
+                quantity = newQuantityAsShort
+            )
+            val updatedChipboard2 =
+                updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
+            val setUnknownButnAvailbl = setUnknownButtonAvailability(updatedChipboard)
+            currentState.copy(
+                chipboardToFind = updatedChipboard2,
+                isUnknownButtonAvailable = setUnknownButnAvailbl
+            )
+        }
+    }
+
+
     private fun setListDoneOrUnDone() {
         //set unionOfChipboards.isFinished to opposite of current value
         //set updatedAt = System.currentTimeMillis()
@@ -492,7 +594,7 @@ class CountViewModel @Inject constructor(
 
         val newChipboardToFind = chipboard.copy(
             id = 0,
-            state = 0,
+            state = 2,
             quantity = 1,
             size1 = 0f,
             realSize1 = 0f,

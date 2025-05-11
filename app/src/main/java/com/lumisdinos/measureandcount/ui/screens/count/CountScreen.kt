@@ -22,10 +22,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -68,6 +68,8 @@ import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.screens.count.model.DialogType
 import com.lumisdinos.measureandcount.ui.theme.Grayish
 import com.lumisdinos.measureandcount.ui.theme.Greenish
+import com.lumisdinos.measureandcount.ui.theme.PrimaryBlue
+import com.lumisdinos.measureandcount.ui.theme.Purple80
 import com.lumisdinos.measureandcount.ui.theme.Yellowish
 import kotlinx.coroutines.delay
 
@@ -103,6 +105,7 @@ fun CountScreen(
             )
         }
     } else {
+        Log.d("CountScreen", "diff1AsString: ${state.chipboardToFind.real1AsString}")
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -126,6 +129,7 @@ fun FindArea(
     shouldFlash: MutableState<Boolean>,
     viewModel: CountViewModel,
 ) {
+    Log.d("CountScreen", "FindArea")
     val animatedColor by animateColorAsState(
         targetValue = if (shouldFlash.value) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent,
         animationSpec = tween(durationMillis = 600),
@@ -338,7 +342,8 @@ fun ListOfItems(
             Row(
                 modifier = Modifier
                     .clickable { processIntent(CountIntent.PressOnItemInList(chipboard)) }
-                    .background(backgroundColor),
+                    .background(backgroundColor)
+                    .padding(start = 16.dp, end = 16.dp,top = 0.dp, bottom = 0.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -350,7 +355,6 @@ fun ListOfItems(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(end = 8.dp)
                     ) {
 
                         Text(
@@ -393,9 +397,10 @@ fun ListOfItems(
                     )
                 }
 
+                Spacer(modifier = Modifier.width(8.dp))
                 IconAtTheEnd(chipboard.state)
             }
-            HorizontalDivider(thickness = 2.dp, color = Color.Gray)
+            HorizontalDivider(thickness = 4.dp, color = Purple80)
         }
     }
 }
@@ -407,17 +412,14 @@ fun IconAtTheEnd(state: Int) {
         1 -> Icon(
             Icons.Filled.Check,
             contentDescription = "Check",
-            tint = Color.Green,
+            tint = PrimaryBlue,
             modifier = Modifier.scale(1.3f)
         )
 
         2 -> Icon(
-            Icons.AutoMirrored.Filled.HelpOutline,
-            //Icons.Filled.QuestionMark
-            //Icons.Filled.HelpCenter
-            //Icons.Filled.ErrorOutline
+            Icons.Filled.ErrorOutline,
             contentDescription = "Unknown",
-            tint = Color.Black,
+            tint = PrimaryBlue,
             modifier = Modifier.scale(1.3f)
         )
 
