@@ -40,7 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
-import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.QuestionType
+import com.lumisdinos.measureandcount.ui.screens.count.model.QuestionType
 import com.lumisdinos.measureandcount.ui.screens.count.CountIntent
 import com.lumisdinos.measureandcount.ui.theme.PrimaryBlue
 import com.lumisdinos.measureandcount.ui.theme.Yellowish

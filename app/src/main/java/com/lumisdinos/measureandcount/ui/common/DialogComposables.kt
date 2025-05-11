@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ConfirmationType
-import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.QuestionType
+import com.lumisdinos.measureandcount.ui.screens.count.model.QuestionType
 import com.lumisdinos.measureandcount.ui.screens.count.CountIntent
 import com.lumisdinos.measureandcount.ui.screens.count.model.DialogType
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.DialogType as AddNewItemDialogType
@@ -151,7 +151,7 @@ fun ChooseDialogType(
                 text = when (dialog.questionType) {
                     QuestionType.Found -> stringResource(R.string.what_is_found)
                     QuestionType.Unknown -> stringResource(R.string.what_is_unknown)
-                    QuestionType.Difference -> stringResource(R.string.what_is_difference)
+                    QuestionType.RealSize -> stringResource(R.string.what_is_difference)
                 }
                 confirmText = stringResource(R.string.ok)
                 dismissText = null
