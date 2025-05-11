@@ -24,20 +24,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
-import com.lumisdinos.measureandcount.ui.Yellowish
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
+import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.QuestionType
 import com.lumisdinos.measureandcount.ui.screens.count.CountIntent
+import com.lumisdinos.measureandcount.ui.theme.PrimaryBlue
+import com.lumisdinos.measureandcount.ui.theme.Yellowish
 
 @Composable
 fun UpArrowIcon(modifier: Modifier = Modifier) {
@@ -65,7 +71,7 @@ fun CommonButton(
     enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    colors: ButtonColors = ButtonDefaults.buttonColors(containerColor = Color.Blue.copy(alpha = 0.7f))
+    colors: ButtonColors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue.copy(alpha = 0.7f))
 ) {
     Button(
         onClick = onClick,
@@ -76,7 +82,7 @@ fun CommonButton(
     ) {
         Text(
             text = text,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onPrimary//Color.White
         )
     }
 }
@@ -212,5 +218,69 @@ fun ExpandHideCountField(isFindAreaOpen: Boolean, processIntent: (CountIntent) -
         processIntent,
         intentFactory = { CountIntent.ToggleFindAreaVisibility }
     )
+}
+
+
+@Composable
+fun DisabledOverlay(
+    isDisabled: Boolean,
+    content: @Composable () -> Unit
+) {
+    Box(modifier = Modifier.wrapContentSize()) {
+        content()
+
+        if (isDisabled) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Transparent)
+                    //.background(Grayish.copy(alpha = 0.6f))
+                    .clickable(enabled = false) { }
+            )
+        }
+    }
+}
+
+
+@Composable
+fun DisabledOverlay(
+    isEnabled: Boolean,
+    onDisabledClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Box(modifier = Modifier.wrapContentSize()) {
+        content()
+
+        if (!isEnabled) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Transparent)
+                    .clickable { onDisabledClick() }
+            )
+        }
+    }
+}
+
+
+@Composable
+fun WhatIsIconButton(
+    questionType: QuestionType,
+    processIntent: (CountIntent) -> Unit,
+    contentDescription: String
+) {
+    IconButton(
+        onClick = {
+            processIntent(CountIntent.ShowWhatIs(questionType))
+        },
+        modifier = Modifier.size(48.dp)
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+            contentDescription = contentDescription,
+            modifier = Modifier.size(36.dp),
+            tint = PrimaryBlue
+        )
+    }
 }
 
