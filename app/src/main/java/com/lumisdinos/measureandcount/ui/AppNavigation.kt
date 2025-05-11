@@ -30,6 +30,7 @@ import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.screens.count.CountScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
 import com.lumisdinos.measureandcount.ui.screens.ListsScreen
+import com.lumisdinos.measureandcount.ui.theme.MainBg
 
 interface BottomBarDestination {
     val baseRoute: String

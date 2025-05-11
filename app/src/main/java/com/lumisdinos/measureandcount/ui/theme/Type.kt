@@ -15,7 +15,7 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp,
-        color = Color.Blue
+        color = Color.Blue//the same as MaterialTheme.colorScheme.primary
     ),
     titleLarge = TextStyle(
         fontFamily = FontFamily.Monospace,
@@ -23,7 +23,7 @@ val Typography = Typography(
         fontSize = 20.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.5.sp,
-        color = Color.Blue
+        color = Color.Blue//the same as MaterialTheme.colorScheme.primary
     )
     /* Other default text styles to override
     labelSmall = TextStyle(
