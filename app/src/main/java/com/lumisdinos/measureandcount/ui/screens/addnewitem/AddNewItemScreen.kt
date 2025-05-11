@@ -54,11 +54,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.common.AddItemColorField
 import com.lumisdinos.measureandcount.ui.common.ChipboardAsStringField
+import com.lumisdinos.measureandcount.ui.common.ChooseDialogTypes
 import com.lumisdinos.measureandcount.ui.common.CommonButton
 import com.lumisdinos.measureandcount.ui.common.ExpandHideNewItemField
 import com.lumisdinos.measureandcount.ui.common.NewItemOutlinedEditor
 import com.lumisdinos.measureandcount.ui.common.QuantityNewItemOutlinedEditor
-import com.lumisdinos.measureandcount.ui.common.ShowDialog
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.DialogType
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemEffect
@@ -87,7 +87,7 @@ fun AddNewItemScreen(
     val shouldFlash = remember { mutableStateOf(false) }
 
     CollectEffects(dialogState, shouldFlash, viewModel, navController, snackbarHostState)
-    ChooseDialogType(dialogState, viewModel::processIntent)
+    ChooseDialogTypes(dialogState, viewModel::processIntent)
 
     //Actual screen
     Column(
@@ -114,7 +114,7 @@ fun AddNewItemArea(
     viewModel: AddNewItemViewModel,
 ) {
     val animatedColor by animateColorAsState(
-        targetValue = if (shouldFlash.value) Color.Blue.copy(alpha = 0.5f) else Color.Transparent,
+        targetValue = if (shouldFlash.value) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent,
         animationSpec = tween(durationMillis = 600),
         label = "backgroundColor"
     )
@@ -304,49 +304,7 @@ fun NumberEditor(
         dimension = dimension,
         onSizeChanged = onSizeChangedIntent
     )
-//    OutlinedTextField(
-//        modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
-//        value = sizeOfDim,
-//        onValueChange = { newValue: String ->
-//            onSizeChangedIntent(AddNewItemIntent.SizeChanged(newValue, dimension))
-//        },
-//        label = { Text(text = stringResource(id = label)) },
-//        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//        colors = TextFieldDefaults.colors(
-//            unfocusedContainerColor = Color.Transparent,
-//            focusedContainerColor = Color.Transparent,
-//            disabledContainerColor = Color.Transparent,
-//        )
-//    )
 }
-
-
-//@Composable
-//fun QuantityEditor(
-//    label: Int,
-//    quantity: String,
-//    onQuantityChangedIntent: (AddNewItemIntent) -> Unit
-//) {
-//    OutlinedEditor(
-//        label = stringResource(id = label),
-//        value = quantity,
-//        onQuantityChanged = onQuantityChangedIntent
-//    )
-////    OutlinedTextField(
-////        modifier = Modifier.widthIn(min = 60.dp, max = 150.dp),
-////        value = quantity,
-////        onValueChange = { newValue: String ->
-////            onQuantityChangedIntent(AddNewItemIntent.QuantityChanged(newValue))
-////        },
-////        label = { Text(text = stringResource(id = label)) },
-////        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-////        colors = TextFieldDefaults.colors(
-////            unfocusedContainerColor = Color.Transparent,
-////            focusedContainerColor = Color.Transparent,
-////            disabledContainerColor = Color.Transparent,
-////        )
-////    )
-//}
 
 
 @Composable
@@ -429,52 +387,5 @@ fun CollectEffects(
 
             }
         }
-    }
-}
-
-
-@Composable
-fun ChooseDialogType(
-    dialogState: MutableState<DialogType>,
-    processIntent: (AddNewItemIntent) -> Unit
-) {
-    when (val dialog = dialogState.value) {
-        is DialogType.Delete -> {
-            ShowDialog(
-                title = stringResource(R.string.confirm_deletion),
-                text = stringResource(
-                    R.string.are_you_sure_delete,
-                    dialog.chipboard.chipboardAsString,
-                    dialog.chipboard.colorName
-                ),
-                confirmText = stringResource(R.string.delete),
-                dismissText = stringResource(R.string.cancel),
-                onDismiss = { dialogState.value = DialogType.None },
-                onConfirm = {
-                    processIntent(AddNewItemIntent.DeleteChipboardConfirmed(dialog.chipboard.id))
-                    dialogState.value = DialogType.None
-                }
-            )
-        }
-
-        is DialogType.Edit -> {
-            ShowDialog(
-                title = stringResource(R.string.confirm_editing),
-                text = stringResource(
-                    R.string.are_you_sure_edit,
-                    dialog.chipboard.chipboardAsString,
-                    dialog.chipboard.colorName
-                ),
-                confirmText = stringResource(R.string.edit),
-                dismissText = stringResource(R.string.cancel),
-                onDismiss = { dialogState.value = DialogType.None },
-                onConfirm = {
-                    processIntent(AddNewItemIntent.EditChipboardConfirmed(dialog.chipboard))
-                    dialogState.value = DialogType.None
-                }
-            )
-        }
-
-        DialogType.None -> {}
     }
 }
