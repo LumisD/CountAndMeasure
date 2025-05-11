@@ -9,7 +9,6 @@ data class CountState(
     val chipboards: List<ChipboardUi> = emptyList(),
     val chipboardToFind: ChipboardUi = ChipboardUi(),
     val isFoundAreaOpen: Boolean = true,
-    val isFoundButtonAvailable: Boolean = false,
     val isUnknownButtonAvailable: Boolean = false,
     val isNoLists: Boolean = false,
 )
