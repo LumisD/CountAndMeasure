@@ -34,7 +34,6 @@ class CountViewModel @Inject constructor(
     val effect = _effect.receiveAsFlow()
 
     private var isInitialChipboardSetForCurrentUnion: Boolean = false
-    //private var unionOfChipboards: UnionOfChipboardsUI = UnionOfChipboardsUI()
 
 
     fun processIntent(intent: CountIntent) {
@@ -136,9 +135,9 @@ class CountViewModel @Inject constructor(
                         size1AsString = it.size1.toString(),
                         size2AsString = it.size2.toString(),
                         size3AsString = it.size3.toString(),
-                        real1AsString = it.realSize1.toString(),
-                        real2AsString = it.realSize2.toString(),
-                        real3AsString = it.realSize3.toString(),
+                        real1AsString = if (it.realSize1 != 0f) it.realSize1.toString() else "",
+                        real2AsString = if (it.realSize2 != 0f) it.realSize2.toString() else "",
+                        real3AsString = if (it.realSize3 != 0f) it.realSize3.toString() else "",
                         chipboardAsString = getChipboardAsString(it.toChipboardUi()),
                         allRealsAsString = getAllRealsAsString(it.toChipboardUi())
                     )
@@ -873,7 +872,6 @@ class CountViewModel @Inject constructor(
                 builder.append("    ")
             }
         }
-        Log.d("CountViewModel", "getAllRealsAsString builder.toString(): ${builder.toString()}")
 
         return if (isAllRealsEmpty) {
             ""
