@@ -30,11 +30,13 @@
     <string name="what_is_found_question">What is Found?</string>
     <string name="what_is_unknown_question">What is Unknown"</string>
     <string name="field_disabled">Field disabled</string>
+    <string name="not_exceeding_target_quantity">Do not exceed target quantity</string>
     <string name="disabled_explanation">Due to other options selected, you cannot change this field at this time</string>
     <string name="what_is_found">Choose more suitable item in the list.\nThen press Found to mark the item as found</string>
     <string name="what_is_unknown">If you have an item with unknown sizes press Unknown to mark the item as unknown</string>
     <string name="what_is_difference">If some size of the item differs from that indicated in the item by some amount, write the real size in this field</string>
     <string name="press_new_screen_create_chipboard_sheet_list">Press New screen to create a Chipboard Sheet List</string>
+    <string name="not_exceeding_target_quantity_explanation">The quantity (%1$s) cannot exceed what is written (%2$s)</string>
     <string name="are_you_sure_delete">Are you sure you want to delete\n%1$s (%2$s)?</string>
     <string name="are_you_sure_edit">Are you sure you want to edit\n%1$s (%2$s)?\n(The item will be deleted from the list)</string>
     <string name="are_you_sure_select_not_found">Are you sure you want to select\n%1$s (%2$s)?\nto Find Area?\n(The item will remain in the list)</string>

@@ -507,6 +507,10 @@ fun CollectEffects(
                     dialogState.value = DialogType.Uncheck(effect.chipboard)
                 }
 
+                is CountEffect.ShowNotExceedingTargetQuantityDialog -> {
+                    dialogState.value = DialogType.NotExceedingTargetQuantity(effect.targetQuantity, effect.enteredQuantity)
+                }
+
                 is CountEffect.ShowWhatIsDialog -> {
                     dialogState.value = DialogType.WhatIs(effect.questionType)
                 }

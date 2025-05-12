@@ -146,6 +146,17 @@ fun ChooseDialogType(
                 }
             }
 
+            is DialogType.NotExceedingTargetQuantity -> {
+                title = stringResource(R.string.not_exceeding_target_quantity)
+                text = stringResource(
+                    R.string.not_exceeding_target_quantity_explanation,
+                    dialog.enteredQuantity,
+                    dialog.targetQuantity)
+                confirmText = stringResource(R.string.ok)
+                dismissText = null
+                onConfirm = { dialogState.value = DialogType.None }
+            }
+
             is DialogType.WhatIs -> {
                 title = stringResource(R.string.what_is)
                 text = when (dialog.questionType) {

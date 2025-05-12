@@ -45,10 +45,7 @@ class CountViewModel @Inject constructor(
                 updateChipboardSize(intent.newSizeAsString, intent.dimension)
             }
 
-            is CountIntent.QuantityChanged -> {
-                sortByQuantity(intent.newQuantityAsString)
-                updateChipboardQuantity(intent.newQuantityAsString)
-            }
+            is CountIntent.QuantityChanged -> handleChangedQuantity(intent.newQuantityAsString)
 
             is CountIntent.ColorChanged -> {
                 sortByColor(intent.colorName, intent.color)
@@ -401,6 +398,8 @@ class CountViewModel @Inject constructor(
 
 
     private fun createUnknownAndSaveInDb() {
+        //This function can be called only for chipboards with state = 2
+
         //set chipboardToFind.state = 2
         //save chipboardToFind in db
         //set characteristics to default values
@@ -482,12 +481,53 @@ class CountViewModel @Inject constructor(
     }
 
 
+    private fun handleChangedQuantity(newQuantityAsString: String) {
+        //chipboardToFind can have only state 0 or 2 (not found and unknown)
+        //if state == 0 - quantity cannot be bigger than the qty of the chipboard with the same id in the list (isUnderReview = true)
+        //  so, if that happened - set chipboardToFind.quantity = chipboard.quantity AND show a dialog with a message about not exceeding target quantity
+        //if state == 2 - quantity can be any number
+        //don't sortByQuantity if a chipbord isUnderReview = true
+        val newQuantityAsShort = newQuantityAsString.toShortOrNull() ?: 0
+        val chipboardInFindArea = _state.value.chipboardToFind
+        val isUnderReview = chipboardInFindArea.isUnderReview
+
+        if (newQuantityAsShort in setOf<Short>(0, 1) || chipboardInFindArea.state == 2) {//if qty is small OR it's unknown chipboard
+            if (!isUnderReview) sortByQuantity(newQuantityAsString)
+            updateChipboardQuantity(newQuantityAsString)
+            return
+        }
+
+        val chipboardId = chipboardInFindArea.id
+        val unionId = chipboardInFindArea.unionId
+        viewModelScope.launch {
+            val originalQuantity =
+                chipboardRepository.getQuantityOfChipboardByConditions(chipboardId, unionId, 0)
+            if (originalQuantity.toInt() == -1 || newQuantityAsShort.toInt() <= originalQuantity.toInt()) {
+                //if qty is not found in db(weird) OR new qty smaller than original qty
+                if (!isUnderReview) sortByQuantity(newQuantityAsString)
+                updateChipboardQuantity(newQuantityAsString)
+            } else {
+                //if new qty is bigger than original qty
+                if (!isUnderReview) sortByQuantity(originalQuantity.toString())
+                updateChipboardQuantity(originalQuantity.toString())
+                _effect.send(
+                    CountEffect.ShowNotExceedingTargetQuantityDialog(
+                        originalQuantity,
+                        newQuantityAsShort
+                    )
+                )
+            }
+        }
+    }
+
+
     private fun sortByQuantity(findQuantityAsString: String) {
         //sort not found chipboard by quantity among those only with state = 0
         //and sorting logic is: for example findQuantityAsString = "2"
         //a) first find a quantity with  "2" and place them on top (if more than one chipboard is found)
         //b)then rest of chipboards
         //The logic has to be applied only to not found chipboards (state = 0)
+        if (findQuantityAsString.isEmpty() || findQuantityAsString == "0") return
 
         _state.update { currentState ->
             val chipboardsToSort = currentState.chipboards.filter { it.state == 0 }
@@ -730,6 +770,7 @@ class CountViewModel @Inject constructor(
                 builder.append("    ")
             }
         }
+        Log.d("CountViewModel", "getAllRealsAsString builder.toString(): ${builder.toString()}")
 
         return if (isAllRealsEmpty) {
             ""
@@ -740,6 +781,7 @@ class CountViewModel @Inject constructor(
 
 
     private fun setUnknownButtonAvailability(chipboard: ChipboardUi): Boolean {
+        if (chipboard.state != 2) return false
         var isUnknownButtonAvailable = true
         for (i in 1..chipboard.dimensions) {
             when (i) {
