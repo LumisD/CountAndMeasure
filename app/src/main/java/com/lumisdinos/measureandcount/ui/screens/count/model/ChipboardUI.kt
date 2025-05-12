@@ -6,9 +6,9 @@ data class ChipboardUi(
     val id: Int = 0,
     val unionId: Int = 0,
     val state: Int = 2,//0 - not found, 1 - found, 2 - unknown
-    val dimensions: Short = 1, // Number of dimensions, starts from 1
-    val direction: Short = 0, // 0 - no direction, 1 to n - direction column
-    val quantity: Short = 1,
+    val dimensions: Int = 1, // Number of dimensions, starts from 1
+    val direction: Int = 0, // 0 - no direction, 1 to n - direction column
+    val quantity: Int = 1,
     val colorName: String = "",
     val color: Int = 0,
     val title1: String = "",

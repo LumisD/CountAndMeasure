@@ -23,9 +23,15 @@ interface MeasureAndCountRepository {
 
     suspend fun updateChipboardState(id: Int, newState: Int)
 
+    suspend fun updateChipboardQuantity(id: Int, newQuantity: Int)
+
+    suspend fun findSimilarFoundChipboard(chipboard: Chipboard): Chipboard?
+
+    suspend fun getChipboardByIdAndUnionId(chipboardId: Int, unionId: Int): Chipboard?
+
     suspend fun getChipboardsCountByUnionId(unionId: Int): Int
 
-    suspend fun getQuantityOfChipboardByConditions(id: Int, unionId: Int, state: Int): Short
+    suspend fun getQuantityOfChipboardByConditions(id: Int, unionId: Int, state: Int): Int
 
     suspend fun deleteChipboardById(chipboardId: Int)
 

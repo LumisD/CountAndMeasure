@@ -25,9 +25,9 @@ data class Chipboard(
     @ColumnInfo(name = "union_id")
     val unionId: Int,
     val state: Int = 0,//0 - not found, 1 - found, 2 - unknown
-    val dimensions: Short,//qty of dimensions starts from 1
-    val direction: Short,//0 - no direction, 1 to n - direction column
-    val quantity: Short,
+    val dimensions: Int,//qty of dimensions starts from 1
+    val direction: Int,//0 - no direction, 1 to n - direction column
+    val quantity: Int,
     val colorName: String,
     val color: Int,
     val title1: String,

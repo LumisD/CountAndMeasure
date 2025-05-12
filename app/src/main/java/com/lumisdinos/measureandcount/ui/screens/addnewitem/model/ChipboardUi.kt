@@ -7,9 +7,9 @@ import com.lumisdinos.measureandcount.data.db.model.Chipboard
 data class ChipboardUi(
     val id: Int = 0,
     val unionId: Int = 0,
-    val dimensions: Short = 1, // Number of dimensions, starts from 1
-    val direction: Short = 0, // 0 - no direction, 1 to n - direction column
-    val quantity: Short = 1,
+    val dimensions: Int = 1, // Number of dimensions, starts from 1
+    val direction: Int = 0, // 0 - no direction, 1 to n - direction column
+    val quantity: Int = 1,
     val colorName: String = "White",
     val color: Int = Color.White.toArgb(),
     val title1: String = "",

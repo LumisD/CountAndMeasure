@@ -24,7 +24,11 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         unionOfChipboardsDao.updateUnionOfChipboardsTitle(unionId, newTitle, updatedAt)
     }
 
-    override suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long) {
+    override suspend fun setUnionOfChipboardsIsFinished(
+        unionId: Int,
+        isFinished: Boolean,
+        updatedAt: Long
+    ) {
         unionOfChipboardsDao.setUnionOfChipboardsIsFinished(unionId, isFinished, updatedAt)
     }
 
@@ -41,6 +45,7 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
 
     }
 
+
     override suspend fun insertChipboard(chipboard: Chipboard) {
         chipboardDao.insertChipboard(chipboard)
     }
@@ -49,14 +54,44 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         chipboardDao.updateChipboardState(id, newState)
     }
 
+    override suspend fun updateChipboardQuantity(id: Int, newQuantity: Int) {
+        chipboardDao.updateChipboardQuantity(id, newQuantity)
+    }
+
+    override suspend fun findSimilarFoundChipboard(chipboard: Chipboard): Chipboard? {
+        return chipboardDao.findSimilarFoundChipboard(
+            unionId = chipboard.unionId,
+            chipboardId = chipboard.id,
+            dimensions = chipboard.dimensions,
+            direction = chipboard.direction,
+            color = chipboard.color,
+            colorName = chipboard.colorName,
+            title1 = chipboard.title1,
+            size1 = chipboard.size1,
+            realSize1 = chipboard.realSize1,
+            title2 = chipboard.title2,
+            size2 = chipboard.size2,
+            realSize2 = chipboard.realSize2,
+            title3 = chipboard.title3,
+            size3 = chipboard.size3,
+            realSize3 = chipboard.realSize3
+        )
+    }
+
+    override suspend fun getChipboardByIdAndUnionId(chipboardId: Int, unionId: Int): Chipboard? {
+        return chipboardDao.getChipboardByIdAndUnionId(chipboardId, unionId)
+    }
+
     override suspend fun getChipboardsCountByUnionId(unionId: Int): Int {
         return chipboardDao.getChipboardsCountByUnionId(unionId)
     }
 
-    override suspend fun getQuantityOfChipboardByConditions(id: Int, unionId: Int, state: Int): Short {
-        // Call the DAO method that returns Short?
+    override suspend fun getQuantityOfChipboardByConditions(
+        id: Int,
+        unionId: Int,
+        state: Int
+    ): Int {
         val quantityFromDb = chipboardDao.getQuantityOfChipboardByConditions(id, unionId, state)
-        // Check if the result is null and return -1 if it is, otherwise return the quantity
         return quantityFromDb ?: -1
     }
 
