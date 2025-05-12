@@ -106,7 +106,7 @@ fun CountScreen(
             )
         }
     } else {
-        Log.d("CountScreen", "diff1AsString: ${state.chipboardToFind.real1AsString}")
+        Log.d("CountScreen", "real1AsString: ${state.chipboardToFind.real1AsString}")
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -198,7 +198,7 @@ fun FindArea(
                 horizontalAlignment = Alignment.Start
             ) {
                 Buttons(
-                    state.chipboardToFind.isUnderReview,
+                    state.isFoundButtonAvailable,
                     state.isUnknownButtonAvailable,
                     viewModel::processIntent
                 )
@@ -220,7 +220,7 @@ fun WidthLengthFields(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (chipboard.direction.toInt() == i) {
+            if (chipboard.direction == i) {
                 UpArrowIcon()
             } else {
                 Spacer(modifier = Modifier.width(24.dp))
@@ -235,7 +235,7 @@ fun WidthLengthFields(
             val realSizeOfDim = getRealSizeForIndex(i, chipboard)
             Log.d(
                 "CountScreen",
-                "WidthLengthFields name: $name, sizeOfDim: $sizeOfDim, diffOfDim: $diffOfDim, i: $i, diff1AsString: ${chipboard.real1AsString}"
+                "WidthLengthFields name: $name, sizeOfDim: $sizeOfDim, realSizeOfDim: $realSizeOfDim, i: $i, real1AsString: ${chipboard.real1AsString}"
             )
 
             Row(

@@ -250,11 +250,11 @@ class AddNewItemViewModel @Inject constructor(
     }
 
     private fun updateChipboardQuantity(newQuantityAsString: String) {
-        val newQuantityAsShort = newQuantityAsString.toShortOrNull() ?: 0
+        val newQuantityAsInt = newQuantityAsString.toIntOrNull() ?: 0
         _state.update { currentState ->
             val updatedChipboard = currentState.newOrEditChipboard.copy(
                 quantityAsString = newQuantityAsString,
-                quantity = newQuantityAsShort
+                quantity = newQuantityAsInt
             )
             val updatedChipboard2 =
                 updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
@@ -270,7 +270,7 @@ class AddNewItemViewModel @Inject constructor(
         //↑12.5 x 54.0 - 3
         val builder = StringBuilder()
         for (i in 1..chipboard.dimensions) {
-            if (chipboard.direction.toInt() == i) {
+            if (chipboard.direction == i) {
                 builder.append("↑")
             }
             when (i) {
@@ -302,7 +302,7 @@ class AddNewItemViewModel @Inject constructor(
                     if (chipboard.size3 == 0f) isAddButtonAvailable = false
                 }
             }
-            if (chipboard.quantity.toInt() == 0) isAddButtonAvailable = false
+            if (chipboard.quantity == 0) isAddButtonAvailable = false
         }
         return isAddButtonAvailable
     }
@@ -312,8 +312,8 @@ class AddNewItemViewModel @Inject constructor(
         _state.update { currentState ->
             val currentChipboard = currentState.newOrEditChipboard
 
-            val dimensions = minOf(itemType.columnNames.size, 3).toShort()
-            val directionColumn = minOf(itemType.directionColumn, 3).toShort()
+            val dimensions = minOf(itemType.columnNames.size, 3)
+            val directionColumn = minOf(itemType.directionColumn, 3)
 
             val titles = itemType.columnNames.map { context.getString(it) }
 

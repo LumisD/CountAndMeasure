@@ -167,8 +167,6 @@ class CountViewModel @Inject constructor(
     private fun updateRealSizeForSize(newRealSizeAsString: String, dimension: Int) {
         val newRealSizeAsFloat = newRealSizeAsString.toFloatOrNull() ?: 0f
 
-        var updatedChipboard2: ChipboardUi? = null
-
         viewModelScope.launch {
             _state.update { currentState ->
                 val currentChipboard = currentState.chipboardToFind
@@ -192,12 +190,8 @@ class CountViewModel @Inject constructor(
                     else -> currentChipboard
                 }
                 val allRealsAsString = getAllRealsAsString(updatedChipboard)
-                updatedChipboard2 = updatedChipboard.copy(allRealsAsString = allRealsAsString)
-                currentState.copy(chipboardToFind = updatedChipboard2!!)
-            }
-
-            updatedChipboard2?.let {
-                chipboardRepository.insertChipboard(it.toChipboard())
+                val updatedChipboard2 = updatedChipboard.copy(allRealsAsString = allRealsAsString)
+                currentState.copy(chipboardToFind = updatedChipboard2)
             }
 
         }
@@ -206,13 +200,13 @@ class CountViewModel @Inject constructor(
 
     private fun setChipboardInFindArea(chipboard: ChipboardUi) {
         //logic for chipboard with state = 0 - not found
-        //set in the chipboard isUnderReview = true (also in the list)
+        //set in the chipboard isUnderReview = true (also in the list), isFoundButtonAvailable = true
         //set chipboard in state.chipboardToFind
         //set state.isFoundAreaOpen = true
         //FlashFindItemArea as _effect.send(AddNewItemEffect.FlashFindItemArea)
 
         //logic for chipboard with state = 2 - unknown
-        //set chipboard isUnderReview = false in the list for all chipboards
+        //set chipboard isUnderReview = false in the list for all chipboards, isFoundButtonAvailable = false
         //set chipboard in state.chipboardToFind
         //delete chipboard from db
         // state.isUnknownButtonAvailable = true
@@ -240,12 +234,11 @@ class CountViewModel @Inject constructor(
                 val chipboardsWithUnderReviewOnTop =
                     setItemWhichUnderReviewOnTopOfList(updatedChipboards)
 
-                val isUnknownButtonAvailable = chipboard.state == 2
-
                 currentState.copy(
                     chipboards = chipboardsWithUnderReviewOnTop,
                     chipboardToFind = chipboard.copy(isUnderReview = chipboard.state == 0),
-                    isUnknownButtonAvailable = isUnknownButtonAvailable,
+                    isUnknownButtonAvailable = chipboard.state == 2,
+                    isFoundButtonAvailable = chipboard.state == 0,
                     isFoundAreaOpen = true
                 )
             }
@@ -273,7 +266,7 @@ class CountViewModel @Inject constructor(
 
 
     private fun removeNotFoundChipboardFromFindArea(chipboard: ChipboardUi) {
-        //find chipboard in the list and set chipboard.isUnderReview = false
+        //find chipboard in the list and set chipboard.isUnderReview = false, isFoundButtonAvailable = false
         //set chipboard default values in state.chipboardToFind
         //set state.isUnknownButtonAvailable = false
 
@@ -291,7 +284,8 @@ class CountViewModel @Inject constructor(
             currentState.copy(
                 chipboards = updatedChipboards,
                 chipboardToFind = defaultChipboardToFind,
-                isUnknownButtonAvailable = false
+                isUnknownButtonAvailable = false,
+                isFoundButtonAvailable = false
             )
         }
     }
@@ -375,24 +369,131 @@ class CountViewModel @Inject constructor(
 
 
     private fun setFound() {
-        //save chipboardToFind in db
-        //set chipboardToFind to initial values and characteristics,
-        //also isUnderReview = false (in getChipboardWithInitialValuesAndCharacteristics) to disable Found button
+        //Starting points:
+        //this function can be called only for chipboards with state = 0
+        //qty can be equal or smaller than original qty
+        //chipboardToFind can differ only with real sizes and qty from the chipboard in db with the same id
+
+        //save chipboardToFind in db:
+        //-check if qty of chipboardToFind corresponds the same qty of the chipboard with the same id in db
+        //   -if yes (qty == qty in db) - find in db a chipboard/s (with the same unionId), not the same id, which has the same fields as chipboardToFind (except qty)
+        //                                          and also is found (state = 1)
+        //      -if yes(is found similar chipboard) - increase a quantity of that chipboard by quantity of chipboardToFind, then delete chipboardToFind (by id) from db
+        //      -if no(is not found similar chipboard) - insert chipboardToFind in db as found (state = 1)
+        //   -if no (qty != qty in db) Options:
+        //       qty of chipboardToFind > qty in db - impossible according current logic, but anyway - show a dialog with a message, abort set found
+        //       qty of chipboardToFind < qty in db
+        //          two option: (depending on existing of the chipboard with the same fields as chipboardToFind (except qty))
+        //            - no similar chipboard: create new chipboard with qty of chipboardToFind AND decrease qty of original chipboard with the same id in db
+        //            - similar chipboard: increase a qty of that chipboard by qty of chipboardToFind, then delete chipboardToFind (by id) from db
+
         viewModelScope.launch {
-            _state.value.chipboardToFind.let { chipboardToFind ->
-                chipboardRepository.updateChipboardState(chipboardToFind.id, 1)
+            val chipboardToFind = _state.value.chipboardToFind
 
-                _state.update { currentState ->
-                    val currentChipboard = currentState.chipboardToFind
-                    currentState.copy(
-                        chipboardToFind = getChipboardWithInitialValuesAndCharacteristics(
-                            currentChipboard
-                        ),
-                        isUnknownButtonAvailable = false
-                    )
+            val originalChipboardInDb = chipboardRepository.getChipboardByIdAndUnionId(
+                chipboardToFind.id,
+                chipboardToFind.unionId,
+            )?.toChipboardUi()
 
-                }
+            var isShoudSkipLogic = false
+
+            if (originalChipboardInDb == null) {
+                // This should not happen if the logic is correct,
+                // but save in db chipboardToFind with current id
+                val foundChipboard = chipboardToFind.copy(state = 1).toChipboard()
+                chipboardRepository.insertChipboard(foundChipboard)
+                isShoudSkipLogic = true
             }
+
+            if (!isShoudSkipLogic) {
+                val quantityOriginalInDb = originalChipboardInDb!!.quantity
+                val quantityFromToFind = chipboardToFind.quantity
+                //first to check: unionId, id != chipboardToFind.id, state = 1
+                //second to check: all fields except qty - dimensions, direction, color, colorName
+                //title1, size1, realSize1, title2, size2, realSize2, title3, size3, realSize3
+                val similarFoundChipboard =
+                    chipboardRepository.findSimilarFoundChipboard(chipboardToFind.toChipboard())
+                        ?.toChipboardUi()
+
+                when {
+                    quantityFromToFind > quantityOriginalInDb -> {//impossible according current logic
+                        Log.d("CountViewModel", "setFound quantityFromToFind > quantityOriginalInDbl -> impossible")
+                        _effect.send(
+                            CountEffect.ShowNotExceedingTargetQuantityDialog(
+                                quantityOriginalInDb,
+                                quantityFromToFind
+                            )
+                        )
+                        return@launch
+                    }
+
+                    quantityFromToFind == quantityOriginalInDb -> {
+                        if (similarFoundChipboard != null) {
+                            // Similar found chipboard exist:
+                            chipboardRepository.updateChipboardQuantity(//increase its quantity
+                                similarFoundChipboard.id,
+                                similarFoundChipboard.quantity + quantityFromToFind
+                            )
+                            chipboardRepository.deleteChipboardById(originalChipboardInDb.id)//delete original chipboard
+                        } else {
+                            // No similar found chipboard: insert chipboardToFind in db as found (state = 1)
+                            chipboardRepository.insertChipboard(
+                                chipboardToFind.copy(state = 1).toChipboard()
+                            )
+                        }
+                    }
+
+                    // qty of chipboardToFind < qty in db
+                    quantityFromToFind < quantityOriginalInDb -> {
+                        if (similarFoundChipboard != null) {
+                            // Similar found chipboard exists:
+                            chipboardRepository.updateChipboardQuantity(//increase its quantity
+                                similarFoundChipboard.id,
+                                similarFoundChipboard.quantity + quantityFromToFind
+                            )
+                            chipboardRepository.updateChipboardQuantity(//decrease qty of original chipboard in db
+                                originalChipboardInDb.id,
+                                originalChipboardInDb.quantity - quantityFromToFind
+                            )
+                        } else {
+                            // No similar found chipboard: create new chipboard with qty of chipboardToFind
+                            // AND decrease qty of original chipboard with the same id in db
+                            val newFoundChipboard = chipboardToFind.copy(
+                                id = 0,//to make db create new chipboard
+                                state = 1
+                            ).toChipboard()
+                            chipboardRepository.insertChipboard(newFoundChipboard)
+                            chipboardRepository.updateChipboardQuantity(originalChipboardInDb.id, originalChipboardInDb.quantity - quantityFromToFind)
+                        }
+                    }
+                }
+
+            }
+
+            //finally:
+            //set chipboardToFind to initial values and characteristics,
+            //also isUnderReview = false (in getChipboardWithInitialValuesAndCharacteristics) in the list, also isFoundButtonAvailable = false
+
+            _state.update { currentState ->
+                val currentChipboard = currentState.chipboardToFind
+                val updatedChipboards = currentState.chipboards.map {
+                    if (it.isUnderReview) {
+                        it.copy(isUnderReview = false)
+                    } else {
+                        it
+                    }
+                }
+                currentState.copy(
+                    chipboardToFind = getChipboardWithInitialValuesAndCharacteristics(
+                        currentChipboard
+                    ),
+                    chipboards = updatedChipboards,
+                    isUnknownButtonAvailable = false,
+                    isFoundButtonAvailable = false
+                )
+            }
+
+            _effect.send(CountEffect.FlashFindItemArea)
         }
     }
 
@@ -483,15 +584,16 @@ class CountViewModel @Inject constructor(
 
     private fun handleChangedQuantity(newQuantityAsString: String) {
         //chipboardToFind can have only state 0 or 2 (not found and unknown)
-        //if state == 0 - quantity cannot be bigger than the qty of the chipboard with the same id in the list (isUnderReview = true)
+        //if state == 0 - quantity cannot be bigger than the qty of the chipboard with the same id in the list
         //  so, if that happened - set chipboardToFind.quantity = chipboard.quantity AND show a dialog with a message about not exceeding target quantity
         //if state == 2 - quantity can be any number
         //don't sortByQuantity if a chipbord isUnderReview = true
-        val newQuantityAsShort = newQuantityAsString.toShortOrNull() ?: 0
+        val newQuantityAsInt = newQuantityAsString.toIntOrNull() ?: 0
         val chipboardInFindArea = _state.value.chipboardToFind
         val isUnderReview = chipboardInFindArea.isUnderReview
 
-        if (newQuantityAsShort in setOf<Short>(0, 1) || chipboardInFindArea.state == 2) {//if qty is small OR it's unknown chipboard
+        if (newQuantityAsInt in setOf<Int>(0, 1) || chipboardInFindArea.state == 2
+        ) {//if qty is small OR it's unknown chipboard
             if (!isUnderReview) sortByQuantity(newQuantityAsString)
             updateChipboardQuantity(newQuantityAsString)
             return
@@ -502,7 +604,7 @@ class CountViewModel @Inject constructor(
         viewModelScope.launch {
             val originalQuantity =
                 chipboardRepository.getQuantityOfChipboardByConditions(chipboardId, unionId, 0)
-            if (originalQuantity.toInt() == -1 || newQuantityAsShort.toInt() <= originalQuantity.toInt()) {
+            if (originalQuantity == -1 || newQuantityAsInt <= originalQuantity) {
                 //if qty is not found in db(weird) OR new qty smaller than original qty
                 if (!isUnderReview) sortByQuantity(newQuantityAsString)
                 updateChipboardQuantity(newQuantityAsString)
@@ -513,7 +615,7 @@ class CountViewModel @Inject constructor(
                 _effect.send(
                     CountEffect.ShowNotExceedingTargetQuantityDialog(
                         originalQuantity,
-                        newQuantityAsShort
+                        newQuantityAsInt
                     )
                 )
             }
@@ -620,19 +722,20 @@ class CountViewModel @Inject constructor(
     }
 
     private fun updateChipboardQuantity(newQuantityAsString: String) {
-        val newQuantityAsShort = newQuantityAsString.toShortOrNull() ?: 0
+        val newQuantityAsInt = newQuantityAsString.toIntOrNull() ?: 0
         _state.update { currentState ->
             //if (currentState.chipboardToFind.state != 2) return@update currentState
             val updatedChipboard = currentState.chipboardToFind.copy(
                 quantityAsString = newQuantityAsString,
-                quantity = newQuantityAsShort
+                quantity = newQuantityAsInt
             )
             val updatedChipboard2 =
                 updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
             val setUnknownButnAvailbl = setUnknownButtonAvailability(updatedChipboard)
             currentState.copy(
                 chipboardToFind = updatedChipboard2,
-                isUnknownButtonAvailable = setUnknownButnAvailbl
+                isUnknownButtonAvailable = setUnknownButnAvailbl,
+                isFoundButtonAvailable = newQuantityAsInt > 0
             )
         }
     }
@@ -711,7 +814,7 @@ class CountViewModel @Inject constructor(
         //↑12.5 x 54.0 - 3
         val builder = StringBuilder()
         for (i in 1..chipboard.dimensions) {
-            if (chipboard.direction.toInt() == i) {
+            if (chipboard.direction == i) {
                 builder.append("↑")
             }
             when (i) {
@@ -737,7 +840,7 @@ class CountViewModel @Inject constructor(
         var isAllRealsEmpty = true
 
         for (i in 1..chipboard.dimensions) {
-            if (chipboard.direction.toInt() == i) {
+            if (chipboard.direction == i) {
                 builder.append(" ")
             }
 
@@ -797,7 +900,7 @@ class CountViewModel @Inject constructor(
                     if (chipboard.size3 == 0f) isUnknownButtonAvailable = false
                 }
             }
-            if (chipboard.quantity.toInt() == 0) isUnknownButtonAvailable = false
+            if (chipboard.quantity == 0) isUnknownButtonAvailable = false
         }
         return isUnknownButtonAvailable
     }

@@ -6,7 +6,7 @@ sealed class DialogType {
     data class SelectNotFoundToFindArea(val chipboard: ChipboardUi) : DialogType()
     data class RemoveNotFoundFromFindArea(val chipboard: ChipboardUi) : DialogType()
     data class SelectUnknownToFindArea(val chipboard: ChipboardUi) : DialogType()
-    data class NotExceedingTargetQuantity(val targetQuantity: Short, val enteredQuantity: Short) : DialogType()
+    data class NotExceedingTargetQuantity(val targetQuantity: Int, val enteredQuantity: Int) : DialogType()
     data class WhatIs(val questionType: QuestionType) : DialogType()
     data object FieldDisabled : DialogType()
     data object None : DialogType()
