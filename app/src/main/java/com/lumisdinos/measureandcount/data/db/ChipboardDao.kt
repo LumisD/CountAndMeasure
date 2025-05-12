@@ -26,6 +26,9 @@ interface ChipboardDao {
     @Query("SELECT COUNT(*) FROM chipboard WHERE union_id = :unionId")
     suspend fun getChipboardsCountByUnionId(unionId: Int): Int
 
+    @Query("SELECT quantity FROM chipboard WHERE id = :id AND union_id = :unionId AND state = :state")
+    suspend fun getQuantityOfChipboardByConditions(id: Int, unionId: Int, state : Int): Short?
+
     @Query("UPDATE chipboard SET state = :newState WHERE id = :id")
     suspend fun updateChipboardState(id: Int, newState: Int)
 

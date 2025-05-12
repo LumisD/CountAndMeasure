@@ -38,6 +38,7 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
 
     override suspend fun deleteUnionOfChipboards(unionId: Int) {
         unionOfChipboardsDao.deleteUnionOfChipboardsById(unionId)
+
     }
 
     override suspend fun insertChipboard(chipboard: Chipboard) {
@@ -50,6 +51,13 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
 
     override suspend fun getChipboardsCountByUnionId(unionId: Int): Int {
         return chipboardDao.getChipboardsCountByUnionId(unionId)
+    }
+
+    override suspend fun getQuantityOfChipboardByConditions(id: Int, unionId: Int, state: Int): Short {
+        // Call the DAO method that returns Short?
+        val quantityFromDb = chipboardDao.getQuantityOfChipboardByConditions(id, unionId, state)
+        // Check if the result is null and return -1 if it is, otherwise return the quantity
+        return quantityFromDb ?: -1
     }
 
     override suspend fun deleteChipboardById(chipboardId: Int) {

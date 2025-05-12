@@ -18,11 +18,14 @@ interface MeasureAndCountRepository {
 
     suspend fun deleteUnionOfChipboards(unionId: Int)
 
+
     suspend fun insertChipboard(chipboard: Chipboard)
 
     suspend fun updateChipboardState(id: Int, newState: Int)
 
     suspend fun getChipboardsCountByUnionId(unionId: Int): Int
+
+    suspend fun getQuantityOfChipboardByConditions(id: Int, unionId: Int, state: Int): Short
 
     suspend fun deleteChipboardById(chipboardId: Int)
 
