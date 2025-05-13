@@ -17,5 +17,6 @@ sealed interface CountIntent {
     data class ActionConfirmed(val confirmationType: ConfirmationType) : CountIntent
     data object FieldDisabled : CountIntent
     data object ToggleFindAreaVisibility : CountIntent
+    data object Back : CountIntent
     data object SetListDone: CountIntent
 }

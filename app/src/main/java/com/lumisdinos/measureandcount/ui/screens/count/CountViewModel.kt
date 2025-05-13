@@ -1,6 +1,5 @@
 package com.lumisdinos.measureandcount.ui.screens.count
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +11,6 @@ import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.screens.count.model.toChipboard
 import com.lumisdinos.measureandcount.ui.screens.count.model.toChipboardUi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,8 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CountViewModel @Inject constructor(
-    private val chipboardRepository: MeasureAndCountRepository,
-    @ApplicationContext private val context: Context
+    private val chipboardRepository: MeasureAndCountRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CountState())
@@ -91,6 +88,12 @@ class CountViewModel @Inject constructor(
 
             CountIntent.FieldDisabled -> viewModelScope.launch {
                 _effect.send(CountEffect.ShowFieldDisabled)
+            }
+
+            CountIntent.Back -> {
+                viewModelScope.launch {
+                    _effect.send(CountEffect.NavigateBack)
+                }
             }
         }
     }
@@ -416,7 +419,6 @@ class CountViewModel @Inject constructor(
 
                 when {
                     quantityFromToFind > quantityOriginalInDb -> {//impossible according current logic
-                        Log.d("CountViewModel", "setFound quantityFromToFind > quantityOriginalInDbl -> impossible")
                         _effect.send(
                             CountEffect.ShowNotExceedingTargetQuantityDialog(
                                 quantityOriginalInDb,

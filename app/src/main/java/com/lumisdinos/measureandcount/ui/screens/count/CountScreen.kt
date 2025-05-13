@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.common.AddCountColorField
 import com.lumisdinos.measureandcount.ui.common.ChipboardAsStringField
@@ -77,6 +79,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun CountScreen(
+    navController: NavController,
     snackbarHostState: SnackbarHostState,
     unionId: Int? = null,
     viewModel: CountViewModel = hiltViewModel()
@@ -91,22 +94,13 @@ fun CountScreen(
     val dialogState = remember { mutableStateOf<DialogType>(DialogType.None) }
     val shouldFlash = remember { mutableStateOf(false) }
 
-    CollectEffects(dialogState, shouldFlash, viewModel, snackbarHostState)
+    CollectEffects(navController, dialogState, shouldFlash, viewModel, snackbarHostState)
     ChooseDialogType(dialogState, viewModel::processIntent)
 
     //Actual screen
     if (state.isNoLists) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.press_new_screen_create_chipboard_sheet_list),
-                textAlign = TextAlign.Center
-            )
-        }
+        EmptyList()
     } else {
-        Log.d("CountScreen", "real1AsString: ${state.chipboardToFind.real1AsString}")
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -133,7 +127,7 @@ fun FindArea(
     val animatedColor by animateColorAsState(
         targetValue = if (shouldFlash.value) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent,
         animationSpec = tween(durationMillis = 600),
-        label = "backgroundColor"
+        label = stringResource(R.string.background_color)
     )
 
     LaunchedEffect(key1 = shouldFlash.value) {
@@ -233,10 +227,6 @@ fun WidthLengthFields(
             }
             val sizeOfDim = getSizeForIndex(i, chipboard)
             val realSizeOfDim = getRealSizeForIndex(i, chipboard)
-            Log.d(
-                "CountScreen",
-                "WidthLengthFields name: $name, sizeOfDim: $sizeOfDim, realSizeOfDim: $realSizeOfDim, i: $i, real1AsString: ${chipboard.real1AsString}"
-            )
 
             Row(
                 verticalAlignment = Alignment.Bottom
@@ -421,19 +411,33 @@ fun IconAtTheEnd(state: Int) {
     when (state) {
         1 -> Icon(
             Icons.Filled.Check,
-            contentDescription = "Check",
+            contentDescription = stringResource(R.string.check),
             tint = PrimaryBlue,
             modifier = Modifier.scale(1.3f)
         )
 
         2 -> Icon(
             Icons.Filled.ErrorOutline,
-            contentDescription = "Unknown",
+            contentDescription = stringResource(R.string.unknown),
             tint = PrimaryBlue,
             modifier = Modifier.scale(1.3f)
         )
 
         else -> Spacer(modifier = Modifier.size(24.dp))
+    }
+}
+
+
+@Composable
+fun EmptyList() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.press_new_screen_create_chipboard_sheet_list),
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -445,6 +449,17 @@ fun TopBar(unionOfChipboards: UnionOfChipboardsUI, processIntent: (CountIntent) 
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        IconButton(
+            onClick = { processIntent(CountIntent.Back) },
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back),
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = unionOfChipboards.title,
             style = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp),
@@ -462,9 +477,9 @@ fun TopBar(unionOfChipboards: UnionOfChipboardsUI, processIntent: (CountIntent) 
                 Icons.Filled.Done
             }
             val contentDescription = if (unionOfChipboards.isFinished) {
-                "Undone"
+                stringResource(R.string.undone)
             } else {
-                "Done"
+                stringResource(R.string.done)
             }
 
             Icon(
@@ -482,6 +497,7 @@ fun TopBar(unionOfChipboards: UnionOfChipboardsUI, processIntent: (CountIntent) 
 
 @Composable
 fun CollectEffects(
+    navController: NavController,
     dialogState: MutableState<DialogType>,
     shouldFlash: MutableState<Boolean>,
     viewModel: CountViewModel,
@@ -508,7 +524,10 @@ fun CollectEffects(
                 }
 
                 is CountEffect.ShowNotExceedingTargetQuantityDialog -> {
-                    dialogState.value = DialogType.NotExceedingTargetQuantity(effect.targetQuantity, effect.enteredQuantity)
+                    dialogState.value = DialogType.NotExceedingTargetQuantity(
+                        effect.targetQuantity,
+                        effect.enteredQuantity
+                    )
                 }
 
                 is CountEffect.ShowWhatIsDialog -> {
@@ -525,6 +544,10 @@ fun CollectEffects(
 
                 CountEffect.ShowFieldDisabled -> {
                     dialogState.value = DialogType.FieldDisabled
+                }
+
+                CountEffect.NavigateBack -> {
+                    navController.popBackStack()
                 }
             }
         }
