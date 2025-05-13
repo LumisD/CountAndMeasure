@@ -3,7 +3,9 @@ package com.lumisdinos.measureandcount.ui.screens.count
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
+import com.lumisdinos.measureandcount.defaultUnionId
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ConfirmationType
@@ -102,7 +104,7 @@ class CountViewModel @Inject constructor(
     private fun setUnionOfChipboardsAndRelatedChipboards(unionId: Int?) {
         isInitialChipboardSetForCurrentUnion = false
         viewModelScope.launch {
-            if (unionId == null) {
+            if (unionId == null || unionId == defaultUnionId) {
                 val unionOfChip = chipboardRepository.getLastUnFinishedUnionOfChipboards()
                     ?.toUnionOfChipboardsUI()
                 getChipboards(unionOfChip)
@@ -117,13 +119,13 @@ class CountViewModel @Inject constructor(
 
     private suspend fun getChipboards(unionOfChip: UnionOfChipboardsUI?) {
         if (unionOfChip == null) {
-            _state.update { it.copy(isNoLists = true) }
+            _state.update { it.copy(messageForEmptyList = R.string.press_new_screen_create_chipboard_sheet_list) }
             return
         }
         _state.update {
             it.copy(
                 unionOfChipboards = unionOfChip,
-                isNoLists = false
+                messageForEmptyList = null
             )
         }
         chipboardRepository.getChipboardsByUnionIdFlow(unionOfChip.id)
@@ -149,7 +151,7 @@ class CountViewModel @Inject constructor(
 
                 _state.update {
                     val updatedState = it.copy(
-                        isNoLists = updatedChipboards.isEmpty(),
+                        messageForEmptyList = if (updatedChipboards.isEmpty()) R.string.this_list_not_contains_any_chipboards else null,
                         chipboards = updatedChipboards,
                     )
                     if (!isInitialChipboardSetForCurrentUnion) {
@@ -464,7 +466,10 @@ class CountViewModel @Inject constructor(
                                 state = 1
                             ).toChipboard()
                             chipboardRepository.insertChipboard(newFoundChipboard)
-                            chipboardRepository.updateChipboardQuantity(originalChipboardInDb.id, originalChipboardInDb.quantity - quantityFromToFind)
+                            chipboardRepository.updateChipboardQuantity(
+                                originalChipboardInDb.id,
+                                originalChipboardInDb.quantity - quantityFromToFind
+                            )
                         }
                     }
                 }

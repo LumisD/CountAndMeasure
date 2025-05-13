@@ -98,8 +98,8 @@ fun CountScreen(
     ChooseDialogType(dialogState, viewModel::processIntent)
 
     //Actual screen
-    if (state.isNoLists) {
-        EmptyList()
+    if (state.messageForEmptyList != null) {
+        EmptyList(state.messageForEmptyList!!)
     } else {
         Column(
             modifier = Modifier
@@ -429,13 +429,13 @@ fun IconAtTheEnd(state: Int) {
 
 
 @Composable
-fun EmptyList() {
+fun EmptyList(messageForEmptyList: Int) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(R.string.press_new_screen_create_chipboard_sheet_list),
+            text = stringResource(messageForEmptyList),
             textAlign = TextAlign.Center
         )
     }

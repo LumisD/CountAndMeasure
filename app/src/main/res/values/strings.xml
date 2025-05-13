@@ -42,6 +42,7 @@
     <string name="what_is_unknown">If you have an item with unknown sizes press Unknown to mark the item as unknown</string>
     <string name="what_is_difference">If some size of the item differs from that indicated in the item by some amount, write the real size in this field</string>
     <string name="press_new_screen_create_chipboard_sheet_list">Press New screen to create a Chipboard Sheet List</string>
+    <string name="this_list_not_contains_any_chipboards">This list does not contain any chipboards</string>
     <string name="not_exceeding_target_quantity_explanation">The quantity (%1$s) cannot exceed what is written (%2$s)</string>
     <string name="are_you_sure_delete">Are you sure you want to delete\n%1$s (%2$s)?</string>
     <string name="are_you_sure_edit">Are you sure you want to edit\n%1$s (%2$s)?\n(The item will be deleted from the list)</string>
