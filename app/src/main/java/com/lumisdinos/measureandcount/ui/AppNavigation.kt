@@ -29,7 +29,7 @@ import androidx.navigation.navArgument
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.screens.count.CountScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
-import com.lumisdinos.measureandcount.ui.screens.ListsScreen
+import com.lumisdinos.measureandcount.ui.screens.lists.ListsScreen
 import com.lumisdinos.measureandcount.ui.theme.MainBg
 
 interface BottomBarDestination {
@@ -103,10 +103,11 @@ fun Navigation(
     modifier: Modifier
 ) {
     NavHost(navController, startDestination = Screen.New.baseRoute, modifier = modifier) {
-        composable(Screen.Lists.baseRoute) { ListsScreen() }
+        composable(Screen.Lists.baseRoute) { ListsScreen(navController, snackbarHostState) }
 
         composable(Screen.Count.baseRoute) {
             CountScreen(
+                navController,
                 snackbarHostState,
                 unionId = null
             )
@@ -117,7 +118,7 @@ fun Navigation(
             arguments = listOf(navArgument("unionId") { type = NavType.IntType })
         ) { backStackEntry ->
             val unionId = backStackEntry.arguments?.getInt("unionId")
-            CountScreen(snackbarHostState, unionId)
+            CountScreen(navController, snackbarHostState, unionId)
         }
 
         composable(Screen.New.baseRoute) {
