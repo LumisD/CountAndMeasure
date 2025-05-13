@@ -45,6 +45,11 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
 
     }
 
+    override fun getAllUnionsFlow(): Flow<List<UnionOfChipboards>> {
+        return unionOfChipboardsDao.getAllUnionsFlow()
+    }
+
+
 
     override suspend fun insertChipboard(chipboard: Chipboard) {
         chipboardDao.insertChipboard(chipboard)

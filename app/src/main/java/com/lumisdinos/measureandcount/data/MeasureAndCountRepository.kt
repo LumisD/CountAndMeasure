@@ -18,6 +18,8 @@ interface MeasureAndCountRepository {
 
     suspend fun deleteUnionOfChipboards(unionId: Int)
 
+    fun getAllUnionsFlow(): Flow<List<UnionOfChipboards>>
+
 
     suspend fun insertChipboard(chipboard: Chipboard)
 
