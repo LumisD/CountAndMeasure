@@ -166,8 +166,7 @@ fun CollectEffects(
                 }
 
                 is ListsEffects.NavigateToCountScreen -> {
-                    navController.navigate(Screen.Count.routeWithArgs(effect.unionId)) {
-                    }
+                    navController.navigate(Screen.Count.routeWithArgs(effect.unionId)) { }
                 }
             }
         }

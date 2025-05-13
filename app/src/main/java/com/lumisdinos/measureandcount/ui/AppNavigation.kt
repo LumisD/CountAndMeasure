@@ -27,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lumisdinos.measureandcount.R
+import com.lumisdinos.measureandcount.defaultUnionId
 import com.lumisdinos.measureandcount.ui.screens.count.CountScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
 import com.lumisdinos.measureandcount.ui.screens.lists.ListsScreen
@@ -45,8 +46,8 @@ sealed class Screen(val route: String) {
         override val icon = R.drawable.ic_old
     }
 
-    data object Count : Screen("count"), BottomBarDestination {
-        override val baseRoute = "count"
+    data object Count : Screen("count/{unionId}"), BottomBarDestination {
+        override val baseRoute = "count/{unionId}"
         override val title = "Count"
         override val icon = R.drawable.ic_current
 
@@ -86,8 +87,8 @@ fun AppNavigation() {
         containerColor = MainBg,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            if (bottomBarScreens.any { it.baseRoute == currentRoute }) {
-                BottomNavigationBar(navController, currentRoute)
+            if (bottomBarScreens.any { it.baseRoute.substringBefore("/") == currentRoute }) {
+                BottomNavigationBar(navController, navBackStackEntry?.destination?.route)
             }
         }
     ) { innerPadding ->
@@ -105,16 +106,8 @@ fun Navigation(
     NavHost(navController, startDestination = Screen.New.baseRoute, modifier = modifier) {
         composable(Screen.Lists.baseRoute) { ListsScreen(navController, snackbarHostState) }
 
-        composable(Screen.Count.baseRoute) {
-            CountScreen(
-                navController,
-                snackbarHostState,
-                unionId = null
-            )
-        }
-
         composable(
-            route = "count/{unionId}",
+            route = Screen.Count.baseRoute,
             arguments = listOf(navArgument("unionId") { type = NavType.IntType })
         ) { backStackEntry ->
             val unionId = backStackEntry.arguments?.getInt("unionId")
@@ -159,8 +152,13 @@ fun BottomNavigationBar(navController: NavHostController, currentRoute: String?)
                 label = { Text(screen.title) },
                 selected = screen.baseRoute == currentRoute,
                 onClick = {
-                    navController.navigate(screen.baseRoute) {
+                    val routeToNavigate = when (screen) {
+                        is Screen.Count -> Screen.Count.routeWithArgs(defaultUnionId)
+                        else -> screen.baseRoute
+                    }
+                    navController.navigate(routeToNavigate) {
                         popUpTo(navController.graph.findStartDestination().id) {
+                            inclusive = true
                             saveState = true
                         }
                         launchSingleTop = true
