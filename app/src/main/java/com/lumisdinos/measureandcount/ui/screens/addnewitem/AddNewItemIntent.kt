@@ -15,5 +15,6 @@ sealed interface AddNewItemIntent {
     data class DeleteChipboardConfirmed(val chipboardId: Int) : AddNewItemIntent
     data object AddChipboardToDb : AddNewItemIntent
     data object ToggleAddAreaVisibility : AddNewItemIntent
+    data object HandleScreenExit : AddNewItemIntent
     data object Back : AddNewItemIntent
 }

@@ -47,10 +47,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.common.AddItemColorField
 import com.lumisdinos.measureandcount.ui.common.ChipboardAsStringField
@@ -79,8 +82,20 @@ fun AddNewItemScreen(
     //val origin = originString?.let { AddNewItemOrigin.valueOf(it) }
     Log.d("AddNewItemScreen", "ItemType: $itemType")
 
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     LaunchedEffect(key1 = itemType) {
         viewModel.processIntent(AddNewItemIntent.SetItemType(itemType))
+    }
+    DisposableEffect(lifecycleOwner.lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                viewModel.processIntent(AddNewItemIntent.HandleScreenExit)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     val state by viewModel.state.collectAsState()
@@ -117,7 +132,7 @@ fun AddNewItemArea(
     val animatedColor by animateColorAsState(
         targetValue = if (shouldFlash.value) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent,
         animationSpec = tween(durationMillis = 600),
-        label = "backgroundColor"
+        label = stringResource(R.string.background_color)
     )
 
     LaunchedEffect(key1 = shouldFlash.value) {
@@ -270,7 +285,7 @@ fun ListOfNewItems(
                 }) {
                     Icon(
                         Icons.Filled.Close,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(R.string.delete),
                         modifier = Modifier.scale(1.3f)
                     )
                 }
@@ -321,7 +336,7 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.back),
                 modifier = Modifier.size(32.dp)
             )
         }

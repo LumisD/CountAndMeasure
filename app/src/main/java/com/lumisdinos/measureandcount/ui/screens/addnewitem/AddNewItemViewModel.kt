@@ -139,6 +139,8 @@ class AddNewItemViewModel @Inject constructor(
             is AddNewItemIntent.EditChipboardConfirmed -> editChipboardInAddAreaAndRemoveFromDb(
                 intent.chipboard
             )
+
+            AddNewItemIntent.HandleScreenExit -> handleScreenExit()
         }
     }
 
@@ -333,8 +335,8 @@ class AddNewItemViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
+
+    private fun handleScreenExit() {
         viewModelScope.launch {
             val unionId = state.value.newOrEditChipboard.unionId
             if (chipboardRepository.getChipboardsCountByUnionId(unionId) == 0) {
