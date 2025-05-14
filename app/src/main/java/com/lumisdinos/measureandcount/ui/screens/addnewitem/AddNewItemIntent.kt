@@ -4,7 +4,7 @@ import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.model.NewScreenType
 
 sealed interface AddNewItemIntent {
-    data class SetItemType(val itemType: NewScreenType) : AddNewItemIntent
+    data class SetItemType(val itemType: NewScreenType?) : AddNewItemIntent
     data class TitleOfUnionChanged(val newTitle: String) : AddNewItemIntent
     data class SizeChanged(val newSizeAsString: String, val dimension: Int) : AddNewItemIntent
     data class QuantityChanged(val newQuantityAsString: String) : AddNewItemIntent

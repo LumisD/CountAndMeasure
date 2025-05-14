@@ -77,7 +77,7 @@ fun AddNewItemScreen(
 ) {
     val navigationArg =
         navController.currentBackStackEntryAsState().value?.arguments?.getString("itemType")
-    val itemType = navigationArg?.deserializeNewScreenType() ?: defaultScreenTypes.first()
+    val itemType = navigationArg?.deserializeNewScreenType() //?: defaultScreenTypes.first()
     Log.d("AddNewItemScreen", "ItemType: $itemType")
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -113,7 +113,7 @@ fun AddNewItemScreen(
     ) {
         TopBar(state.unionOfChipboards.title, viewModel::processIntent)
         AnimatedVisibility(visible = state.isAddAreaOpen) {
-            AddNewItemArea(itemType, state, shouldFlash, viewModel)
+            if (itemType != null) AddNewItemArea(itemType, state, shouldFlash, viewModel)
         }
         ExpandHideNewItemField(state.isAddAreaOpen, viewModel::processIntent)
         ListOfNewItems(state.createdChipboards, viewModel::processIntent)

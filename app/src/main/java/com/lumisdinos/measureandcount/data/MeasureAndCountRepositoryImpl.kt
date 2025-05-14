@@ -32,6 +32,15 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         unionOfChipboardsDao.updateUnionOfChipboardsTitle(unionId, newTitle, updatedAt)
     }
 
+    override suspend fun updateUnionCharacteristics(
+        unionId: Int,
+        dimensions: Int,
+        direction: Int,
+        hasColor: Boolean
+    ) {
+        unionOfChipboardsDao.updateUnionCharacteristics(unionId, dimensions, direction, hasColor)
+    }
+
     override suspend fun setUnionOfChipboardsIsFinished(
         unionId: Int,
         isFinished: Boolean,

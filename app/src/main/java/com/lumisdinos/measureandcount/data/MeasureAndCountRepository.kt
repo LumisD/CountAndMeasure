@@ -12,6 +12,13 @@ interface MeasureAndCountRepository {
 
     suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long)
 
+    suspend fun updateUnionCharacteristics(
+        unionId: Int,
+        dimensions: Int,
+        direction: Int,
+        hasColor: Boolean
+    )
+
     suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)
 
     suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards?

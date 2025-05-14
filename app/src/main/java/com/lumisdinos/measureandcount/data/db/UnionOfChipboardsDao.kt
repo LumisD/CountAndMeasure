@@ -13,14 +13,22 @@ interface UnionOfChipboardsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUnionOfChipboards(unionOfChipboards: UnionOfChipboards): Long
 
-    @Query("SELECT * FROM union_of_chipboards WHERE id = :unionId")
-    suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards?
-
     @Query("UPDATE union_of_chipboards SET title = :newTitle, updated_at = :updatedAt WHERE id = :unionId")
     suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long)
 
+    @Query("UPDATE union_of_chipboards SET dimensions = :dimensions, direction = :direction, has_color = :hasColor WHERE id = :unionId")
+    suspend fun updateUnionCharacteristics(
+        unionId: Int,
+        dimensions: Int,
+        direction: Int,
+        hasColor: Boolean
+    )
+
     @Query("UPDATE union_of_chipboards SET is_finished = :isFinished, updated_at = :updatedAt WHERE id = :unionId")
     suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)
+
+    @Query("SELECT * FROM union_of_chipboards WHERE id = :unionId")
+    suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards?
 
     @Query("SELECT * FROM union_of_chipboards")
     fun getAllUnionsFlow(): Flow<List<UnionOfChipboards>>
