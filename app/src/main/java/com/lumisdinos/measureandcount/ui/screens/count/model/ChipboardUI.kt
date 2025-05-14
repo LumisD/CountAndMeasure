@@ -6,8 +6,6 @@ data class ChipboardUi(
     val id: Int = 0,
     val unionId: Int = 0,
     val state: Int = 2,//0 - not found, 1 - found, 2 - unknown
-    val dimensions: Int = 1, // Number of dimensions, starts from 1
-    val direction: Int = 0, // 0 - no direction, 1 to n - direction column
     val quantity: Int = 1,
     val colorName: String = "",
     val color: Int = 0,
@@ -32,8 +30,8 @@ data class ChipboardUi(
     val allRealsAsString: String = "",
 
     val isUnderReview: Boolean = false//if true - enable: Found button, "real size" editors
-                                      // AND disable: Unknown button,size editors, quantity editor, color editor
-                                      //if false - all opposite
+    // AND disable: Unknown button,size editors, quantity editor, color editor
+    //if false - all opposite
 )
 
 fun ChipboardUi.toChipboard(): Chipboard {
@@ -41,8 +39,6 @@ fun ChipboardUi.toChipboard(): Chipboard {
         id = id,
         unionId = unionId,
         state = state,
-        dimensions = dimensions,
-        direction = direction,
         quantity = quantity,
         colorName = colorName,
         color = color,
@@ -63,8 +59,6 @@ fun Chipboard.toChipboardUi(): ChipboardUi {
         id = id,
         unionId = unionId,
         state = state,
-        dimensions = dimensions,
-        direction = direction,
         quantity = quantity,
         colorName = colorName,
         color = color,
@@ -77,6 +71,5 @@ fun Chipboard.toChipboardUi(): ChipboardUi {
         title3 = title3,
         size3 = size3,
         realSize3 = realSize3
-
     )
 }

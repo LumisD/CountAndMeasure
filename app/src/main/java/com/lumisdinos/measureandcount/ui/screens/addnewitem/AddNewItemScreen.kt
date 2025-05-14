@@ -78,8 +78,6 @@ fun AddNewItemScreen(
     val navigationArg =
         navController.currentBackStackEntryAsState().value?.arguments?.getString("itemType")
     val itemType = navigationArg?.deserializeNewScreenType() ?: defaultScreenTypes.first()
-    //val originString = navBackStackEntry?.arguments?.getString("origin")
-    //val origin = originString?.let { AddNewItemOrigin.valueOf(it) }
     Log.d("AddNewItemScreen", "ItemType: $itemType")
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -113,7 +111,7 @@ fun AddNewItemScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        TopBar(state.titleOfUnion, viewModel::processIntent)
+        TopBar(state.unionOfChipboards.title, viewModel::processIntent)
         AnimatedVisibility(visible = state.isAddAreaOpen) {
             AddNewItemArea(itemType, state, shouldFlash, viewModel)
         }
@@ -196,14 +194,12 @@ fun WidthLengthFields(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(top = 8.dp)
-                //.background(Color.Gray)
         ) {
             if (type.directionColumn == index + 1) {
                 UpArrowIcon()
             } else {
                 Spacer(modifier = Modifier.width(24.dp))
             }
-            //Text(text = stringResource(nameResId))
             val sizeOfDim = getSizeForIndex(index, chipboard)
             NumberEditor(nameResId, sizeOfDim, index + 1, processIntent)
         }
@@ -216,14 +212,12 @@ fun QuantityField(quantity: String, processIntent: (AddNewItemIntent) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        //Text(text = stringResource(R.string.quantity))
         Spacer(modifier = Modifier.width(24.dp))
         QuantityNewItemOutlinedEditor(
             label = stringResource(R.string.quantity),
             value = quantity,
             onQuantityChanged = processIntent
         )
-        //QuantityEditor(R.string.quantity, quantity, processIntent)
     }
 }
 
@@ -385,19 +379,6 @@ fun CollectEffects(
                 }
 
                 is AddNewItemEffect.NavigateBack -> {
-//            when (origin) {
-//                AddNewItemOrigin.NEW_SCREEN -> {
-//                    navController.popBackStack(Screen.New.route, inclusive = false)
-//                }
-//
-//                AddNewItemOrigin.CREATE_OWN_MEASURE -> {
-//                    navController.popBackStack(Screen.CreateOwnMeasure.route, inclusive = false)
-//                }
-//
-//                null -> {
-//                    navController.popBackStack()
-//                }
-//            }
                     navController.popBackStack()
                 }
 

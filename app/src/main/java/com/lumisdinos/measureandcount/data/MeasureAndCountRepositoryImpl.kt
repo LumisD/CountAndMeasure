@@ -16,6 +16,14 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         return unionOfChipboardsDao.insertUnionOfChipboards(unionOfChipboards).toInt()
     }
 
+    override suspend fun insertAndGetUnionOfChipboards(union: UnionOfChipboards): UnionOfChipboards? {
+        val unionId = unionOfChipboardsDao.insertUnionOfChipboards(union)
+        if (unionId > 0) {
+            return unionOfChipboardsDao.getUnionOfChipboardsById(unionId.toInt())
+        }
+        return null
+    }
+
     override suspend fun updateUnionOfChipboardsTitle(
         unionId: Int,
         newTitle: String,
@@ -67,8 +75,6 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         return chipboardDao.findSimilarFoundChipboard(
             unionId = chipboard.unionId,
             chipboardId = chipboard.id,
-            dimensions = chipboard.dimensions,
-            direction = chipboard.direction,
             color = chipboard.color,
             colorName = chipboard.colorName,
             title1 = chipboard.title1,

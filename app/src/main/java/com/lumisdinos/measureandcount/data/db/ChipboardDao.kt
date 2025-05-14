@@ -29,8 +29,6 @@ interface ChipboardDao {
         WHERE union_id = :unionId
         AND state = 1
         AND id != :chipboardId
-        AND dimensions = :dimensions
-        AND direction = :direction
         AND color = :color
         AND colorName = :colorName
         AND title1 = :title1
@@ -48,8 +46,6 @@ interface ChipboardDao {
     suspend fun findSimilarFoundChipboard(
         unionId: Int,
         chipboardId: Int,
-        dimensions: Int,
-        direction: Int,
         color: Int,
         colorName: String,
         title1: String,

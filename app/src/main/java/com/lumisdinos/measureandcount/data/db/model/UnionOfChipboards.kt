@@ -11,6 +11,10 @@ data class UnionOfChipboards(
     @ColumnInfo(name = "id")
     val id: Int,
     val title: String,
+    val dimensions: Int,//qty of dimensions starts from 1
+    val direction: Int,//0 - no direction, 1 to n - direction column
+    @ColumnInfo(name = "has_color")
+    val hasColor: Boolean,
     @ColumnInfo(name = "is_finished")
     val isFinished: Boolean,
     @ColumnInfo(name = "created_at")

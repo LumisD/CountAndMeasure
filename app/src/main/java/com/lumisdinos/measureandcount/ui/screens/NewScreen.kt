@@ -78,19 +78,13 @@ fun ListItem(item: NewScreenType, navController: NavController, isLast: Boolean 
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-//                if (isLast) {
-//                    navController.navigate(Screen.CreateOwnMeasure)
-//                } else {
                 val serializedItem = item.serialize()
                 Log.d("NewScreen", "serializedItem: $serializedItem")
                 navController.navigate(
                     Screen.AddNewItem.routeWithArgs(
                         itemType = serializedItem,
-                        //origin = AddNewItemOrigin.NEW_SCREEN
                     )
                 )
-                //}
-
             }
             .padding(top = 16.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -107,10 +101,6 @@ fun MiddleContent(type: NewScreenType) {
     val hasColor = type.hasColor
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-//        if (columnNames.isEmpty()) {
-//            TextC(stringResource(R.string.create_own_measure))
-//            return
-//        }
         columnNames.forEachIndexed { index, name ->
             if (directionColumn == index + 1) {
                 UpArrowIcon()

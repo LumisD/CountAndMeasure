@@ -7,8 +7,6 @@ import com.lumisdinos.measureandcount.data.db.model.Chipboard
 data class ChipboardUi(
     val id: Int = 0,
     val unionId: Int = 0,
-    val dimensions: Int = 1, // Number of dimensions, starts from 1
-    val direction: Int = 0, // 0 - no direction, 1 to n - direction column
     val quantity: Int = 1,
     val colorName: String = "White",
     val color: Int = Color.White.toArgb(),
@@ -30,8 +28,6 @@ fun ChipboardUi.toChipboard(): Chipboard {
     return Chipboard(
         id = id,
         unionId = unionId,
-        dimensions = dimensions,
-        direction = direction,
         quantity = quantity,
         colorName = colorName,
         color = color,
@@ -48,10 +44,8 @@ fun Chipboard.toChipboardUi(): ChipboardUi {
     return ChipboardUi(
         id = id,
         unionId = unionId,
-        dimensions = dimensions,
         colorName = colorName,
         color = color,
-        direction = direction,
         quantity = quantity,
         title1 = title1,
         size1 = size1,

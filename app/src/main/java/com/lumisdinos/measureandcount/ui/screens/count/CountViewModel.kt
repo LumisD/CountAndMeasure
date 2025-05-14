@@ -818,9 +818,11 @@ class CountViewModel @Inject constructor(
 
     private fun getChipboardAsString(chipboard: ChipboardUi): String {
         //↑12.5 x 54.0 - 3
+        val dimensions = _state.value.unionOfChipboards.dimensions
+        val direction = _state.value.unionOfChipboards.direction
         val builder = StringBuilder()
-        for (i in 1..chipboard.dimensions) {
-            if (chipboard.direction == i) {
+        for (i in 1..dimensions) {
+            if (direction == i) {
                 builder.append("↑")
             }
             when (i) {
@@ -828,7 +830,7 @@ class CountViewModel @Inject constructor(
                 2 -> builder.append(chipboard.size2)
                 3 -> builder.append(chipboard.size3)
             }
-            if (i < chipboard.dimensions) {
+            if (i < dimensions) {
                 builder.append(" x ")
             }
         }
@@ -842,11 +844,13 @@ class CountViewModel @Inject constructor(
         // 12.7   53.8    - diffs as string
         //        53.8   - diffs as string
         // 12.7          - diffs as string
+        val dimensions = _state.value.unionOfChipboards.dimensions
+        val direction = _state.value.unionOfChipboards.direction
         val builder = StringBuilder()
         var isAllRealsEmpty = true
 
-        for (i in 1..chipboard.dimensions) {
-            if (chipboard.direction == i) {
+        for (i in 1..dimensions) {
+            if (direction == i) {
                 builder.append(" ")
             }
 
@@ -875,7 +879,7 @@ class CountViewModel @Inject constructor(
                 builder.append(" ".repeat(sizeString.length))
             }
 
-            if (i < chipboard.dimensions) {
+            if (i < dimensions) {
                 builder.append("    ")
             }
         }
@@ -890,8 +894,9 @@ class CountViewModel @Inject constructor(
 
     private fun setUnknownButtonAvailability(chipboard: ChipboardUi): Boolean {
         if (chipboard.state != 2) return false
+        val dimensions = _state.value.unionOfChipboards.dimensions
         var isUnknownButtonAvailable = true
-        for (i in 1..chipboard.dimensions) {
+        for (i in 1..dimensions) {
             when (i) {
                 1 -> {
                     if (chipboard.size1 == 0f) isUnknownButtonAvailable = false

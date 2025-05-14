@@ -145,7 +145,7 @@ fun FindArea(
         horizontalAlignment = Alignment.Start
     ) {
 
-        WidthLengthFields(state.chipboardToFind, viewModel::processIntent)
+        WidthLengthFields(state.unionOfChipboards, state.chipboardToFind, viewModel::processIntent)
 
         Row(
             modifier = Modifier
@@ -207,14 +207,15 @@ fun FindArea(
 
 @Composable
 fun WidthLengthFields(
+    unionOfChipboards: UnionOfChipboardsUI,
     chipboard: ChipboardUi,
     processIntent: (CountIntent) -> Unit
 ) {
-    for (i in 1..chipboard.dimensions) {
+    for (i in 1..unionOfChipboards.dimensions) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (chipboard.direction == i) {
+            if (unionOfChipboards.direction == i) {
                 UpArrowIcon()
             } else {
                 Spacer(modifier = Modifier.width(24.dp))

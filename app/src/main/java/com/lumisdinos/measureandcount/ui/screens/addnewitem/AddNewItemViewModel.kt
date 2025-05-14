@@ -10,6 +10,7 @@ import com.lumisdinos.measureandcount.ui.model.NewScreenType
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.toChipboard
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboards
+import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.toChipboardUi
 import com.lumisdinos.measureandcount.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,22 +50,19 @@ class AddNewItemViewModel @Inject constructor(
                     title = titleTemplate,
                     isFinished = false,
                     createdAt = System.currentTimeMillis()
-                ).toUnionOfChipboards()
-            val unionId = chipboardRepository.insertUnionOfChipboards(newUnion)
+                )
+            val unionId =
+                chipboardRepository.insertUnionOfChipboards(newUnion.toUnionOfChipboards())
 
             if (unionId != null) {
                 _state.update { currentState ->
+                    val updatedUnion = newUnion.copy(id = unionId)
                     currentState.copy(
-                        titleOfUnion = titleTemplate,
+                        unionOfChipboards = updatedUnion,
                         newOrEditChipboard = currentState.newOrEditChipboard.copy(unionId = unionId)
                     )
                 }
                 observeChipboardsForUnion(unionId)
-            } else {
-                //TODO
-                // Handle error: Could not create a new union
-                // You might want to set an error state or show a message to the user
-                //_state.update { it.copy(error = "Failed to create a new item. Please try again.") }
             }
         }
     }
@@ -91,6 +89,8 @@ class AddNewItemViewModel @Inject constructor(
 
     fun processIntent(intent: AddNewItemIntent) {
         when (intent) {
+            is AddNewItemIntent.SetItemType -> setInitialCharacteristicsOfUnionAndChipboard(intent.itemType)
+
             is AddNewItemIntent.TitleOfUnionChanged -> updateUnionTitle(intent.newTitle)
 
             is AddNewItemIntent.SizeChanged -> updateChipboardSize(
@@ -115,12 +115,7 @@ class AddNewItemViewModel @Inject constructor(
                 viewModelScope.launch {
                     _effect.send(AddNewItemEffect.NavigateBack)
                 }
-                //_state.update { it.copy(navigateBack = true) }
             }
-//            AddNewItemIntent.ResetNavigateBack -> {
-//                _state.update { it.copy(navigateBack = false) }
-//            }
-            is AddNewItemIntent.SetItemType -> setInitialCharacteristicsOfChipboard(intent.itemType)
 
             is AddNewItemIntent.AskEditChipboard -> {
                 viewModelScope.launch {
@@ -234,7 +229,7 @@ class AddNewItemViewModel @Inject constructor(
                 System.currentTimeMillis()
             )
         }
-        _state.update { it.copy(titleOfUnion = newTitle) }
+        _state.update { it.copy(unionOfChipboards = it.unionOfChipboards.copy(title = newTitle)) }
     }
 
     private fun updateChipboardColor(newColorName: String, newColor: Int) {
@@ -270,9 +265,11 @@ class AddNewItemViewModel @Inject constructor(
 
     private fun getChipboardAsString(chipboard: ChipboardUi): String {
         //↑12.5 x 54.0 - 3
+        val dimensions = _state.value.unionOfChipboards.dimensions
+        val direction = _state.value.unionOfChipboards.direction
         val builder = StringBuilder()
-        for (i in 1..chipboard.dimensions) {
-            if (chipboard.direction == i) {
+        for (i in 1..dimensions) {
+            if (direction == i) {
                 builder.append("↑")
             }
             when (i) {
@@ -280,7 +277,7 @@ class AddNewItemViewModel @Inject constructor(
                 2 -> builder.append(chipboard.size2)
                 3 -> builder.append(chipboard.size3)
             }
-            if (i < chipboard.dimensions) {
+            if (i < dimensions) {
                 builder.append(" x ")
             }
         }
@@ -289,8 +286,9 @@ class AddNewItemViewModel @Inject constructor(
     }
 
     private fun setAddButtonAvailability(chipboard: ChipboardUi): Boolean {
+        val dimensions = _state.value.unionOfChipboards.dimensions
         var isAddButtonAvailable = true
-        for (i in 1..chipboard.dimensions) {
+        for (i in 1..dimensions) {
             when (i) {
                 1 -> {
                     if (chipboard.size1 == 0f) isAddButtonAvailable = false
@@ -310,28 +308,48 @@ class AddNewItemViewModel @Inject constructor(
     }
 
 
-    private fun setInitialCharacteristicsOfChipboard(itemType: NewScreenType) {
-        _state.update { currentState ->
-            val currentChipboard = currentState.newOrEditChipboard
+    private fun setInitialCharacteristicsOfUnionAndChipboard(itemType: NewScreenType) {
+        viewModelScope.launch {
+            _state.update { currentState ->
+                val currentChipboard = currentState.newOrEditChipboard
+                val union = currentState.unionOfChipboards
 
-            val dimensions = minOf(itemType.columnNames.size, 3)
-            val directionColumn = minOf(itemType.directionColumn, 3)
+                val dimensions = minOf(itemType.columnNames.size, 3)
+                val directionColumn = minOf(itemType.directionColumn, 3)
 
-            val titles = itemType.columnNames.map { context.getString(it) }
+                val titles = itemType.columnNames.map { context.getString(it) }
 
-            val updatedChipboard = currentChipboard.copy(
-                direction = directionColumn,
-                dimensions = dimensions,
-                title1 = titles.getOrElse(0) { "" },
-                title2 = titles.getOrElse(1) { "" },
-                title3 = titles.getOrElse(2) { "" }
-            )
-            val updatedChipboard2 =
-                updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard))
+                val updatedUnion = union.copy(
+                    dimensions = dimensions,
+                    direction = directionColumn,
+                    hasColor = itemType.hasColor
+                )
 
-            currentState.copy(
-                newOrEditChipboard = updatedChipboard2,
-            )
+                val savedUnion =
+                    chipboardRepository.insertAndGetUnionOfChipboards(updatedUnion.toUnionOfChipboards())
+
+                if (savedUnion != null) {
+                    val updatedChipboard = currentChipboard.copy(
+                        unionId = savedUnion.id,
+                        title1 = titles.getOrElse(0) { "" },
+                        title2 = titles.getOrElse(1) { "" },
+                        title3 = titles.getOrElse(2) { "" }
+                    )
+                    val updatedChipboard2 =
+                        updatedChipboard.copy(
+                            chipboardAsString = getChipboardAsString(
+                                updatedChipboard
+                            )
+                        )
+
+                    currentState.copy(
+                        unionOfChipboards = savedUnion.toUnionOfChipboardsUI(),
+                        newOrEditChipboard = updatedChipboard2,
+                    )
+                } else {
+                    currentState
+                }
+            }
         }
     }
 

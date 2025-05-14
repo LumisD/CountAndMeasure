@@ -8,6 +8,8 @@ interface MeasureAndCountRepository {
 
     suspend fun insertUnionOfChipboards(unionOfChipboards: UnionOfChipboards): Int
 
+    suspend fun insertAndGetUnionOfChipboards(union: UnionOfChipboards): UnionOfChipboards?
+
     suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long)
 
     suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)
