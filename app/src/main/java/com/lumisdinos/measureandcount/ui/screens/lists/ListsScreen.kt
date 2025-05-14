@@ -84,7 +84,7 @@ fun ListOfItems(unions: List<UnionOfChipboardsUI>, processIntent: (ListsIntent) 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(60.dp)
                     .background(if (union.isFinished) Grayish else Color.White)
                     .clickable { processIntent(ListsIntent.PressOnItemInList(union)) }
                     .padding(start = 16.dp, end = 16.dp),
@@ -98,6 +98,7 @@ fun ListOfItems(unions: List<UnionOfChipboardsUI>, processIntent: (ListsIntent) 
                         .weight(1f)
                         .align(Alignment.CenterVertically)
                         .padding(end = 8.dp),
+                    minLines = 2,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )

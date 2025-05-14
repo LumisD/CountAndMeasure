@@ -207,23 +207,23 @@ fun FindArea(
 
 @Composable
 fun WidthLengthFields(
-    unionOfChipboards: UnionOfChipboardsUI,
+    union: UnionOfChipboardsUI,
     chipboard: ChipboardUi,
     processIntent: (CountIntent) -> Unit
 ) {
-    for (i in 1..unionOfChipboards.dimensions) {
+    for (i in 1..union.dimensions) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (unionOfChipboards.direction == i) {
+            if (union.direction == i) {
                 UpArrowIcon()
             } else {
                 Spacer(modifier = Modifier.width(24.dp))
             }
             val name = when (i) {
-                1 -> chipboard.title1
-                2 -> chipboard.title2
-                3 -> chipboard.title3
+                1 -> union.titleColumn1
+                2 -> union.titleColumn2
+                3 -> union.titleColumn3
                 else -> ""
             }
             val sizeOfDim = getSizeForIndex(i, chipboard)

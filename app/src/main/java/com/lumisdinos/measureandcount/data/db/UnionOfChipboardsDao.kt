@@ -16,12 +16,27 @@ interface UnionOfChipboardsDao {
     @Query("UPDATE union_of_chipboards SET title = :newTitle, updated_at = :updatedAt WHERE id = :unionId")
     suspend fun updateUnionOfChipboardsTitle(unionId: Int, newTitle: String, updatedAt: Long)
 
-    @Query("UPDATE union_of_chipboards SET dimensions = :dimensions, direction = :direction, has_color = :hasColor WHERE id = :unionId")
+    @Query(
+        """
+    UPDATE union_of_chipboards
+    SET
+        dimensions = :dimensions,
+        direction = :direction,
+        has_color = :hasColor,
+        title_column1 = :titleColumn1,
+        title_column2 = :titleColumn2,
+        title_column3 = :titleColumn3
+    WHERE id = :unionId
+"""
+    )
     suspend fun updateUnionCharacteristics(
         unionId: Int,
         dimensions: Int,
         direction: Int,
-        hasColor: Boolean
+        hasColor: Boolean,
+        titleColumn1: String,
+        titleColumn2: String,
+        titleColumn3: String
     )
 
     @Query("UPDATE union_of_chipboards SET is_finished = :isFinished, updated_at = :updatedAt WHERE id = :unionId")
@@ -34,7 +49,7 @@ interface UnionOfChipboardsDao {
     fun getAllUnionsFlow(): Flow<List<UnionOfChipboards>>
 
     @Query(
-    """
+        """
     SELECT * FROM union_of_chipboards
     WHERE is_finished = 0
     ORDER BY 

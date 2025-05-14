@@ -37,7 +37,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import com.lumisdinos.measureandcount.ui.defaultScreenTypes
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemState
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemViewModel
@@ -77,7 +76,7 @@ fun AddNewItemScreen(
 ) {
     val navigationArg =
         navController.currentBackStackEntryAsState().value?.arguments?.getString("itemType")
-    val itemType = navigationArg?.deserializeNewScreenType() //?: defaultScreenTypes.first()
+    val itemType = navigationArg?.deserializeNewScreenType()
     Log.d("AddNewItemScreen", "ItemType: $itemType")
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current

@@ -11,7 +11,6 @@ import com.lumisdinos.measureandcount.ui.model.NewScreenType
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.toChipboard
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboards
-import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.toChipboardUi
 import com.lumisdinos.measureandcount.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -268,7 +267,10 @@ class AddNewItemViewModel @Inject constructor(
         }
     }
 
-    private fun getChipboardAsString(chipboard: ChipboardUi, updatedUnion: UnionOfChipboardsUI? = null): String {
+    private fun getChipboardAsString(
+        chipboard: ChipboardUi,
+        updatedUnion: UnionOfChipboardsUI? = null
+    ): String {
         //↑12.5 x 54.0 - 3
         val dimensions = updatedUnion?.dimensions ?: _state.value.unionOfChipboards.dimensions
         val direction = updatedUnion?.direction ?: _state.value.unionOfChipboards.direction
@@ -332,7 +334,10 @@ class AddNewItemViewModel @Inject constructor(
                 union.id,
                 dimensions,
                 directionColumn,
-                itemType.hasColor
+                itemType.hasColor,
+                titles.getOrElse(0) { "" },
+                titles.getOrElse(1) { "" },
+                titles.getOrElse(2) { "" }
             )
 
             _state.update { currentState ->
@@ -341,18 +346,17 @@ class AddNewItemViewModel @Inject constructor(
                     direction = directionColumn,
                     hasColor = itemType.hasColor
                 )
-                val updatedChipboard = currentState.newOrEditChipboard.copy(
-                    unionId = updatedUnion.id,
-                    title1 = titles.getOrElse(0) { "" },
-                    title2 = titles.getOrElse(1) { "" },
-                    title3 = titles.getOrElse(2) { "" }
-                )
-                val updatedChipboard2 =
-                    updatedChipboard.copy(chipboardAsString = getChipboardAsString(updatedChipboard, updatedUnion))
+                val updatedChipboard =
+                    currentState.newOrEditChipboard.copy(
+                        chipboardAsString = getChipboardAsString(
+                            currentState.newOrEditChipboard,
+                            updatedUnion
+                        )
+                    )
 
                 currentState.copy(
                     unionOfChipboards = updatedUnion,
-                    newOrEditChipboard = updatedChipboard2,
+                    newOrEditChipboard = updatedChipboard,
                 )
             }
         }

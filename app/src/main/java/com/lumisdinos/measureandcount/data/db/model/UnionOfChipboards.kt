@@ -3,7 +3,6 @@ package com.lumisdinos.measureandcount.data.db.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 
 @Entity(tableName = "union_of_chipboards")
 data class UnionOfChipboards(
@@ -15,6 +14,12 @@ data class UnionOfChipboards(
     val direction: Int,//0 - no direction, 1 to n - direction column
     @ColumnInfo(name = "has_color")
     val hasColor: Boolean,
+    @ColumnInfo(name = "title_column1")
+    val titleColumn1: String,
+    @ColumnInfo(name = "title_column2")
+    val titleColumn2: String,
+    @ColumnInfo(name = "title_column3")
+    val titleColumn3: String,
     @ColumnInfo(name = "is_finished")
     val isFinished: Boolean,
     @ColumnInfo(name = "created_at")

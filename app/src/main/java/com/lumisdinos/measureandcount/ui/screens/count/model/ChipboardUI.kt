@@ -9,13 +9,10 @@ data class ChipboardUi(
     val quantity: Int = 1,
     val colorName: String = "",
     val color: Int = 0,
-    val title1: String = "",
     val size1: Float = 0f,
     val realSize1: Float = 0f,//diff between real measured size and size1
-    val title2: String = "",
     val size2: Float = 0f,
     val realSize2: Float = 0f,
-    val title3: String = "",
     val size3: Float = 0f,
     val realSize3: Float = 0f,
 
@@ -42,13 +39,10 @@ fun ChipboardUi.toChipboard(): Chipboard {
         quantity = quantity,
         colorName = colorName,
         color = color,
-        title1 = title1,
         size1 = size1,
         realSize1 = realSize1,
-        title2 = title2,
         size2 = size2,
         realSize2 = realSize2,
-        title3 = title3,
         size3 = size3,
         realSize3 = realSize3
     )
@@ -62,13 +56,10 @@ fun Chipboard.toChipboardUi(): ChipboardUi {
         quantity = quantity,
         colorName = colorName,
         color = color,
-        title1 = title1,
         size1 = size1,
         realSize1 = realSize1,
-        title2 = title2,
         size2 = size2,
         realSize2 = realSize2,
-        title3 = title3,
         size3 = size3,
         realSize3 = realSize3
     )

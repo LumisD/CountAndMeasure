@@ -36,9 +36,20 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         unionId: Int,
         dimensions: Int,
         direction: Int,
-        hasColor: Boolean
+        hasColor: Boolean,
+        titleColumn1: String,
+        titleColumn2: String,
+        titleColumn3: String
     ) {
-        unionOfChipboardsDao.updateUnionCharacteristics(unionId, dimensions, direction, hasColor)
+        unionOfChipboardsDao.updateUnionCharacteristics(
+            unionId,
+            dimensions,
+            direction,
+            hasColor,
+            titleColumn1,
+            titleColumn2,
+            titleColumn3
+        )
     }
 
     override suspend fun setUnionOfChipboardsIsFinished(
@@ -67,7 +78,6 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
     }
 
 
-
     override suspend fun insertChipboard(chipboard: Chipboard) {
         chipboardDao.insertChipboard(chipboard)
     }
@@ -86,13 +96,10 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
             chipboardId = chipboard.id,
             color = chipboard.color,
             colorName = chipboard.colorName,
-            title1 = chipboard.title1,
             size1 = chipboard.size1,
             realSize1 = chipboard.realSize1,
-            title2 = chipboard.title2,
             size2 = chipboard.size2,
             realSize2 = chipboard.realSize2,
-            title3 = chipboard.title3,
             size3 = chipboard.size3,
             realSize3 = chipboard.realSize3
         )

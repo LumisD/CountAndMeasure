@@ -28,13 +28,10 @@ data class Chipboard(
     val quantity: Int,
     val colorName: String,
     val color: Int,
-    val title1: String,
     val size1: Float,
     val realSize1: Float = 0f,//diff between real measured size and size1
-    val title2: String,
     val size2: Float,
     val realSize2: Float = 0f,
-    val title3: String,
     val size3: Float,
     val realSize3: Float = 0f
 )
