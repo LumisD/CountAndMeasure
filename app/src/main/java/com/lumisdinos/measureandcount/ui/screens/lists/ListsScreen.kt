@@ -105,7 +105,6 @@ fun ListOfItems(unions: List<UnionOfChipboardsUI>, processIntent: (ListsIntent) 
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = stringResource(R.string.delete),
-                    tint = PrimaryBlue,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .clickable { processIntent(ListsIntent.PressOnDeleteIcon(union)) }

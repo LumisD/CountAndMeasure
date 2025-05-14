@@ -45,7 +45,6 @@ private fun <T> ColorFieldInternal(
             processIntent(intentFactory(colorItem.name, colorItem.color))
         }
     )
-    Spacer(modifier = Modifier.height(16.dp))
 }
 
 

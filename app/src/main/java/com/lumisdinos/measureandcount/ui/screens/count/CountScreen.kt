@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -93,8 +95,9 @@ fun CountScreen(
     val state by viewModel.state.collectAsState()
     val dialogState = remember { mutableStateOf<DialogType>(DialogType.None) }
     val shouldFlash = remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
 
-    CollectEffects(navController, dialogState, shouldFlash, viewModel, snackbarHostState)
+    CollectEffects(navController, dialogState, shouldFlash, listState, viewModel, snackbarHostState)
     ChooseDialogType(dialogState, viewModel::processIntent)
 
     //Actual screen
@@ -108,12 +111,12 @@ fun CountScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            TopBar(state.unionOfChipboards, viewModel::processIntent)
+            TopBar(state.isBackButtonVisible, state.unionOfChipboards, viewModel::processIntent)
             AnimatedVisibility(visible = state.isFoundAreaOpen) {
                 FindArea(state, shouldFlash, viewModel)
             }
             ExpandHideCountField(state.isFoundAreaOpen, viewModel::processIntent)
-            ListOfItems(state.chipboards, viewModel::processIntent)
+            ListOfItems(listState, state.chipboards, viewModel::processIntent)
         }
     }
 }
@@ -159,7 +162,7 @@ fun FindArea(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start
             ) {
-                if (state.chipboardToFind.color != 0) {
+                if (state.unionOfChipboards.hasColor) {
                     DisabledOverlay(
                         isEnabled = !state.chipboardToFind.isUnderReview,
                         onDisabledClick = { viewModel.processIntent(CountIntent.FieldDisabled) },
@@ -199,7 +202,11 @@ fun FindArea(
             }
 
         }
-        ChipboardAsStringField(state.chipboardToFind.chipboardAsString, state.chipboardToFind.color)
+        ChipboardAsStringField(
+            state.chipboardToFind.chipboardAsString,
+            state.unionOfChipboards.hasColor,
+            state.chipboardToFind.color
+        )
     }
 
 }
@@ -327,11 +334,12 @@ fun Buttons(
 
 @Composable
 fun ListOfItems(
+    listState: LazyListState,
     chipboards: List<ChipboardUi>,
-    processIntent: (CountIntent) -> Unit
+    processIntent: (CountIntent) -> Unit,
 ) {
 
-    LazyColumn {
+    LazyColumn(state = listState) {
         items(chipboards, key = { it.id }) { chipboard ->
             val backgroundColor = when {
                 chipboard.isUnderReview -> Yellowish
@@ -444,26 +452,29 @@ fun EmptyList(messageForEmptyList: Int) {
 
 
 @Composable
-fun TopBar(unionOfChipboards: UnionOfChipboardsUI, processIntent: (CountIntent) -> Unit) {
+fun TopBar(isBackButtonVisible: Boolean, unionOfChipboards: UnionOfChipboardsUI, processIntent: (CountIntent) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(
-            onClick = { processIntent(CountIntent.Back) },
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back),
+        if (isBackButtonVisible) {
+            IconButton(
+                onClick = { processIntent(CountIntent.Back) },
                 modifier = Modifier.size(32.dp)
-            )
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back),
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = unionOfChipboards.title,
             style = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp),
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 8.dp)
@@ -501,6 +512,7 @@ fun CollectEffects(
     navController: NavController,
     dialogState: MutableState<DialogType>,
     shouldFlash: MutableState<Boolean>,
+    listState: LazyListState,
     viewModel: CountViewModel,
     snackbarHostState: SnackbarHostState
 ) {
@@ -549,6 +561,10 @@ fun CollectEffects(
 
                 CountEffect.NavigateBack -> {
                     navController.popBackStack()
+                }
+
+                CountEffect.ScrollToTop -> {
+                    listState.animateScrollToItem(0)
                 }
             }
         }

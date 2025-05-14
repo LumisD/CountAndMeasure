@@ -89,7 +89,7 @@ fun CommonButton(
 
 
 @Composable
-fun ChipboardAsStringField(chipboardAsString: String, color: Int) {
+fun ChipboardAsStringField(chipboardAsString: String, hasColor: Boolean, color: Int) {
     Spacer(modifier = Modifier.height(16.dp))
     Row(
         modifier = Modifier
@@ -112,12 +112,14 @@ fun ChipboardAsStringField(chipboardAsString: String, color: Int) {
                 .width(1.dp),
             color = Color.Black
         )
-        Box(
-            modifier = Modifier
-                .width(36.dp)
-                .height(42.dp)
-                .background(Color(color))
-        )
+        if (hasColor) {
+            Box(
+                modifier = Modifier
+                    .width(36.dp)
+                    .height(42.dp)
+                    .background(Color(color))
+            )
+        }
     }
 }
 

@@ -13,5 +13,6 @@ sealed class CountEffect {
     data class ShowSnackbar(val message: String) : CountEffect()
     data object ShowFieldDisabled : CountEffect()
     data object FlashFindItemArea : CountEffect()
+    data object ScrollToTop : CountEffect()
     data object NavigateBack : CountEffect()
 }

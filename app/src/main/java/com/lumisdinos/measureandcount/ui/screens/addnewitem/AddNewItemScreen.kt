@@ -50,6 +50,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -115,7 +116,11 @@ fun AddNewItemScreen(
             if (itemType != null) AddNewItemArea(itemType, state, shouldFlash, viewModel)
         }
         ExpandHideNewItemField(state.isAddAreaOpen, viewModel::processIntent)
-        ListOfNewItems(state.createdChipboards, viewModel::processIntent)
+        ListOfNewItems(
+            state.unionOfChipboards.hasColor,
+            state.createdChipboards,
+            viewModel::processIntent
+        )
     }
 }
 
@@ -161,6 +166,7 @@ fun AddNewItemArea(
                 if (type.hasColor) {
                     AddItemColorField(state.newOrEditChipboard.colorName, viewModel::processIntent)
                 }
+                Spacer(modifier = Modifier.height(16.dp))
                 QuantityField(
                     state.newOrEditChipboard.quantityAsString,
                     viewModel::processIntent
@@ -175,6 +181,7 @@ fun AddNewItemArea(
         }
         ChipboardAsStringField(
             state.newOrEditChipboard.chipboardAsString,
+            state.unionOfChipboards.hasColor,
             state.newOrEditChipboard.color
         )
     }
@@ -242,6 +249,7 @@ fun AddChipboardButton(
 
 @Composable
 fun ListOfNewItems(
+    hasColor: Boolean,
     chipboards: List<ChipboardUi>,
     processIntent: (AddNewItemIntent) -> Unit
 ) {
@@ -264,13 +272,15 @@ fun ListOfNewItems(
                         modifier = Modifier.weight(1f)
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .width(36.dp)
-                            .height(42.dp)
-                            .background(Color(chipboard.color))
-                            .border(width = 1.dp, color = Color.Black)
-                    )
+                    if (hasColor) {
+                        Box(
+                            modifier = Modifier
+                                .width(36.dp)
+                                .height(42.dp)
+                                .background(Color(chipboard.color))
+                                .border(width = 1.dp, color = Color.Black)
+                        )
+                    }
                 }
 
                 IconButton(onClick = {
@@ -339,7 +349,8 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
             onValueChange = { newTitle ->
                 processIntent(AddNewItemIntent.TitleOfUnionChanged(newTitle))
             },
-            textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp)
+            textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp, textAlign = TextAlign.Center),
+            modifier = Modifier.weight(1f)
         )
     }
     Spacer(modifier = Modifier.height(8.dp))

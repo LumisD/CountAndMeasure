@@ -12,4 +12,5 @@ data class CountState(
     val isUnknownButtonAvailable: Boolean = false,
     val isFoundButtonAvailable: Boolean = false,
     val messageForEmptyList: Int? = null,
+    val isBackButtonVisible: Boolean = false
 )

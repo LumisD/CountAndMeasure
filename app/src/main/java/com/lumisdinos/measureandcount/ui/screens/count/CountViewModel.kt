@@ -103,6 +103,7 @@ class CountViewModel @Inject constructor(
 
     private fun setUnionOfChipboardsAndRelatedChipboards(unionId: Int?) {
         isInitialChipboardSetForCurrentUnion = false
+        _state.update { it.copy(isBackButtonVisible = !(unionId == null || unionId == defaultUnionId)) }
         viewModelScope.launch {
             if (unionId == null || unionId == defaultUnionId) {
                 val unionOfChip = chipboardRepository.getLastUnFinishedUnionOfChipboards()
@@ -252,6 +253,7 @@ class CountViewModel @Inject constructor(
             }
 
             _effect.send(CountEffect.FlashFindItemArea)
+            _effect.send(CountEffect.ScrollToTop)
         }
     }
 
