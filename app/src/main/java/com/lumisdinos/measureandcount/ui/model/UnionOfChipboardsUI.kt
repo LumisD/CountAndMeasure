@@ -12,6 +12,7 @@ data class UnionOfChipboardsUI(
     val titleColumn2: String = "",
     val titleColumn3: String = "",
     var isFinished: Boolean = false,
+    var isMarkedAsDeleted: Boolean = false,
     var createdAt: Long = 0L,
     var updatedAt: Long = 0L
 )
@@ -27,6 +28,7 @@ fun UnionOfChipboardsUI.toUnionOfChipboards(): UnionOfChipboards {
         titleColumn2 = titleColumn2,
         titleColumn3 = titleColumn3,
         isFinished = isFinished,
+        isMarkedAsDeleted = isMarkedAsDeleted,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
@@ -43,6 +45,7 @@ fun UnionOfChipboards.toUnionOfChipboardsUI(): UnionOfChipboardsUI {
         titleColumn2 = titleColumn2,
         titleColumn3 = titleColumn3,
         isFinished = isFinished,
+        isMarkedAsDeleted = isMarkedAsDeleted,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

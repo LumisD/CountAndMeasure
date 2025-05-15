@@ -22,6 +22,8 @@ data class UnionOfChipboards(
     val titleColumn3: String,
     @ColumnInfo(name = "is_finished")
     val isFinished: Boolean,
+    @ColumnInfo(name = "is_marked_as_deleted")
+    val isMarkedAsDeleted: Boolean,
     @ColumnInfo(name = "created_at")
     val createdAt: Long,
     @ColumnInfo(name = "updated_at")

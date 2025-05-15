@@ -115,6 +115,12 @@ class AddNewItemViewModel @Inject constructor(
                 _state.update { it.copy(isAddAreaOpen = !it.isAddAreaOpen) }
             }
 
+            AddNewItemIntent.PressToDeleteUnion -> pressedToDeleteUnion()
+
+            AddNewItemIntent.PressToShareUnion -> viewModelScope.launch {//todo
+                _effect.send(AddNewItemEffect.ShowShareUnionDialog)
+            }
+
             AddNewItemIntent.Back -> {
                 viewModelScope.launch {
                     _effect.send(AddNewItemEffect.NavigateBack)
@@ -134,6 +140,10 @@ class AddNewItemViewModel @Inject constructor(
             }
 
             is AddNewItemIntent.DeleteChipboardConfirmed -> deleteChipboardFromDb(intent.chipboardId)
+
+            AddNewItemIntent.DeletingUnionConfirmed -> deleteUnion()
+
+            AddNewItemIntent.SharingUnionConfirmed -> shareUnion()
 
             is AddNewItemIntent.EditChipboardConfirmed -> editChipboardInAddAreaAndRemoveFromDb(
                 intent.chipboard
@@ -264,6 +274,52 @@ class AddNewItemViewModel @Inject constructor(
                 newOrEditChipboard = updatedChipboard2,
                 isAddButtonAvailable = setAddButnAvailbl
             )
+        }
+    }
+
+
+    private fun shareUnion() {
+        //todo
+        //share union's chipboards
+    }
+
+
+    private fun pressedToDeleteUnion() {
+        //IF there are chipboards in the union
+        if (_state.value.createdChipboards.isNotEmpty()) {
+            viewModelScope.launch {
+                _effect.send(AddNewItemEffect.ShowRemoveUnionDialog)
+            }
+        } else {
+            deleteUnion(true)
+        }
+    }
+
+
+    private fun deleteUnion(hasToDeletePermanently: Boolean = false) {
+        //IF hasToDeletePermanentlyl:
+        //delete unionOfChipboards and related chipboards from db
+        //go back to AddScreen
+        val unionId = _state.value.unionOfChipboards.id
+        if (hasToDeletePermanently) {
+            viewModelScope.launch {
+                chipboardRepository.deleteUnionOfChipboards(unionId)
+                chipboardRepository.deleteAllChipboardsByUnionId(unionId)
+                _effect.send(AddNewItemEffect.NavigateBack)
+            }
+        } else {
+            //IF NOT hasToDeletePermanentlyl:
+            //set unionOfChipboards.isMarkedAsDeleted to true and updatedAt = System.currentTimeMillis()
+            //save unionOfChipboards in db
+            //go back to AddScreen
+            viewModelScope.launch {
+                chipboardRepository.setUnionOfChipboardsIsMarkedAsDeleted(
+                    unionId,
+                    true,
+                    System.currentTimeMillis()
+                )
+                _effect.send(AddNewItemEffect.NavigateBack)
+            }
         }
     }
 

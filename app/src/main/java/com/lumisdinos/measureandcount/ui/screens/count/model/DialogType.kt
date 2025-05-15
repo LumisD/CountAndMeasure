@@ -8,6 +8,8 @@ sealed class DialogType {
     data class SelectUnknownToFindArea(val chipboard: ChipboardUi) : DialogType()
     data class NotExceedingTargetQuantity(val targetQuantity: Int, val enteredQuantity: Int) : DialogType()
     data class WhatIs(val questionType: QuestionType) : DialogType()
+    data object ShareCurrentUnion : DialogType()
+    data object RemoveCurrentUnion : DialogType()
     data object FieldDisabled : DialogType()
     data object None : DialogType()
 }

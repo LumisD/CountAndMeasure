@@ -24,6 +24,14 @@ interface MeasureAndCountRepository {
 
     suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)
 
+    suspend fun setUnionOfChipboardsIsMarkedAsDeleted(
+        unionId: Int,
+        isMarkedAsDeleted: Boolean,
+        updatedAt: Long
+    )
+
+    suspend fun countUnions(): Int
+
     suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards?
 
     suspend fun getLastUnFinishedUnionOfChipboards(): UnionOfChipboards?
@@ -48,6 +56,8 @@ interface MeasureAndCountRepository {
     suspend fun getQuantityOfChipboardByConditions(id: Int, unionId: Int, state: Int): Int
 
     suspend fun deleteChipboardById(chipboardId: Int)
+
+    suspend fun deleteAllChipboardsByUnionId(unionId: Int)
 
     fun getChipboardsByUnionIdFlow(unionId: Int): Flow<List<Chipboard>>
 

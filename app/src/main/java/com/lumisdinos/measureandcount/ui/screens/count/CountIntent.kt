@@ -1,6 +1,6 @@
 package com.lumisdinos.measureandcount.ui.screens.count
 
-import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ConfirmationType
+import com.lumisdinos.measureandcount.ui.screens.count.model.ConfirmationType
 import com.lumisdinos.measureandcount.ui.screens.count.model.QuestionType
 import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 
@@ -12,6 +12,8 @@ sealed interface CountIntent {
     data class ColorChanged(val colorName: String, val color: Int) : CountIntent
     data object SetFoundChipboard : CountIntent
     data object CreateUnknownChipboard : CountIntent
+    data object PressToShareUnion : CountIntent
+    data object PressToDeleteUnion : CountIntent
     data class PressOnItemInList(val chipboard: ChipboardUi) : CountIntent
     data class ShowWhatIs(val questionType: QuestionType) : CountIntent
     data class ActionConfirmed(val confirmationType: ConfirmationType) : CountIntent

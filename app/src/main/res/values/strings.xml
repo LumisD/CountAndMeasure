@@ -30,6 +30,7 @@
     <string name="confirm_editing">Confirm editing</string>
     <string name="confirm_selection">Confirm selection</string>
     <string name="under_review">Under review</string>
+    <string name="marked_as_deleted">Marked as deleted</string>
     <string name="real_size">Real size</string>
     <string name="what_is_diff_question">What is difference?</string>
     <string name="what_is_found_question">What is Found?</string>
@@ -51,4 +52,5 @@
     <string name="are_you_sure_select_unknown">Are you sure you want to select\n%1$s (%2$s)?\nto Find Area?\n(The item will be deleted from the list)</string>
     <string name="are_you_sure_uncheck">Are you sure you want to set\n%1$s (%2$s)?\nas not found yet?\n(The item will remain in the list\nReal sizes will be empty)</string>
     <string name="are_you_sure_delete_union">Are you sure you want to delete\n%1$s?</string>
+    <string name="are_you_sure_delete_current_list_chipboards">Are you sure you want to delete current list of chipboards?\n(If you choose Delete - in any case, this list will be stored for another 30 days before being permanently deleted)</string>
 </resources>

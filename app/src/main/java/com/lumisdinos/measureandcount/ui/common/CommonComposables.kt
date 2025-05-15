@@ -26,7 +26,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -37,6 +39,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
@@ -174,17 +177,34 @@ fun ShowDialog(
     )
 }
 
+
 @Composable
 private fun <T> ExpandHideFieldInternal(
     isAreaOpen: Boolean,
     processIntent: (T) -> Unit,
-    intentFactory: () -> T
+    intentFactory: () -> T,
+    onShareClick: (T) -> Unit,
+    shareFactory: () -> T,
+    onDeleteClick: (T) -> Unit,
+    deleteFactory: () -> T,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        IconButton(
+            onClick = { onShareClick(shareFactory()) },
+            modifier = Modifier
+                .size(48.dp)
+                .alpha(0.5f),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Share,
+                contentDescription = "Share",
+            )
+        }
+
         val rotationAngle by animateFloatAsState(
             targetValue = if (isAreaOpen) 0f else 180f,
             animationSpec = tween(durationMillis = 500),
@@ -199,16 +219,31 @@ private fun <T> ExpandHideFieldInternal(
                 .rotate(rotationAngle)
                 .clickable { processIntent(intentFactory()) }
         )
+
+        IconButton(
+            onClick = { onDeleteClick(deleteFactory()) },
+            modifier = Modifier
+                .size(48.dp)
+                .alpha(0.5f)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                contentDescription = "Delete",
+            )
+        }
     }
 }
-
 
 @Composable
 fun ExpandHideNewItemField(isAddAreaOpen: Boolean, processIntent: (AddNewItemIntent) -> Unit) {
     ExpandHideFieldInternal(
         isAddAreaOpen,
         processIntent,
-        intentFactory = { AddNewItemIntent.ToggleAddAreaVisibility }
+        intentFactory = { AddNewItemIntent.ToggleAddAreaVisibility },
+        processIntent,
+        shareFactory = { AddNewItemIntent.PressToShareUnion },
+        processIntent,
+        deleteFactory = { AddNewItemIntent.PressToDeleteUnion },
     )
 }
 
@@ -218,7 +253,11 @@ fun ExpandHideCountField(isFindAreaOpen: Boolean, processIntent: (CountIntent) -
     ExpandHideFieldInternal(
         isFindAreaOpen,
         processIntent,
-        intentFactory = { CountIntent.ToggleFindAreaVisibility }
+        intentFactory = { CountIntent.ToggleFindAreaVisibility },
+        processIntent,
+        shareFactory = { CountIntent.PressToShareUnion },
+        processIntent,
+        deleteFactory = { CountIntent.PressToDeleteUnion },
     )
 }
 

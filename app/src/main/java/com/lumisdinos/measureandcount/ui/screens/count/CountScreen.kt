@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.lumisdinos.measureandcount.R
+import com.lumisdinos.measureandcount.ui.Screen
 import com.lumisdinos.measureandcount.ui.common.AddCountColorField
 import com.lumisdinos.measureandcount.ui.common.ChipboardAsStringField
 import com.lumisdinos.measureandcount.ui.common.ChooseDialogType
@@ -98,7 +99,7 @@ fun CountScreen(
     val listState = rememberLazyListState()
 
     CollectEffects(navController, dialogState, shouldFlash, listState, viewModel, snackbarHostState)
-    ChooseDialogType(dialogState, viewModel::processIntent)
+    ChooseDialogType(dialogState, viewModel::processIntent)//todo - implement share feature
 
     //Actual screen
     if (state.messageForEmptyList != null) {
@@ -371,7 +372,7 @@ fun ListOfItems(
 
                         if (chipboard.isUnderReview) {
                             Text(
-                                text = stringResource(R.string.under_review),
+                                text = stringResource(R.string.marked_as_deleted),
                                 color = Color.Red.copy(alpha = 0.5f),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
@@ -452,7 +453,11 @@ fun EmptyList(messageForEmptyList: Int) {
 
 
 @Composable
-fun TopBar(isBackButtonVisible: Boolean, unionOfChipboards: UnionOfChipboardsUI, processIntent: (CountIntent) -> Unit) {
+fun TopBar(
+    isBackButtonVisible: Boolean,
+    unionOfChipboards: UnionOfChipboardsUI,
+    processIntent: (CountIntent) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -559,13 +564,30 @@ fun CollectEffects(
                     dialogState.value = DialogType.FieldDisabled
                 }
 
+                CountEffect.ScrollToTop -> {
+                    listState.animateScrollToItem(0)
+                }
+                CountEffect.ShowShareUnionDialog -> {
+                    dialogState.value = DialogType.ShareCurrentUnion
+                }
+
+                CountEffect.ShowRemoveUnionDialog -> {
+                    dialogState.value = DialogType.RemoveCurrentUnion
+                }
+
+
+                CountEffect.NavigateToListsScreen -> {
+                    navController.navigate(Screen.Lists.baseRoute)
+                }
+
+                CountEffect.NavigateToNewScreen -> {
+                    navController.navigate(Screen.New.baseRoute)
+                }
+
                 CountEffect.NavigateBack -> {
                     navController.popBackStack()
                 }
 
-                CountEffect.ScrollToTop -> {
-                    listState.animateScrollToItem(0)
-                }
             }
         }
     }

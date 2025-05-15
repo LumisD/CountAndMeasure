@@ -383,13 +383,20 @@ fun CollectEffects(
                     snackbarHostState.showSnackbar(effect.message)
                 }
 
-
                 is AddNewItemEffect.FlashAddItemArea -> {
                     shouldFlash.value = true
                 }
 
                 is AddNewItemEffect.NavigateBack -> {
                     navController.popBackStack()
+                }
+
+                AddNewItemEffect.ShowShareUnionDialog -> {
+                    dialogState.value = DialogType.ShareCurrentUnion
+                }
+
+                AddNewItemEffect.ShowRemoveUnionDialog -> {
+                    dialogState.value = DialogType.RemoveCurrentUnion
                 }
 
             }

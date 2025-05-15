@@ -60,6 +60,22 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         unionOfChipboardsDao.setUnionOfChipboardsIsFinished(unionId, isFinished, updatedAt)
     }
 
+    override suspend fun setUnionOfChipboardsIsMarkedAsDeleted(
+        unionId: Int,
+        isMarkedAsDeleted: Boolean,
+        updatedAt: Long
+    ) {
+        unionOfChipboardsDao.setUnionOfChipboardsIsMarkedAsDeleted(
+            unionId,
+            isMarkedAsDeleted,
+            updatedAt
+        )
+    }
+
+    override suspend fun countUnions(): Int {
+        return unionOfChipboardsDao.countUnions()
+    }
+
     override suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards? {
         return unionOfChipboardsDao.getUnionOfChipboardsById(unionId)
     }
@@ -70,12 +86,12 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
 
     override suspend fun deleteUnionOfChipboards(unionId: Int) {
         unionOfChipboardsDao.deleteUnionOfChipboardsById(unionId)
-
     }
 
     override fun getAllUnionsFlow(): Flow<List<UnionOfChipboards>> {
         return unionOfChipboardsDao.getAllUnionsFlow()
     }
+
 
 
     override suspend fun insertChipboard(chipboard: Chipboard) {
@@ -124,6 +140,10 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
 
     override suspend fun deleteChipboardById(chipboardId: Int) {
         chipboardDao.deleteChipboardById(chipboardId)
+    }
+
+    override suspend fun deleteAllChipboardsByUnionId(unionId: Int) {
+        chipboardDao.deleteAllChipboardsByUnionId(unionId)
     }
 
     override fun getChipboardsByUnionIdFlow(unionId: Int): Flow<List<Chipboard>> {

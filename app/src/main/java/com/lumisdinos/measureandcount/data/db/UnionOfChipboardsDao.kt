@@ -42,6 +42,12 @@ interface UnionOfChipboardsDao {
     @Query("UPDATE union_of_chipboards SET is_finished = :isFinished, updated_at = :updatedAt WHERE id = :unionId")
     suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)
 
+    @Query("UPDATE union_of_chipboards SET is_marked_as_deleted = :isMarkedAsDeleted, updated_at = :updatedAt WHERE id = :unionId")
+    suspend fun setUnionOfChipboardsIsMarkedAsDeleted(unionId: Int, isMarkedAsDeleted: Boolean, updatedAt: Long)
+
+    @Query("SELECT COUNT(*) FROM union_of_chipboards")
+    suspend fun countUnions(): Int
+
     @Query("SELECT * FROM union_of_chipboards WHERE id = :unionId")
     suspend fun getUnionOfChipboardsById(unionId: Int): UnionOfChipboards?
 

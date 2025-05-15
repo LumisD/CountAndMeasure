@@ -8,7 +8,7 @@ import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
 import com.lumisdinos.measureandcount.defaultUnionId
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboardsUI
-import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ConfirmationType
+import com.lumisdinos.measureandcount.ui.screens.count.model.ConfirmationType
 import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.screens.count.model.toChipboard
 import com.lumisdinos.measureandcount.ui.screens.count.model.toChipboardUi
@@ -38,6 +38,7 @@ class CountViewModel @Inject constructor(
     fun processIntent(intent: CountIntent) {
         when (intent) {
             is CountIntent.SetUnionId -> setUnionOfChipboardsAndRelatedChipboards(intent.unionId)
+
             is CountIntent.SizeChanged -> {
                 sortBySize(intent.newSizeAsString, intent.dimension)
                 updateChipboardSize(intent.newSizeAsString, intent.dimension)
@@ -56,8 +57,19 @@ class CountViewModel @Inject constructor(
             )
 
             CountIntent.SetFoundChipboard -> setFound()
+
             CountIntent.CreateUnknownChipboard -> createUnknownAndSaveInDb()
+
+            CountIntent.PressToDeleteUnion -> viewModelScope.launch {
+                _effect.send(CountEffect.ShowRemoveUnionDialog)
+            }
+
+            CountIntent.PressToShareUnion -> viewModelScope.launch {
+                _effect.send(CountEffect.ShowShareUnionDialog)
+            }
+
             is CountIntent.PressOnItemInList -> pressOnItemInList(intent.chipboard)
+
             is CountIntent.ShowWhatIs -> viewModelScope.launch {
                 _effect.send(CountEffect.ShowWhatIsDialog(intent.questionType))
             }
@@ -79,6 +91,10 @@ class CountViewModel @Inject constructor(
                     is ConfirmationType.SelectUnknownToFindAreaConfirmed -> setChipboardInFindArea(
                         confirmationType.chipboard
                     )
+
+                    ConfirmationType.SharingUnionConfirmed -> shareUnion()
+
+                    ConfirmationType.DeletingUnionConfirmed -> deleteUnion()
                 }
             }
 
@@ -774,6 +790,34 @@ class CountViewModel @Inject constructor(
                         unionOfChipboards = updatedUnion
                     )
                 }
+            }
+        }
+    }
+
+
+    private fun shareUnion() {
+        //todo
+        //share union's chipboards
+    }
+
+
+    private fun deleteUnion() {
+        //set unionOfChipboards.isMarkedAsDeleted to true and updatedAt = System.currentTimeMillis()
+        //save unionOfChipboards in db
+        //check if db has unionOfChipboards at least on
+        //  if yes - go to ListsScreen
+        //  if no - go to NewScreen
+
+        viewModelScope.launch {
+            chipboardRepository.setUnionOfChipboardsIsMarkedAsDeleted(
+                _state.value.unionOfChipboards.id,
+                true,
+                System.currentTimeMillis()
+            )
+            if (chipboardRepository.countUnions() > 0) {
+                _effect.send(CountEffect.NavigateToListsScreen)
+            } else {
+                _effect.send(CountEffect.NavigateToNewScreen)
             }
         }
     }

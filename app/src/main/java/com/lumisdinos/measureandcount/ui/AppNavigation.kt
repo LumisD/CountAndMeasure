@@ -104,7 +104,7 @@ fun Navigation(
     modifier: Modifier
 ) {
     NavHost(navController, startDestination = Screen.New.baseRoute, modifier = modifier) {
-        composable(Screen.Lists.baseRoute) { ListsScreen(navController, snackbarHostState) }
+        composable(Screen.Lists.baseRoute) { ListsScreen(navController) }
 
         composable(
             route = Screen.Count.baseRoute,

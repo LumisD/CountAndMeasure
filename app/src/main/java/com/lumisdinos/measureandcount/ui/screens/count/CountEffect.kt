@@ -11,8 +11,12 @@ sealed class CountEffect {
     data class ShowNotExceedingTargetQuantityDialog(val targetQuantity: Int, val enteredQuantity: Int) : CountEffect()
     data class ShowWhatIsDialog(val questionType: QuestionType) : CountEffect()
     data class ShowSnackbar(val message: String) : CountEffect()
+    data object ShowRemoveUnionDialog : CountEffect()
+    data object ShowShareUnionDialog : CountEffect()
     data object ShowFieldDisabled : CountEffect()
     data object FlashFindItemArea : CountEffect()
     data object ScrollToTop : CountEffect()
+    data object NavigateToListsScreen : CountEffect()
+    data object NavigateToNewScreen : CountEffect()
     data object NavigateBack : CountEffect()
 }

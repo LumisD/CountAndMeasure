@@ -8,7 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.res.stringResource
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
-import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ConfirmationType
+import com.lumisdinos.measureandcount.ui.screens.count.model.ConfirmationType
 import com.lumisdinos.measureandcount.ui.screens.count.model.QuestionType
 import com.lumisdinos.measureandcount.ui.screens.count.CountIntent
 import com.lumisdinos.measureandcount.ui.screens.count.model.DialogType
@@ -151,7 +151,8 @@ fun ChooseDialogType(
                 text = stringResource(
                     R.string.not_exceeding_target_quantity_explanation,
                     dialog.enteredQuantity,
-                    dialog.targetQuantity)
+                    dialog.targetQuantity
+                )
                 confirmText = stringResource(R.string.ok)
                 dismissText = null
                 onConfirm = { dialogState.value = DialogType.None }
@@ -167,6 +168,36 @@ fun ChooseDialogType(
                 confirmText = stringResource(R.string.ok)
                 dismissText = null
                 onConfirm = { dialogState.value = DialogType.None }
+            }
+
+            DialogType.ShareCurrentUnion -> {//todo
+                title = stringResource(R.string.confirm_deletion)
+                text = stringResource(R.string.are_you_sure_delete_current_list_chipboards)
+                confirmText = stringResource(R.string.delete)
+                dismissText = stringResource(R.string.cancel)
+                onConfirm = {
+                    processIntent(
+                        CountIntent.ActionConfirmed(
+                            ConfirmationType.SharingUnionConfirmed
+                        )
+                    )
+                    dialogState.value = DialogType.None
+                }
+            }
+
+            DialogType.RemoveCurrentUnion -> {
+                title = stringResource(R.string.confirm_deletion)
+                text = stringResource(R.string.are_you_sure_delete_current_list_chipboards)
+                confirmText = stringResource(R.string.delete)
+                dismissText = stringResource(R.string.cancel)
+                onConfirm = {
+                    processIntent(
+                        CountIntent.ActionConfirmed(
+                            ConfirmationType.DeletingUnionConfirmed
+                        )
+                    )
+                    dialogState.value = DialogType.None
+                }
             }
 
             DialogType.FieldDisabled -> {
@@ -240,6 +271,28 @@ fun ChooseDialogTypes(
                 dismissText = stringResource(R.string.cancel)
                 onConfirm = {
                     processIntent(AddNewItemIntent.EditChipboardConfirmed(dialog.chipboard))
+                    dialogState.value = AddNewItemDialogType.None
+                }
+            }
+
+            AddNewItemDialogType.ShareCurrentUnion -> {//todo
+                title = stringResource(R.string.confirm_deletion)
+                text = stringResource(R.string.are_you_sure_delete_current_list_chipboards)
+                confirmText = stringResource(R.string.delete)
+                dismissText = stringResource(R.string.cancel)
+                onConfirm = {
+                    processIntent(AddNewItemIntent.SharingUnionConfirmed)
+                    dialogState.value = AddNewItemDialogType.None
+                }
+            }
+
+            AddNewItemDialogType.RemoveCurrentUnion -> {
+                title = stringResource(R.string.confirm_deletion)
+                text = stringResource(R.string.are_you_sure_delete_current_list_chipboards)
+                confirmText = stringResource(R.string.delete)
+                dismissText = stringResource(R.string.cancel)
+                onConfirm = {
+                    processIntent(AddNewItemIntent.DeletingUnionConfirmed)
                     dialogState.value = AddNewItemDialogType.None
                 }
             }

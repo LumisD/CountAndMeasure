@@ -68,6 +68,9 @@ interface ChipboardDao {
     @Query("DELETE FROM chipboard WHERE id = :chipboardId")
     suspend fun deleteChipboardById(chipboardId: Int)
 
+    @Query("DELETE FROM chipboard WHERE union_id = :unionId")
+    suspend fun deleteAllChipboardsByUnionId(unionId: Int)
+
     @Delete
     suspend fun deleteChipboard(chipboard: Chipboard)
 

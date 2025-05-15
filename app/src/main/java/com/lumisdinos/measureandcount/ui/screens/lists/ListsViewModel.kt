@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
 import com.lumisdinos.measureandcount.data.db.model.UnionOfChipboards
-import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboardsUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -36,9 +35,9 @@ class ListsViewModel @Inject constructor(
                 .collect { unions ->
                     val sortedUnions = unions.sortedWith(
                         compareBy<UnionOfChipboards> {
-                            if (it.isFinished) 1 else 0
-                        }.thenByDescending {
-                            maxOf(it.createdAt, it.updatedAt)
+                            if (it.isMarkedAsDeleted) 2 else {
+                                if (it.isFinished) 1 else 0
+                            }
                         }
                     ).map {
                         it.toUnionOfChipboardsUI()
@@ -51,25 +50,11 @@ class ListsViewModel @Inject constructor(
 
     fun processIntent(intent: ListsIntent) {
         when (intent) {
-            is ListsIntent.DeletingUnionConfirmed -> deleteUnion(intent.union)
-            is ListsIntent.PressOnDeleteIcon -> {
-                viewModelScope.launch {
-                    _effect.send(ListsEffects.ShowRemoveUnionDialog(intent.union))
-                }
-            }
             is ListsIntent.PressOnItemInList -> {
                 viewModelScope.launch {
                     _effect.send(ListsEffects.NavigateToCountScreen(intent.union.id))
                 }
             }
-        }
-
-    }
-
-
-    private fun deleteUnion(union: UnionOfChipboardsUI) {
-        viewModelScope.launch {
-            chipboardRepository.deleteUnionOfChipboards(union.id)
         }
 
     }
