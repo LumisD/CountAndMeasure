@@ -6,5 +6,6 @@ sealed class ConfirmationType {
     data class RemoveNotFoundFromFindAreaConfirmed(val chipboard: ChipboardUi): ConfirmationType()
     data class SelectUnknownToFindAreaConfirmed(val chipboard: ChipboardUi): ConfirmationType()
     data object DeletingUnionConfirmed: ConfirmationType()
+    data object RestoringUnionConfirmed: ConfirmationType()
     data object SharingUnionConfirmed: ConfirmationType()
 }

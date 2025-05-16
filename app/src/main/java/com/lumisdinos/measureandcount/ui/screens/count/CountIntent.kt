@@ -13,7 +13,7 @@ sealed interface CountIntent {
     data object SetFoundChipboard : CountIntent
     data object CreateUnknownChipboard : CountIntent
     data object PressToShareUnion : CountIntent
-    data object PressToDeleteUnion : CountIntent
+    data object PressToDeleteOrRestoreUnion : CountIntent
     data class PressOnItemInList(val chipboard: ChipboardUi) : CountIntent
     data class ShowWhatIs(val questionType: QuestionType) : CountIntent
     data class ActionConfirmed(val confirmationType: ConfirmationType) : CountIntent

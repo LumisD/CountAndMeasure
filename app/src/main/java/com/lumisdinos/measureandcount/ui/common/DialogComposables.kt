@@ -185,7 +185,7 @@ fun ChooseDialogType(
                 }
             }
 
-            DialogType.RemoveCurrentUnion -> {
+            DialogType.DeleteCurrentUnion -> {
                 title = stringResource(R.string.confirm_deletion)
                 text = stringResource(R.string.are_you_sure_delete_current_list_chipboards)
                 confirmText = stringResource(R.string.delete)
@@ -194,6 +194,21 @@ fun ChooseDialogType(
                     processIntent(
                         CountIntent.ActionConfirmed(
                             ConfirmationType.DeletingUnionConfirmed
+                        )
+                    )
+                    dialogState.value = DialogType.None
+                }
+            }
+
+            DialogType.RestoreCurrentUnion -> {
+                title = stringResource(R.string.confirm_restoring)
+                text = stringResource(R.string.are_you_sure_restore_current_list_chipboards)
+                confirmText = stringResource(R.string.restore)
+                dismissText = stringResource(R.string.cancel)
+                onConfirm = {
+                    processIntent(
+                        CountIntent.ActionConfirmed(
+                            ConfirmationType.RestoringUnionConfirmed
                         )
                     )
                     dialogState.value = DialogType.None

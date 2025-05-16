@@ -33,12 +33,23 @@ class ListsViewModel @Inject constructor(
         viewModelScope.launch {
             chipboardRepository.getAllUnionsFlow()
                 .collect { unions ->
-                    val sortedUnions = unions.sortedWith(
+                    val thirtyDaysAgo = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L)
+
+                    val (unionsToDelete, unionsToKeep) = unions.partition { union ->
+                        union.isMarkedAsDeleted && maxOf(union.createdAt, union.updatedAt) < thirtyDaysAgo
+                    }
+
+                    unionsToDelete.forEach { union ->
+                        chipboardRepository.deleteUnionOfChipboards(union.id)
+                        chipboardRepository.deleteAllChipboardsByUnionId(union.id)
+                    }
+
+                    val sortedUnions = unionsToKeep.sortedWith(
                         compareBy<UnionOfChipboards> {
                             if (it.isMarkedAsDeleted) 2 else {
                                 if (it.isFinished) 1 else 0
                             }
-                        }
+                        }.thenByDescending { maxOf(it.createdAt, it.updatedAt) }
                     ).map {
                         it.toUnionOfChipboardsUI()
                     }

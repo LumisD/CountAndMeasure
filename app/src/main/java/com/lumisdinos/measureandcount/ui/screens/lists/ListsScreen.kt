@@ -87,7 +87,7 @@ fun ListOfItems(unions: List<UnionOfChipboardsUI>, processIntent: (ListsIntent) 
                 ) {
                     Text(
                         text = union.title,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp),
                         modifier = Modifier
                             .weight(1f)
                             .align(Alignment.CenterVertically)

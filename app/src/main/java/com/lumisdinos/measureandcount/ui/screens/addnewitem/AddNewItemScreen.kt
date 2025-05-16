@@ -43,11 +43,13 @@ import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -278,7 +280,12 @@ fun ListOfNewItems(
                                 .width(36.dp)
                                 .height(42.dp)
                                 .background(Color(chipboard.color))
-                                .border(width = 1.dp, color = Color.Black)
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.Black,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .clip(RoundedCornerShape(4.dp))
                         )
                     }
                 }
@@ -349,7 +356,10 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
             onValueChange = { newTitle ->
                 processIntent(AddNewItemIntent.TitleOfUnionChanged(newTitle))
             },
-            textStyle = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp, textAlign = TextAlign.Center),
+            textStyle = MaterialTheme.typography.titleLarge.copy(
+                fontSize = 19.sp,
+                textAlign = TextAlign.Center
+            ),
             modifier = Modifier.weight(1f)
         )
     }

@@ -9,7 +9,8 @@ sealed class DialogType {
     data class NotExceedingTargetQuantity(val targetQuantity: Int, val enteredQuantity: Int) : DialogType()
     data class WhatIs(val questionType: QuestionType) : DialogType()
     data object ShareCurrentUnion : DialogType()
-    data object RemoveCurrentUnion : DialogType()
+    data object DeleteCurrentUnion : DialogType()
+    data object RestoreCurrentUnion : DialogType()
     data object FieldDisabled : DialogType()
     data object None : DialogType()
 }

@@ -60,8 +60,12 @@ class CountViewModel @Inject constructor(
 
             CountIntent.CreateUnknownChipboard -> createUnknownAndSaveInDb()
 
-            CountIntent.PressToDeleteUnion -> viewModelScope.launch {
-                _effect.send(CountEffect.ShowRemoveUnionDialog)
+            CountIntent.PressToDeleteOrRestoreUnion -> viewModelScope.launch {
+                if (_state.value.unionOfChipboards.isMarkedAsDeleted) {
+                    _effect.send(CountEffect.ShowRestoreUnionDialog)
+                } else {
+                    _effect.send(CountEffect.ShowDeleteUnionDialog)
+                }
             }
 
             CountIntent.PressToShareUnion -> viewModelScope.launch {
@@ -95,6 +99,8 @@ class CountViewModel @Inject constructor(
                     ConfirmationType.SharingUnionConfirmed -> shareUnion()
 
                     ConfirmationType.DeletingUnionConfirmed -> deleteUnion()
+
+                    ConfirmationType.RestoringUnionConfirmed -> restoreUnion()
                 }
             }
 
@@ -818,6 +824,27 @@ class CountViewModel @Inject constructor(
                 _effect.send(CountEffect.NavigateToListsScreen)
             } else {
                 _effect.send(CountEffect.NavigateToNewScreen)
+            }
+        }
+    }
+
+
+    private fun restoreUnion() {
+        //set unionOfChipboards.isMarkedAsDeleted to false and updatedAt = System.currentTimeMillis()
+        //save unionOfChipboards in db
+        //update state with new unionOfChipboards
+        viewModelScope.launch {
+            chipboardRepository.setUnionOfChipboardsIsMarkedAsDeleted(
+                _state.value.unionOfChipboards.id,
+                false,
+                System.currentTimeMillis()
+            )
+            _state.update {
+                it.copy(
+                    unionOfChipboards = it.unionOfChipboards.copy(
+                        isMarkedAsDeleted = false
+                    )
+                )
             }
         }
     }

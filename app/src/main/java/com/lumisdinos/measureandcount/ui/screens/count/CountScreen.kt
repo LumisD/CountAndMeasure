@@ -44,6 +44,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -116,8 +117,17 @@ fun CountScreen(
             AnimatedVisibility(visible = state.isFoundAreaOpen) {
                 FindArea(state, shouldFlash, viewModel)
             }
-            ExpandHideCountField(state.isFoundAreaOpen, viewModel::processIntent)
-            ListOfItems(listState, state.chipboards, viewModel::processIntent)
+            ExpandHideCountField(
+                state.isFoundAreaOpen,
+                state.unionOfChipboards.isMarkedAsDeleted,
+                viewModel::processIntent
+            )
+            ListOfItems(
+                listState,
+                state.chipboards,
+                state.unionOfChipboards.hasColor,
+                viewModel::processIntent
+            )
         }
     }
 }
@@ -337,6 +347,7 @@ fun Buttons(
 fun ListOfItems(
     listState: LazyListState,
     chipboards: List<ChipboardUi>,
+    hasColor: Boolean,
     processIntent: (CountIntent) -> Unit,
 ) {
 
@@ -372,7 +383,7 @@ fun ListOfItems(
 
                         if (chipboard.isUnderReview) {
                             Text(
-                                text = stringResource(R.string.marked_as_deleted),
+                                text = stringResource(R.string.under_review),
                                 color = Color.Red.copy(alpha = 0.5f),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
@@ -397,14 +408,20 @@ fun ListOfItems(
                                 .padding(top = 16.dp)
                         )
                     }
-
-                    Box(
-                        modifier = Modifier
-                            .width(36.dp)
-                            .height(42.dp)
-                            .background(Color(chipboard.color))
-                            .border(width = 1.dp, color = Color.Black)
-                    )
+                    if (hasColor) {
+                        Box(
+                            modifier = Modifier
+                                .width(36.dp)
+                                .height(42.dp)
+                                .background(Color(chipboard.color))
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.Black,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .clip(RoundedCornerShape(4.dp))
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -567,14 +584,18 @@ fun CollectEffects(
                 CountEffect.ScrollToTop -> {
                     listState.animateScrollToItem(0)
                 }
+
                 CountEffect.ShowShareUnionDialog -> {
                     dialogState.value = DialogType.ShareCurrentUnion
                 }
 
-                CountEffect.ShowRemoveUnionDialog -> {
-                    dialogState.value = DialogType.RemoveCurrentUnion
+                CountEffect.ShowDeleteUnionDialog -> {
+                    dialogState.value = DialogType.DeleteCurrentUnion
                 }
 
+                CountEffect.ShowRestoreUnionDialog -> {
+                    dialogState.value = DialogType.RestoreCurrentUnion
+                }
 
                 CountEffect.NavigateToListsScreen -> {
                     navController.navigate(Screen.Lists.baseRoute)
@@ -588,6 +609,8 @@ fun CollectEffects(
                     navController.popBackStack()
                 }
 
+                CountEffect.ShowDeleteUnionDialog -> TODO()
+                CountEffect.ShowRestoreUnionDialog -> TODO()
             }
         }
     }

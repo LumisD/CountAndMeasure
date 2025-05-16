@@ -25,9 +25,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -40,6 +42,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
@@ -121,6 +124,12 @@ fun ChipboardAsStringField(chipboardAsString: String, hasColor: Boolean, color: 
                     .width(36.dp)
                     .height(42.dp)
                     .background(Color(color))
+                    .border(
+                        width = 1.dp,
+                        color = Color.Black,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .clip(RoundedCornerShape(4.dp))
             )
         }
     }
@@ -181,6 +190,7 @@ fun ShowDialog(
 @Composable
 private fun <T> ExpandHideFieldInternal(
     isAreaOpen: Boolean,
+    isRestoreIconShown: Boolean,
     processIntent: (T) -> Unit,
     intentFactory: () -> T,
     onShareClick: (T) -> Unit,
@@ -194,14 +204,15 @@ private fun <T> ExpandHideFieldInternal(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = { onShareClick(shareFactory()) },
+            onClick = { onDeleteClick(deleteFactory()) },
             modifier = Modifier
                 .size(48.dp)
-                .alpha(0.5f),
+                .alpha(0.35f)
         ) {
+            val icon = if (isRestoreIconShown) Icons.Filled.Restore else Icons.Filled.Delete
             Icon(
-                imageVector = Icons.Filled.Share,
-                contentDescription = "Share",
+                imageVector = icon,
+                contentDescription = "Delete/Restore",
             )
         }
 
@@ -221,14 +232,14 @@ private fun <T> ExpandHideFieldInternal(
         )
 
         IconButton(
-            onClick = { onDeleteClick(deleteFactory()) },
+            onClick = { onShareClick(shareFactory()) },
             modifier = Modifier
                 .size(48.dp)
-                .alpha(0.5f)
+                .alpha(0.35f),
         ) {
             Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete",
+                imageVector = Icons.Filled.Share,
+                contentDescription = "Share",
             )
         }
     }
@@ -238,6 +249,7 @@ private fun <T> ExpandHideFieldInternal(
 fun ExpandHideNewItemField(isAddAreaOpen: Boolean, processIntent: (AddNewItemIntent) -> Unit) {
     ExpandHideFieldInternal(
         isAddAreaOpen,
+        true,
         processIntent,
         intentFactory = { AddNewItemIntent.ToggleAddAreaVisibility },
         processIntent,
@@ -249,15 +261,16 @@ fun ExpandHideNewItemField(isAddAreaOpen: Boolean, processIntent: (AddNewItemInt
 
 
 @Composable
-fun ExpandHideCountField(isFindAreaOpen: Boolean, processIntent: (CountIntent) -> Unit) {
+fun ExpandHideCountField(isFindAreaOpen: Boolean, isRestoreIconShown: Boolean, processIntent: (CountIntent) -> Unit) {
     ExpandHideFieldInternal(
         isFindAreaOpen,
+        isRestoreIconShown,
         processIntent,
         intentFactory = { CountIntent.ToggleFindAreaVisibility },
         processIntent,
         shareFactory = { CountIntent.PressToShareUnion },
         processIntent,
-        deleteFactory = { CountIntent.PressToDeleteUnion },
+        deleteFactory = { CountIntent.PressToDeleteOrRestoreUnion },
     )
 }
 
