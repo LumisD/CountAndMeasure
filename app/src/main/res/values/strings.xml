@@ -56,4 +56,5 @@
     <string name="are_you_sure_delete_union">Are you sure you want to delete\n%1$s?</string>
     <string name="are_you_sure_delete_current_list_chipboards">Are you sure you want to delete current list of chipboards?\n(If you choose Delete - in any case, this list will be stored for another 30 days before being permanently deleted)</string>
     <string name="are_you_sure_restore_current_list_chipboards">Are you sure you want to restore current list of chipboards?</string>
+    <string name="finished">is finished</string>
 </resources>

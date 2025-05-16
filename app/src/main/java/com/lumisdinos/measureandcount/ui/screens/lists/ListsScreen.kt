@@ -77,24 +77,29 @@ fun ListOfItems(unions: List<UnionOfChipboardsUI>, processIntent: (ListsIntent) 
                     .height(60.dp)
                     .background(if (union.isFinished) Grayish else Color.White)
                     .clickable { processIntent(ListsIntent.PressOnItemInList(union)) }
-                    .padding(start = 16.dp, end = 16.dp),
-                contentAlignment = Alignment.CenterStart
+                    .padding(start = 16.dp, end = 16.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.Start
                 ) {
                     Text(
                         text = union.title,
                         style = MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .align(Alignment.CenterVertically)
-                            .padding(end = 8.dp),
+                        modifier = Modifier.weight(1f),
                         minLines = 2,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
+                    )
+                }
+                if (union.isFinished) {
+                    Text(
+                        text = stringResource(R.string.finished),
+                        color = Color.Red,
+                        fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
                     )
                 }
                 if (union.isMarkedAsDeleted) {
