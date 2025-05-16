@@ -19,7 +19,8 @@ interface MeasureAndCountRepository {
         hasColor: Boolean,
         titleColumn1: String,
         titleColumn2: String,
-        titleColumn3: String
+        titleColumn3: String,
+        updatedAt: Long
     )
 
     suspend fun setUnionOfChipboardsIsFinished(unionId: Int, isFinished: Boolean, updatedAt: Long)

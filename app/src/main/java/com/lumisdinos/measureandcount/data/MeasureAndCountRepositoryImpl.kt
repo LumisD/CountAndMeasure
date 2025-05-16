@@ -39,7 +39,8 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         hasColor: Boolean,
         titleColumn1: String,
         titleColumn2: String,
-        titleColumn3: String
+        titleColumn3: String,
+        updatedAt: Long
     ) {
         unionOfChipboardsDao.updateUnionCharacteristics(
             unionId,
@@ -48,7 +49,8 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
             hasColor,
             titleColumn1,
             titleColumn2,
-            titleColumn3
+            titleColumn3,
+            updatedAt
         )
     }
 

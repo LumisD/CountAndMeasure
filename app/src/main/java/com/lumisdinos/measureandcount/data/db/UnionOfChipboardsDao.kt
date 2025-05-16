@@ -25,7 +25,8 @@ interface UnionOfChipboardsDao {
         has_color = :hasColor,
         title_column1 = :titleColumn1,
         title_column2 = :titleColumn2,
-        title_column3 = :titleColumn3
+        title_column3 = :titleColumn3,
+        updated_at = :updatedAt
     WHERE id = :unionId
 """
     )
@@ -36,7 +37,8 @@ interface UnionOfChipboardsDao {
         hasColor: Boolean,
         titleColumn1: String,
         titleColumn2: String,
-        titleColumn3: String
+        titleColumn3: String,
+        updatedAt: Long
     )
 
     @Query("UPDATE union_of_chipboards SET is_finished = :isFinished, updated_at = :updatedAt WHERE id = :unionId")

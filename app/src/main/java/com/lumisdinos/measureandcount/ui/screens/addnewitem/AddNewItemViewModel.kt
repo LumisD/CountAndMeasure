@@ -393,7 +393,8 @@ class AddNewItemViewModel @Inject constructor(
                 itemType.hasColor,
                 titles.getOrElse(0) { "" },
                 titles.getOrElse(1) { "" },
-                titles.getOrElse(2) { "" }
+                titles.getOrElse(2) { "" },
+                System.currentTimeMillis()
             )
 
             _state.update { currentState ->
