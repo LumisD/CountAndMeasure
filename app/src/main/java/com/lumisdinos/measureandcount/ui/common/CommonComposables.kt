@@ -249,7 +249,7 @@ private fun <T> ExpandHideFieldInternal(
 fun ExpandHideNewItemField(isAddAreaOpen: Boolean, processIntent: (AddNewItemIntent) -> Unit) {
     ExpandHideFieldInternal(
         isAddAreaOpen,
-        true,
+        false,
         processIntent,
         intentFactory = { AddNewItemIntent.ToggleAddAreaVisibility },
         processIntent,
