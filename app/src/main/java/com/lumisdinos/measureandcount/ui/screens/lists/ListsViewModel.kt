@@ -3,6 +3,7 @@ package com.lumisdinos.measureandcount.ui.screens.lists
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
 import com.lumisdinos.measureandcount.data.db.model.UnionOfChipboards
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboardsUI
@@ -29,22 +30,27 @@ class ListsViewModel @Inject constructor(
     private val _effect = Channel<ListsEffects>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
+
     init {
         viewModelScope.launch {
             chipboardRepository.getAllUnionsFlow()
-                .collect { unions ->
+                .collect { unionsFromDb ->
                     val thirtyDaysAgo = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L)
 
-                    val (unionsToDelete, unionsToKeep) = unions.partition { union ->
+                    val (unionsToDelete, potentiallyKeptUnionsFromDb) = unionsFromDb.partition { union ->
                         union.isMarkedAsDeleted && maxOf(union.createdAt, union.updatedAt) < thirtyDaysAgo
                     }
 
-                    unionsToDelete.forEach { union ->
-                        chipboardRepository.deleteUnionOfChipboards(union.id)
-                        chipboardRepository.deleteAllChipboardsByUnionId(union.id)
+                    val currentTime = System.currentTimeMillis()
+                    val processedUnions = potentiallyKeptUnionsFromDb.map { union ->
+                        if (union.title.isBlank()) {
+                            union.copy(title = context.getString(R.string.no_title), updatedAt = currentTime)
+                        } else {
+                            union
+                        }
                     }
 
-                    val sortedUnions = unionsToKeep.sortedWith(
+                    val sortedUnionsForUi = processedUnions.sortedWith(
                         compareBy<UnionOfChipboards> {
                             if (it.isMarkedAsDeleted) 2 else {
                                 if (it.isFinished) 1 else 0
@@ -53,11 +59,26 @@ class ListsViewModel @Inject constructor(
                     ).map {
                         it.toUnionOfChipboardsUI()
                     }
-                    _state.update { it.copy(listOfUnions = sortedUnions) }
-                }
+                    _state.update { it.copy(listOfUnions = sortedUnionsForUi) }
 
+                    unionsToDelete.forEach { union ->
+                        chipboardRepository.deleteUnionOfChipboards(union.id)
+                        chipboardRepository.deleteAllChipboardsByUnionId(union.id)
+                    }
+
+                    potentiallyKeptUnionsFromDb.forEach { originalUnion ->
+                        if (originalUnion.title.isBlank()) {
+                            chipboardRepository.updateUnionOfChipboardsTitle(
+                                originalUnion.id,
+                                context.getString(R.string.no_title),
+                                currentTime
+                            )
+                        }
+                    }
+                }
         }
     }
+
 
     fun processIntent(intent: ListsIntent) {
         when (intent) {

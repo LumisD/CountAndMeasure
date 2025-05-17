@@ -44,6 +44,8 @@ class CountViewModel @Inject constructor(
         when (intent) {
             is CountIntent.SetUnionId -> setUnionOfChipboardsAndRelatedChipboards(intent.unionId)
 
+            is CountIntent.TitleOfUnionChanged -> updateUnionTitle(intent.newTitle)
+
             is CountIntent.SizeChanged -> {
                 sortBySize(intent.newSizeAsString, intent.dimension)
                 updateChipboardSize(intent.newSizeAsString, intent.dimension)
@@ -193,6 +195,18 @@ class CountViewModel @Inject constructor(
                 }
             }
 
+    }
+
+
+    private fun updateUnionTitle(newTitle: String) {
+        viewModelScope.launch {
+            chipboardRepository.updateUnionOfChipboardsTitle(
+                _state.value.unionOfChipboards.id,
+                newTitle,
+                System.currentTimeMillis()
+            )
+        }
+        _state.update { it.copy(unionOfChipboards = it.unionOfChipboards.copy(title = newTitle)) }
     }
 
 

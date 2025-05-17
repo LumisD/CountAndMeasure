@@ -6,6 +6,7 @@ import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 
 sealed interface CountIntent {
     data class SetUnionId(val unionId: Int?) : CountIntent
+    data class TitleOfUnionChanged(val newTitle: String) : CountIntent
     data class SizeChanged(val newSizeAsString: String, val dimension: Int) : CountIntent
     data class RealSizeChanged(val newDiffAsString: String, val dimension: Int) : CountIntent
     data class QuantityChanged(val newQuantityAsString: String) : CountIntent

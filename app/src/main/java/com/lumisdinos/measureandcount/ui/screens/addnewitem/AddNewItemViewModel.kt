@@ -232,7 +232,7 @@ class AddNewItemViewModel @Inject constructor(
     private fun updateUnionTitle(newTitle: String) {
         viewModelScope.launch {
             chipboardRepository.updateUnionOfChipboardsTitle(
-                _state.value.newOrEditChipboard.unionId,
+                _state.value.unionOfChipboards.id,
                 newTitle,
                 System.currentTimeMillis()
             )

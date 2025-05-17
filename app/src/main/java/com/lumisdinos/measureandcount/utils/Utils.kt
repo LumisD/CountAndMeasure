@@ -20,18 +20,3 @@ fun getDefaultUnionTitle(context: Context): String {
         getCurrentDateTime()
     )
 }
-
-
-fun generateShareText(
-    chipboards: List<Shareable>,
-    unionDetails: UnionOfChipboardsUI
-): String {
-    val shareTextBuilder = StringBuilder()
-    val unionTitle = unionDetails.title
-    shareTextBuilder.appendLine("$unionTitle:")
-
-    chipboards.forEachIndexed { index, chipboard ->
-        shareTextBuilder.appendLine("${index + 1}. ${chipboard.getShareableString(unionDetails)}")
-    }
-    return shareTextBuilder.toString()
-}

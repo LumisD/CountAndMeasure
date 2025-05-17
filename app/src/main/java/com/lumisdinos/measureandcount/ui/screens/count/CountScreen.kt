@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Undo
@@ -494,13 +495,16 @@ fun TopBar(
             }
         }
         Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = unionOfChipboards.title,
-            style = MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp)
+        BasicTextField(
+            value = unionOfChipboards.title,
+            onValueChange = { newTitle ->
+                processIntent(CountIntent.TitleOfUnionChanged(newTitle))
+            },
+            textStyle = MaterialTheme.typography.titleLarge.copy(
+                fontSize = 19.sp,
+                textAlign = TextAlign.Center
+            ),
+            modifier = Modifier.weight(1f)
         )
         IconButton(
             onClick = { processIntent(CountIntent.SetListDone) },

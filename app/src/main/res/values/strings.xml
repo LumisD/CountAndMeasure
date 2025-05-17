@@ -66,4 +66,5 @@
     <string name="not_found_chipboards">Not found chipboards</string>
     <string name="found_chipboards">Found chipboards</string>
     <string name="found_chipboards_with_mismatched_sizes">Found chipboards with mismatched sizes</string>
+    <string name="no_title">no title</string>
 </resources>
