@@ -1,5 +1,6 @@
 package com.lumisdinos.measureandcount.ui.screens.count
 
+import android.content.Intent
 import com.lumisdinos.measureandcount.ui.screens.count.model.QuestionType
 import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 
@@ -17,6 +18,7 @@ sealed class CountEffect {
     data object ShowFieldDisabled : CountEffect()
     data object FlashFindItemArea : CountEffect()
     data object ScrollToTop : CountEffect()
+    data class ShareUnion(val shareIntent: Intent): CountEffect()
     data object NavigateToListsScreen : CountEffect()
     data object NavigateToNewScreen : CountEffect()
     data object NavigateBack : CountEffect()

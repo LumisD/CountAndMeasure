@@ -1,6 +1,8 @@
 package com.lumisdinos.measureandcount.ui.screens.count.model
 
 import com.lumisdinos.measureandcount.data.db.model.Chipboard
+import com.lumisdinos.measureandcount.ui.model.Shareable
+import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 
 data class ChipboardUi(
     val id: Int = 0,
@@ -29,7 +31,77 @@ data class ChipboardUi(
     val isUnderReview: Boolean = false//if true - enable: Found button, "real size" editors
     // AND disable: Unknown button,size editors, quantity editor, color editor
     //if false - all opposite
-)
+) : Shareable {
+
+    override fun getShareableString(union: UnionOfChipboardsUI): String {
+        val builder = StringBuilder()
+        val realSizeBuilder = StringBuilder()
+        val dimensions = union.dimensions
+        val direction = union.direction
+        var isAllRealsEmpty = true
+
+        for (i in 1..dimensions) {
+            if (direction == i) {
+                builder.append("↑")
+                realSizeBuilder.append(" ")
+            }
+
+            val sizeString = when (i) {
+                1 -> size1.toString()
+                2 -> size2.toString()
+                3 -> size3.toString()
+                else -> ""
+            }
+            builder.append(sizeString)
+
+            val realSize = when (i) {
+                1 -> realSize1
+                2 -> realSize2
+                3 -> realSize3
+                else -> 0f
+            }
+            if (realSize != 0f) {
+                isAllRealsEmpty = false
+                val realSizeString = realSize.toString()
+                realSizeBuilder.append(realSizeString)
+                if (sizeString.length > realSizeString.length) {
+                    realSizeBuilder.append(" ".repeat(sizeString.length - realSizeString.length))
+                }
+            } else {
+                realSizeBuilder.append(" ".repeat(sizeString.length))
+            }
+
+
+            if (i < dimensions) {
+                builder.append(" x ")
+                realSizeBuilder.append("    ")
+            }
+        }
+        builder.append(" - $quantity")
+        if (union.hasColor && colorName.isNotBlank()) {
+            builder.append(" ($colorName)")
+        }
+        val stateText = when (state) {
+            0 -> " (Not Found)"
+            1 -> " (Found)"
+            else -> ""
+        }
+        builder.append(stateText)
+
+        if (!isAllRealsEmpty) {
+            //so, final result will consist of two lines:
+            //↑12.5 x 54.0 - 3 White (Found)
+            // 12.1   52
+            realSizeBuilder.append("      <- real size")
+            builder.appendLine()
+            builder.append(realSizeBuilder.toString().trimEnd())
+
+        }
+
+        return builder.toString()
+    }
+
+}
 
 fun ChipboardUi.toChipboard(): Chipboard {
     return Chipboard(

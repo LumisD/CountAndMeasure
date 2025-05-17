@@ -3,6 +3,8 @@ package com.lumisdinos.measureandcount.ui.screens.addnewitem.model
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.lumisdinos.measureandcount.data.db.model.Chipboard
+import com.lumisdinos.measureandcount.ui.model.Shareable
+import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 
 data class ChipboardUi(
     val id: Int = 0,
@@ -19,7 +21,33 @@ data class ChipboardUi(
     val size2AsString: String = "",
     val size3AsString: String = "",
     val chipboardAsString: String = ""
-)
+) : Shareable {
+
+    override fun getShareableString(union: UnionOfChipboardsUI): String {
+        val builder = StringBuilder()
+        val dimensions = union.dimensions
+        val direction = union.direction
+
+        for (i in 1..dimensions) {
+            if (direction == i) {
+                builder.append("↑")
+            }
+            when (i) {
+                1 -> builder.append(size1)
+                2 -> builder.append(size2)
+                3 -> builder.append(size3)
+            }
+            if (i < dimensions) {
+                builder.append(" x ")
+            }
+        }
+        builder.append(" - $quantity")
+        if (union.hasColor && colorName.isNotBlank()) {
+            builder.append(" ($colorName)")
+        }
+        return builder.toString()
+    }
+}
 
 fun ChipboardUi.toChipboard(): Chipboard {
     return Chipboard(

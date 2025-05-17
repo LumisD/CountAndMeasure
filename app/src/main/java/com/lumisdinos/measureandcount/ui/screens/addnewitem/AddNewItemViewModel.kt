@@ -1,7 +1,7 @@
 package com.lumisdinos.measureandcount.ui.screens.addnewitem
 
 import android.content.Context
-import android.util.Log
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumisdinos.measureandcount.R
@@ -12,7 +12,7 @@ import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.toChipboard
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboards
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.toChipboardUi
-import com.lumisdinos.measureandcount.utils.getCurrentDateTime
+import com.lumisdinos.measureandcount.utils.getDefaultUnionTitle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
@@ -44,13 +44,9 @@ class AddNewItemViewModel @Inject constructor(
 
     private fun createNewUnion() {
         viewModelScope.launch {
-            val titleTemplate = String.format(
-                context.getString(R.string.chipboard_sheet_list_title),
-                getCurrentDateTime()
-            )
             val newUnion =
                 UnionOfChipboardsUI(
-                    title = titleTemplate,
+                    title = getDefaultUnionTitle(context),
                     isFinished = false,
                     createdAt = System.currentTimeMillis()
                 )
@@ -117,9 +113,7 @@ class AddNewItemViewModel @Inject constructor(
 
             AddNewItemIntent.PressToDeleteUnion -> pressedToDeleteUnion()
 
-            AddNewItemIntent.PressToShareUnion -> viewModelScope.launch {//todo
-                _effect.send(AddNewItemEffect.ShowShareUnionDialog)
-            }
+            AddNewItemIntent.PressToShareUnion -> checkBeforeShare()
 
             AddNewItemIntent.Back -> {
                 viewModelScope.launch {
@@ -278,9 +272,54 @@ class AddNewItemViewModel @Inject constructor(
     }
 
 
+    private fun checkBeforeShare() {
+        viewModelScope.launch {
+            if (_state.value.createdChipboards.isEmpty()) {
+                _effect.send(AddNewItemEffect.ShowSnackbar(context.getString(R.string.no_chipboards_to_share)))
+            } else {
+                _effect.send(AddNewItemEffect.ShowShareUnionDialog)
+            }
+        }
+    }
+
+
     private fun shareUnion() {
-        //todo
-        //share union's chipboards
+        viewModelScope.launch {
+            val currentUnion = _state.value.unionOfChipboards
+            val unionId = currentUnion.id
+            val chipboards =
+                chipboardRepository.getChipboardsByUnionId(unionId).map { it.toChipboardUi() }
+
+            if (chipboards.isEmpty()) {
+                _effect.send(AddNewItemEffect.ShowSnackbar(context.getString(R.string.no_chipboards_to_share)))
+                return@launch
+            }
+
+            val unionTitle = currentUnion.title.ifEmpty { getDefaultUnionTitle(context) }
+            val textToShareBuilder = StringBuilder()
+
+            textToShareBuilder.appendLine(unionTitle)
+            textToShareBuilder.appendLine()
+
+            chipboards.forEachIndexed { index, chipboard ->
+                textToShareBuilder.appendLine(
+                    "${index + 1}. ${chipboard.getShareableString(currentUnion)}"
+                )
+            }
+
+            val textToShare = textToShareBuilder.toString().trim()
+
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, textToShare)
+                putExtra(Intent.EXTRA_SUBJECT, unionTitle)
+                type = "text/plain"
+            }
+
+            val shareIntent =
+                Intent.createChooser(sendIntent, context.getString(R.string.share_chipboards))
+            _effect.send(AddNewItemEffect.ShareUnion(shareIntent))
+        }
     }
 
 

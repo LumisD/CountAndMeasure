@@ -1,5 +1,7 @@
 package com.lumisdinos.measureandcount.ui.screens.count
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +14,9 @@ import com.lumisdinos.measureandcount.ui.screens.count.model.ConfirmationType
 import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 import com.lumisdinos.measureandcount.ui.screens.count.model.toChipboard
 import com.lumisdinos.measureandcount.ui.screens.count.model.toChipboardUi
+import com.lumisdinos.measureandcount.utils.getDefaultUnionTitle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CountViewModel @Inject constructor(
-    private val chipboardRepository: MeasureAndCountRepository
+    private val chipboardRepository: MeasureAndCountRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CountState())
@@ -230,7 +235,7 @@ class CountViewModel @Inject constructor(
         //set in the chipboard isUnderReview = true (also in the list), isFoundButtonAvailable = true
         //set chipboard in state.chipboardToFind
         //set state.isFoundAreaOpen = true
-        //FlashFindItemArea as _effect.send(AddNewItemEffect.FlashFindItemArea)
+        //FlashFindItemArea as _effect.send(CountEffect.FlashFindItemArea)
 
         //logic for chipboard with state = 2 - unknown
         //set chipboard isUnderReview = false in the list for all chipboards, isFoundButtonAvailable = false
@@ -802,8 +807,80 @@ class CountViewModel @Inject constructor(
 
 
     private fun shareUnion() {
-        //todo
-        //share union's chipboards
+        viewModelScope.launch {
+            val currentUnion = _state.value.unionOfChipboards
+            val unionId = currentUnion.id
+            val chipboards =
+                chipboardRepository.getChipboardsByUnionId(unionId).map { it.toChipboardUi() }
+
+            if (chipboards.isEmpty()) {
+                _effect.send(CountEffect.ShowSnackbar(context.getString(R.string.no_chipboards_to_share)))
+                return@launch
+            }
+
+            val unknownChipboards = chipboards.filter { it.state == 2 }
+            val notFoundChipboards = chipboards.filter { it.state == 0 }
+            val foundChipboards = chipboards.filter { it.state == 1 }
+
+            val foundWithRealSize = foundChipboards.filter {
+                it.realSize1 > 0f || it.realSize2 > 0f || it.realSize3 > 0f
+            }
+            val foundWithoutRealSize = foundChipboards.filterNot {
+                it.realSize1 > 0f || it.realSize2 > 0f || it.realSize3 > 0f
+            }
+
+            val unionTitle = currentUnion.title.ifEmpty { getDefaultUnionTitle(context) }
+            val textToShareBuilder = StringBuilder()
+
+            textToShareBuilder.appendLine(unionTitle)
+            textToShareBuilder.appendLine()
+
+            fun appendChipboardSection(
+                titleKey: Int,
+                list: List<ChipboardUi>
+            ) {
+                if (list.isNotEmpty()) {
+                    textToShareBuilder.appendLine(context.getString(titleKey))
+                    list.forEachIndexed { index, chipboard ->
+                        val prefix = "${index + 1}. "
+                        val shareableString = chipboard.getShareableString(currentUnion)
+
+                        if (list === foundWithRealSize && shareableString.contains('\n')) {
+                            val lines = shareableString.split('\n', limit = 2)
+                            textToShareBuilder.appendLine("$prefix${lines[0]}")
+                            if (lines.size > 1) {
+                                val padding = " ".repeat(prefix.length)
+                                textToShareBuilder.appendLine("$padding${lines[1]}")
+                            }
+                        } else {
+                            textToShareBuilder.appendLine("$prefix$shareableString")
+                        }
+                    }
+                    textToShareBuilder.appendLine()
+                }
+            }
+
+            appendChipboardSection(R.string.not_found_chipboards, notFoundChipboards)
+            appendChipboardSection(R.string.unknown_chipboards, unknownChipboards)
+            appendChipboardSection(
+                R.string.found_chipboards_with_mismatched_sizes,
+                foundWithRealSize
+            )
+            appendChipboardSection(R.string.found_chipboards, foundWithoutRealSize)
+
+            val textToShare = textToShareBuilder.toString().trim()
+
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, textToShare)
+                putExtra(Intent.EXTRA_SUBJECT, unionTitle)
+                type = "text/plain"
+            }
+
+            val shareIntent =
+                Intent.createChooser(sendIntent, context.getString(R.string.share_chipboards))
+            _effect.send(CountEffect.ShareUnion(shareIntent))
+        }
     }
 
 

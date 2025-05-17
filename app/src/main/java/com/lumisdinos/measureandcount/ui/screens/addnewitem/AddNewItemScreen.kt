@@ -51,6 +51,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -377,6 +378,7 @@ fun CollectEffects(
     navController: NavController,
     snackbarHostState: SnackbarHostState
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
@@ -403,6 +405,10 @@ fun CollectEffects(
 
                 AddNewItemEffect.ShowShareUnionDialog -> {
                     dialogState.value = DialogType.ShareCurrentUnion
+                }
+
+                is AddNewItemEffect.ShareUnion -> {
+                    context.startActivity(effect.shareIntent)
                 }
 
                 AddNewItemEffect.ShowRemoveUnionDialog -> {

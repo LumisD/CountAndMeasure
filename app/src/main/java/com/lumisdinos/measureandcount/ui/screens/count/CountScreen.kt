@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -538,6 +539,7 @@ fun CollectEffects(
     viewModel: CountViewModel,
     snackbarHostState: SnackbarHostState
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
@@ -595,6 +597,10 @@ fun CollectEffects(
 
                 CountEffect.ShowRestoreUnionDialog -> {
                     dialogState.value = DialogType.RestoreCurrentUnion
+                }
+
+                is CountEffect.ShareUnion -> {
+                    context.startActivity(effect.shareIntent)
                 }
 
                 CountEffect.NavigateToListsScreen -> {

@@ -170,10 +170,10 @@ fun ChooseDialogType(
                 onConfirm = { dialogState.value = DialogType.None }
             }
 
-            DialogType.ShareCurrentUnion -> {//todo
-                title = stringResource(R.string.confirm_deletion)
-                text = stringResource(R.string.are_you_sure_delete_current_list_chipboards)
-                confirmText = stringResource(R.string.delete)
+            DialogType.ShareCurrentUnion -> {
+                title = stringResource(R.string.confirm_sharing)
+                text = stringResource(R.string.are_you_sure_share_current_list_chipboards)
+                confirmText = stringResource(R.string.share)
                 dismissText = stringResource(R.string.cancel)
                 onConfirm = {
                     processIntent(
@@ -290,10 +290,10 @@ fun ChooseDialogTypes(
                 }
             }
 
-            AddNewItemDialogType.ShareCurrentUnion -> {//todo
-                title = stringResource(R.string.confirm_deletion)
-                text = stringResource(R.string.are_you_sure_delete_current_list_chipboards)
-                confirmText = stringResource(R.string.delete)
+            AddNewItemDialogType.ShareCurrentUnion -> {
+                title = stringResource(R.string.confirm_sharing)
+                text = stringResource(R.string.are_you_sure_share_current_list_chipboards)
+                confirmText = stringResource(R.string.share)
                 dismissText = stringResource(R.string.cancel)
                 onConfirm = {
                     processIntent(AddNewItemIntent.SharingUnionConfirmed)

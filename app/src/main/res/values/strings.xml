@@ -12,6 +12,7 @@
     <string name="add">Add</string>
     <string name="item_deleted">Item deleted</string>
     <string name="delete">Delete</string>
+    <string name="share">Share</string>
     <string name="restore">Restore</string>
     <string name="edit">Edit</string>
     <string name="uncheck">Uncheck</string>
@@ -26,6 +27,7 @@
     <string name="unknown">Unknown</string>
     <string name="back">Back</string>
     <string name="what_is">What is</string>
+    <string name="confirm_sharing">Confirm sharing</string>
     <string name="confirm_deletion">Confirm deletion</string>
     <string name="confirm_restoring">Confirm restoring</string>
     <string name="confirm_uncheck">Confirm uncheck</string>
@@ -55,6 +57,13 @@
     <string name="are_you_sure_uncheck">Are you sure you want to set\n%1$s (%2$s)?\nas not found yet?\n(The item will remain in the list\nReal sizes will be empty)</string>
     <string name="are_you_sure_delete_union">Are you sure you want to delete\n%1$s?</string>
     <string name="are_you_sure_delete_current_list_chipboards">Are you sure you want to delete current list of chipboards?\n(If you choose Delete - in any case, this list will be stored for another 30 days before being permanently deleted)</string>
+    <string name="are_you_sure_share_current_list_chipboards">Are you sure you want to share current list of chipboards?</string>
     <string name="are_you_sure_restore_current_list_chipboards">Are you sure you want to restore current list of chipboards?</string>
     <string name="finished">is finished</string>
+    <string name="no_chipboards_to_share">No chipboard to share!</string>
+    <string name="share_chipboards">Share chipboards</string>
+    <string name="unknown_chipboards">Unknown chipboards</string>
+    <string name="not_found_chipboards">Not found chipboards</string>
+    <string name="found_chipboards">Found chipboards</string>
+    <string name="found_chipboards_with_mismatched_sizes">Found chipboards with mismatched sizes</string>
 </resources>

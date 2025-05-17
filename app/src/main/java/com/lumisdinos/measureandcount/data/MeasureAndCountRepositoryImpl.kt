@@ -148,6 +148,10 @@ class MeasureAndCountRepositoryImpl @Inject constructor(
         chipboardDao.deleteAllChipboardsByUnionId(unionId)
     }
 
+    override suspend fun getChipboardsByUnionId(unionId: Int): List<Chipboard> {
+        return chipboardDao.getChipboardsByUnionId(unionId)
+    }
+
     override fun getChipboardsByUnionIdFlow(unionId: Int): Flow<List<Chipboard>> {
         return chipboardDao.getChipboardsFlowByUnionId(unionId)
     }
