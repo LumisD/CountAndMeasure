@@ -54,9 +54,14 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.lumisdinos.measureandcount.BANNER_AD_UNIT_ID
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.ui.common.AddItemColorField
 import com.lumisdinos.measureandcount.ui.common.ChipboardAsStringField
@@ -110,7 +115,7 @@ fun AddNewItemScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
@@ -119,11 +124,15 @@ fun AddNewItemScreen(
             if (itemType != null) AddNewItemArea(itemType, state, shouldFlash, viewModel)
         }
         ExpandHideNewItemField(state.isAddAreaOpen, viewModel::processIntent)
-        ListOfNewItems(
-            state.unionOfChipboards.hasColor,
-            state.createdChipboards,
-            viewModel::processIntent
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            ListOfNewItems(
+                state.unionOfChipboards.hasColor,
+                state.createdChipboards,
+                viewModel::processIntent
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        BannerAdView(BANNER_AD_UNIT_ID)
     }
 }
 
@@ -367,6 +376,21 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
     Spacer(modifier = Modifier.height(8.dp))
     HorizontalDivider(thickness = 2.dp, color = Color.Gray)
     Spacer(modifier = Modifier.height(8.dp))
+}
+
+
+@Composable
+fun BannerAdView(adUnitId: String) {
+    AndroidView(
+        modifier = Modifier.fillMaxWidth().height(100.dp),
+        factory = { context ->
+            AdView(context).apply {
+                setAdSize(AdSize.LARGE_BANNER)
+                this.adUnitId = adUnitId
+                loadAd(AdRequest.Builder().build())
+            }
+        }
+    )
 }
 
 

@@ -27,7 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lumisdinos.measureandcount.R
-import com.lumisdinos.measureandcount.defaultUnionId
+import com.lumisdinos.measureandcount.DEFAULT_UNION_ID
 import com.lumisdinos.measureandcount.ui.screens.count.CountScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
 import com.lumisdinos.measureandcount.ui.screens.lists.ListsScreen
@@ -153,7 +153,7 @@ fun BottomNavigationBar(navController: NavHostController, currentRoute: String?)
                 selected = screen.baseRoute == currentRoute,
                 onClick = {
                     val routeToNavigate = when (screen) {
-                        is Screen.Count -> Screen.Count.routeWithArgs(defaultUnionId)
+                        is Screen.Count -> Screen.Count.routeWithArgs(DEFAULT_UNION_ID)
                         else -> screen.baseRoute
                     }
                     navController.navigate(routeToNavigate) {

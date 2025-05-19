@@ -2,12 +2,11 @@ package com.lumisdinos.measureandcount.ui.screens.count
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.data.MeasureAndCountRepository
-import com.lumisdinos.measureandcount.defaultUnionId
+import com.lumisdinos.measureandcount.DEFAULT_UNION_ID
 import com.lumisdinos.measureandcount.ui.model.UnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.model.toUnionOfChipboardsUI
 import com.lumisdinos.measureandcount.ui.screens.count.model.ConfirmationType
@@ -132,9 +131,9 @@ class CountViewModel @Inject constructor(
 
     private fun setUnionOfChipboardsAndRelatedChipboards(unionId: Int?) {
         isInitialChipboardSetForCurrentUnion = false
-        _state.update { it.copy(isBackButtonVisible = !(unionId == null || unionId == defaultUnionId)) }
+        _state.update { it.copy(isBackButtonVisible = !(unionId == null || unionId == DEFAULT_UNION_ID)) }
         viewModelScope.launch {
-            if (unionId == null || unionId == defaultUnionId) {
+            if (unionId == null || unionId == DEFAULT_UNION_ID) {
                 val unionOfChip = chipboardRepository.getLastUnFinishedUnionOfChipboards()
                     ?.toUnionOfChipboardsUI()
                 getChipboards(unionOfChip)
