@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
     kotlin("plugin.serialization") version "1.9.20"
 }
 
@@ -24,12 +25,21 @@ android {
     }
 
     buildTypes {
+        debug {
+            isDebuggable = true
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = false
+            }
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = true
+            }
         }
     }
     compileOptions {
@@ -66,6 +76,8 @@ dependencies {
     testImplementation(libs.room.testing)
     implementation(libs.room.paging)
     implementation(libs.play.services.ads)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
