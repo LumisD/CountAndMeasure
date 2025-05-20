@@ -574,7 +574,8 @@ class CountViewModel @Inject constructor(
 
 
     private fun sortBySize(findSizeAsString: String, dimension: Int) {
-        //sort not found chipboard by this side:
+        //sort not found chipboard by this side (simpleSort) OR by several sizes (complicatedSort):
+        //here is a logic for simpleSort:
         //find a size by dimension (dimension = 1 -> size1, dimension = 2 -> size2, dimension = 3 -> size3)
         //then sort only those with state = 0
         //and sorting logic is: for example findSizeAsFloat = 1.0
@@ -593,39 +594,90 @@ class CountViewModel @Inject constructor(
         //g)then rest of chipboards
         //The logic has to be applied only to not found chipboards (state = 0) and only to chipboards with same dimension
 
-        _state.update { currentState ->
-            val chipboardsToSort = currentState.chipboards.filter { it.state == 0 }
-            val otherChipboards = currentState.chipboards.filter { it.state != 0 }
+        viewModelScope.launch {
+            val oldState = _state.value
+            var newState: CountState? = null
 
-            val sortedChipboards = chipboardsToSort.sortedWith(
-                compareBy { chipboard ->
+            _state.update { currentState ->
+                val chipboardsToSort = currentState.chipboards.filter { it.state == 0 }
+                val otherChipboards = currentState.chipboards.filter { it.state != 0 }
+                val direction = currentState.unionOfChipboards.direction
+                val dimensions = currentState.unionOfChipboards.dimensions
+
+                val matchingPrefixes = mutableListOf<String>()
+                var currentPrefixForSearch = findSizeAsString
+                while (currentPrefixForSearch.isNotEmpty()) {
+                    matchingPrefixes.add(currentPrefixForSearch)
+                    currentPrefixForSearch = currentPrefixForSearch.dropLast(1)
+                }
+
+                var bestMatchIndexOverall = Int.MAX_VALUE
+
+                fun simpleSort(chipboard: ChipboardUi) {
+                    // Sort by a specific dimension that triggered the sort
                     val chipboardSizeString = when (dimension) {
                         1 -> chipboard.size1AsString
                         2 -> chipboard.size2AsString
                         3 -> chipboard.size3AsString
                         else -> ""
                     }
-
-                    // Generate a list of matching prefixes for the current chipboard size
-                    val matchingPrefixes = mutableListOf<String>()
-                    var currentPrefix = findSizeAsString
-                    while (currentPrefix.isNotEmpty()) {
-                        matchingPrefixes.add(currentPrefix)
-                        currentPrefix = currentPrefix.dropLast(1)
-                    }
-
-                    // Find the index of the best match in the matchingPrefixes list
                     val bestMatchIndex = matchingPrefixes.indexOfFirst { prefix ->
                         chipboardSizeString.startsWith(prefix)
                     }
-
-                    // If no match is found, assign a high index to place it at the end
-                    if (bestMatchIndex == -1) Int.MAX_VALUE else bestMatchIndex
+                    bestMatchIndexOverall =
+                        if (bestMatchIndex == -1) Int.MAX_VALUE else bestMatchIndex
                 }
-            )
 
-            val finalSortedList = sortedChipboards + otherChipboards
-            currentState.copy(chipboards = finalSortedList)
+                fun complicatedSort(chipboard: ChipboardUi) {
+                    // Sort by the best match across all *active* dimensions for this item type
+                    val potentialSizesToCheck = mutableListOf<String>()
+
+                    if (dimensions >= 1) {
+                        potentialSizesToCheck.add(chipboard.size1AsString)
+                    }
+                    if (dimensions >= 2) {
+                        potentialSizesToCheck.add(chipboard.size2AsString)
+                    }
+                    if (dimensions >= 3) {
+                        potentialSizesToCheck.add(chipboard.size3AsString)
+                    }
+
+                    for (chipboardSizeString in potentialSizesToCheck) {
+                        if (chipboardSizeString.isNotEmpty()) {
+                            val currentDimensionMatchIndex =
+                                matchingPrefixes.indexOfFirst { prefix ->
+                                    chipboardSizeString.startsWith(prefix)
+                                }
+                            if (currentDimensionMatchIndex != -1 && currentDimensionMatchIndex < bestMatchIndexOverall) {
+                                bestMatchIndexOverall = currentDimensionMatchIndex
+                            }
+                        }
+                    }
+                }
+
+
+                val sortedChipboards = chipboardsToSort.sortedWith(
+                    compareBy { chipboard ->
+                        if (dimensions == 1 || direction != 0 && dimensions == 2) {
+                            simpleSort(chipboard)
+                        } else if (direction == 0 && dimensions >= 2 || direction != 0 && dimensions == 3) {
+                            complicatedSort(chipboard)
+                        }
+
+                        bestMatchIndexOverall
+                    }
+                )
+
+                val finalSortedList = sortedChipboards + otherChipboards
+                _effect.send(CountEffect.ScrollToTop)//todo
+                newState = currentState.copy(chipboards = finalSortedList)
+                newState!!
+            }
+
+            while (_state.value === oldState || _state.value != newState) {
+                kotlinx.coroutines.delay(10)
+            }
+            _effect.send(CountEffect.ScrollToTop)
         }
     }
 
