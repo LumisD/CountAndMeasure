@@ -630,6 +630,7 @@ class CountViewModel @Inject constructor(
 
                 fun complicatedSort(chipboard: ChipboardUi) {
                     // Sort by the best match across all *active* dimensions for this item type
+                    bestMatchIndexOverall = Int.MAX_VALUE
                     val potentialSizesToCheck = mutableListOf<String>()
 
                     if (dimensions >= 1) {
