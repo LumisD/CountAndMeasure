@@ -33,7 +33,12 @@ data class ChipboardUi(
     //if false - all opposite
 ) : Shareable {
 
-    override fun getShareableString(union: UnionOfChipboardsUI): String {
+    override fun getShareableString(
+        union: UnionOfChipboardsUI,
+        notFoundText: String,
+        foundText: String,
+        realSizeText: String
+    ): String {
         val builder = StringBuilder()
         val realSizeBuilder = StringBuilder()
         val dimensions = union.dimensions
@@ -82,8 +87,8 @@ data class ChipboardUi(
             builder.append(" ($colorName)")
         }
         val stateText = when (state) {
-            0 -> " (Not Found)"
-            1 -> " (Found)"
+            0 -> notFoundText
+            1 -> foundText
             else -> ""
         }
         builder.append(stateText)
@@ -92,7 +97,7 @@ data class ChipboardUi(
             //so, final result will consist of two lines:
             //↑12.5 x 54.0 - 3 White (Found)
             // 12.1   52
-            realSizeBuilder.append("      <- real size")
+            realSizeBuilder.append("      <- $realSizeText")
             builder.appendLine()
             builder.append(realSizeBuilder.toString().trimEnd())
 

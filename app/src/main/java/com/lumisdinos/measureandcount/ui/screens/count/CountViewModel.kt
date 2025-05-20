@@ -911,7 +911,12 @@ class CountViewModel @Inject constructor(
                     textToShareBuilder.appendLine(context.getString(titleKey))
                     list.forEachIndexed { index, chipboard ->
                         val prefix = "${index + 1}. "
-                        val shareableString = chipboard.getShareableString(currentUnion)
+                        val shareableString = chipboard.getShareableString(
+                            currentUnion,
+                            context.getString(R.string.not_found_in_brackets),
+                            context.getString(R.string.found_in_brackets),
+                            context.getString(R.string.real_size)
+                        )
 
                         if (list === foundWithRealSize && shareableString.contains('\n')) {
                             val lines = shareableString.split('\n', limit = 2)

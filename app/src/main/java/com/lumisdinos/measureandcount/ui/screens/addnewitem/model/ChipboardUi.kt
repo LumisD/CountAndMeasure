@@ -23,7 +23,12 @@ data class ChipboardUi(
     val chipboardAsString: String = ""
 ) : Shareable {
 
-    override fun getShareableString(union: UnionOfChipboardsUI): String {
+    override fun getShareableString(
+        union: UnionOfChipboardsUI,
+        notFoundText: String,
+        foundText: String,
+        realSizeText: String
+    ): String {
         val builder = StringBuilder()
         val dimensions = union.dimensions
         val direction = union.direction
