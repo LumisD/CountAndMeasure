@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MeasureAndCount</string>
+    <string name="app_name">Measure and Count</string>
     <string name="width_column">Width</string>
     <string name="length_column">Length</string>
     <string name="height_column">Height</string>
