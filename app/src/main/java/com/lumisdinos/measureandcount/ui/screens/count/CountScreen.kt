@@ -102,7 +102,7 @@ fun CountScreen(
     val listState = rememberLazyListState()
 
     CollectEffects(navController, dialogState, shouldFlash, listState, viewModel, snackbarHostState)
-    ChooseDialogType(dialogState, viewModel::processIntent)//todo - implement share feature
+    ChooseDialogType(dialogState, viewModel::processIntent)
 
     //Actual screen
     if (state.messageForEmptyList != null) {
@@ -617,8 +617,6 @@ fun CollectEffects(
                     navController.popBackStack()
                 }
 
-                CountEffect.ShowDeleteUnionDialog -> TODO()
-                CountEffect.ShowRestoreUnionDialog -> TODO()
             }
         }
     }

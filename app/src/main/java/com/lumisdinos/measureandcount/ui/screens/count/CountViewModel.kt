@@ -53,7 +53,7 @@ class CountViewModel @Inject constructor(
             is CountIntent.QuantityChanged -> handleChangedQuantity(intent.newQuantityAsString)
 
             is CountIntent.ColorChanged -> {
-                sortByColor(intent.colorName, intent.color)
+                sortByColor(intent.colorName)
                 updateChipboardColor(intent.colorName, intent.color)
             }
 
@@ -488,8 +488,7 @@ class CountViewModel @Inject constructor(
                         }
                     }
 
-                    // qty of chipboardToFind < qty in db
-                    quantityFromToFind < quantityOriginalInDb -> {
+                    else -> {//quantityFromToFind < quantityOriginalInDb
                         if (similarFoundChipboard != null) {
                             // Similar found chipboard exists:
                             chipboardRepository.updateChipboardQuantity(//increase its quantity
@@ -670,7 +669,6 @@ class CountViewModel @Inject constructor(
                 )
 
                 val finalSortedList = sortedChipboards + otherChipboards
-                _effect.send(CountEffect.ScrollToTop)//todo
                 newState = currentState.copy(chipboards = finalSortedList)
                 newState!!
             }
@@ -749,7 +747,7 @@ class CountViewModel @Inject constructor(
     }
 
 
-    private fun sortByColor(colorName: String, color: Int) {
+    private fun sortByColor(colorName: String) {
         //sort not found chipboard by colorName among those only with state = 0
         //and sorting logic is: for example colorName = "White"
         //a) first find a colorName with  "White" and place them on top (if more than one chipboard is found)
