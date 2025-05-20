@@ -88,7 +88,7 @@ fun SizeCountOutlinedEditor(
     dimension: Int,
     onSizeChanged: (CountIntent) -> Unit,
     width: Dp = 150.dp,
-    height: Dp = 60.dp
+    height: Dp = 70.dp
 ) {
     OutlinedEditorInternal(
         width, height, label, value, dimension,
@@ -105,7 +105,7 @@ fun NewItemOutlinedEditor(
     dimension: Int,
     onSizeChanged: (AddNewItemIntent) -> Unit,
     width: Dp = 150.dp,
-    height: Dp = 60.dp
+    height: Dp = 70.dp
 ) {
     OutlinedEditorInternal(
         width, height, label, value, dimension,
@@ -120,7 +120,7 @@ fun QuantityNewItemOutlinedEditor(
     value: String,
     onQuantityChanged: (AddNewItemIntent) -> Unit,
     width: Dp = 150.dp,
-    height: Dp = 60.dp
+    height: Dp = 70.dp
 ) {
     OutlinedEditorInternal(
         width, height, label, value,

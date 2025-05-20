@@ -261,9 +261,7 @@ fun WidthLengthFields(
                             label = name,
                             value = sizeOfDim,
                             dimension = i,
-                            onSizeChanged = processIntent,
-                            width = 150.dp,
-                            height = 60.dp
+                            onSizeChanged = processIntent
                         )
                     }
                 )
