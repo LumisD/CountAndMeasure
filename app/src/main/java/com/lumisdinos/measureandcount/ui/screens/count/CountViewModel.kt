@@ -177,10 +177,14 @@ class CountViewModel @Inject constructor(
                     )
                 }
 
+                if (updatedChipboards.isEmpty()) {
+                    deleteUnion(hasToDeleteCompletely = true)
+                    return@collect
+                }
 
                 _state.update {
                     val updatedState = it.copy(
-                        messageForEmptyList = if (updatedChipboards.isEmpty()) R.string.this_list_not_contains_any_chipboards else null,
+                        messageForEmptyList =  null,
                         chipboards = updatedChipboards,
                     )
                     if (!isInitialChipboardSetForCurrentUnion) {
@@ -948,19 +952,24 @@ class CountViewModel @Inject constructor(
     }
 
 
-    private fun deleteUnion() {
-        //set unionOfChipboards.isMarkedAsDeleted to true and updatedAt = System.currentTimeMillis()
-        //save unionOfChipboards in db
-        //check if db has unionOfChipboards at least on
-        //  if yes - go to ListsScreen
-        //  if no - go to NewScreen
-
+    private fun deleteUnion(hasToDeleteCompletely: Boolean = false) {
         viewModelScope.launch {
-            chipboardRepository.setUnionOfChipboardsIsMarkedAsDeleted(
-                _state.value.unionOfChipboards.id,
-                true,
-                System.currentTimeMillis()
-            )
+            if (hasToDeleteCompletely) {
+                chipboardRepository.deleteUnionOfChipboards(
+                    _state.value.unionOfChipboards.id
+                )
+            } else {
+                //set unionOfChipboards.isMarkedAsDeleted to true and updatedAt = System.currentTimeMillis()
+                //save unionOfChipboards in db
+                chipboardRepository.setUnionOfChipboardsIsMarkedAsDeleted(
+                    _state.value.unionOfChipboards.id,
+                    true,
+                    System.currentTimeMillis()
+                )
+            }
+            //check if db has unionOfChipboards at least on
+            //  if yes - go to ListsScreen
+            //  if no - go to NewScreen
             if (chipboardRepository.countUnions() > 0) {
                 _effect.send(CountEffect.NavigateToListsScreen)
             } else {
