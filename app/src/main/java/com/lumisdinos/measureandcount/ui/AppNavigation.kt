@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -35,20 +36,20 @@ import com.lumisdinos.measureandcount.ui.theme.MainBg
 
 interface BottomBarDestination {
     val baseRoute: String
-    val title: String
+    val title: String @Composable get
     val icon: Int
 }
 
 sealed class Screen(val route: String) {
     data object Lists : Screen("lists"), BottomBarDestination {
         override val baseRoute = "lists"
-        override val title = "Lists"
+        override val title: String @Composable get() = stringResource(R.string.lists)
         override val icon = R.drawable.ic_old
     }
 
     data object Count : Screen("count/{unionId}"), BottomBarDestination {
         override val baseRoute = "count/{unionId}"
-        override val title = "Count"
+        override val title: String @Composable get() = stringResource(R.string.count)
         override val icon = R.drawable.ic_current
 
         fun routeWithArgs(unionId: Int) = "count/$unionId"
@@ -56,7 +57,7 @@ sealed class Screen(val route: String) {
 
     data object New : Screen("new"), BottomBarDestination {
         override val baseRoute = "new"
-        override val title = "New"
+        override val title: String @Composable get() = stringResource(R.string._new)
         override val icon = R.drawable.ic_new
     }
 

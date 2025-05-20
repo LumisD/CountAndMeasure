@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">Measure and Count</string>
+    <string name="lists">Lists</string>
+    <string name="count">Count</string>
+    <string name="_new">New</string>
     <string name="width_column">Width</string>
     <string name="length_column">Length</string>
     <string name="height_column">Height</string>
     <string name="color_column">Color</string>
+    <string name="not_found_in_brackets"> (Not Found)</string>
+    <string name="found_in_brackets"> (Found)</string>
     <string name="create_own_measure">Create own measure</string>
     <string name="chipboard_sheet_list">Chipboard Sheet List</string>
     <string name="chipboard_sheet_list_title">Chipboard Sheet List – %s</string>

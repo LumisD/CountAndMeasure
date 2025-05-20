@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Измерить и Посчитать</string>
+    <string name="lists">Листы</string>
+    <string name="count">Считать</string>
+    <string name="_new">Новый</string>
     <string name="width_column">Ширина</string>
     <string name="length_column">Длина</string>
     <string name="height_column">Высота</string>
     <string name="color_column">Цвет</string>
+    <string name="not_found_in_brackets"> (Не найден)</string>
+    <string name="found_in_brackets"> (Найден)</string>
     <string name="create_own_measure">Создать собственный замер</string>
     <string name="chipboard_sheet_list">Список листов ДСП</string>
     <string name="chipboard_sheet_list_title">Список листов ДСП – %s</string>

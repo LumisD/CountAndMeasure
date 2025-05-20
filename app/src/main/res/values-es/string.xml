@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Medir y Contar</string>
+    <string name="lists">Listas</string>
+    <string name="count">Contar</string>
+    <string name="_new">Nuevo</string>
     <string name="width_column">Ancho</string>
     <string name="length_column">Largo</string>
     <string name="height_column">Alto</string>
     <string name="color_column">Color</string>
+    <string name="not_found_in_brackets"> (No encontrado)</string>
+    <string name="found_in_brackets"> (Encontrado)</string>
     <string name="create_own_measure">Crear medida propia</string>
     <string name="chipboard_sheet_list">Lista de tableros</string>
     <string name="chipboard_sheet_list_title">Lista de tableros – %s</string>
