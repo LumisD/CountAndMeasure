@@ -47,6 +47,7 @@
     <string name="what_is_unknown_question">Что значит Неизвестно</string>
     <string name="field_disabled">Поле отключено</string>
     <string name="background_color">цветФона</string>
+    <string name="choose_type_of_measurement">Выберите тип измерения</string>
     <string name="not_exceeding_target_quantity">Не превышать целевое количество</string>
     <string name="disabled_explanation">Из-за выбранных опций вы не можете изменить это поле сейчас</string>
     <string name="what_is_found">Выберите наиболее подходящий элемент из списка.\nЗатем нажмите «Найдено», чтобы отметить элемент как найденный</string>
@@ -73,4 +74,24 @@
     <string name="found_chipboards">Найденные листы ДСП</string>
     <string name="found_chipboards_with_mismatched_sizes">Найденные листы ДСП с несоответствующими размерами</string>
     <string name="no_title">нет заголовка</string>
+    <string name="color_white">Белый</string>
+    <string name="color_black">Черный</string>
+    <string name="color_red">Красный</string>
+    <string name="color_green">Зеленый</string>
+    <string name="color_blue">Синий</string>
+    <string name="color_yellow">Желтый</string>
+    <string name="color_cyan">Голубой</string>
+    <string name="color_magenta">Пурпурный</string>
+    <string name="color_gray">Серый</string>
+    <string name="color_dark_gray">Темно-серый</string>
+    <string name="color_light_gray">Светло-серый</string>
+    <string name="color_orange">Оранжевый</string>
+    <string name="color_purple">Фиолетовый</string>
+    <string name="color_pink">Розовый</string>
+    <string name="color_brown">Коричневый</string>
+    <string name="color_teal">Бирюзовый</string>
+    <string name="color_lime">Лайм</string>
+    <string name="color_indigo">Индиго</string>
+    <string name="color_amber">Янтарный</string>
+    <string name="color_deep_orange">Темно-оранжевый</string>
 </resources>

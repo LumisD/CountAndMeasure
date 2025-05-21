@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lumisdinos.measureandcount.R
-import com.lumisdinos.measureandcount.ui.colorList
+import com.lumisdinos.measureandcount.ui.colorListWithResId
 import com.lumisdinos.measureandcount.ui.model.ColorItem
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemIntent
 import com.lumisdinos.measureandcount.ui.screens.count.CountIntent
@@ -35,14 +35,14 @@ import com.lumisdinos.measureandcount.ui.screens.count.CountState
 private fun <T> ColorFieldInternal(
     color: String,
     processIntent: (T) -> Unit,
-    intentFactory: (String, Int) -> T
+    intentFactory: (Int, Int) -> T
 ) {
-    val selectedColor = colorList.firstOrNull { it.name == color } ?: colorList.first()
+    val selectedColor = colorListWithResId.firstOrNull { stringResource(id = it.nameResId) == color } ?: colorListWithResId.first()
     Spacer(modifier = Modifier.height(16.dp))
     ColorPickerRow(
         selectedColor = selectedColor,
         onColorSelected = { colorItem ->
-            processIntent(intentFactory(colorItem.name, colorItem.color))
+            processIntent(intentFactory(colorItem.nameResId, colorItem.color))
         }
     )
 }
@@ -51,7 +51,7 @@ private fun <T> ColorFieldInternal(
 @Composable
 fun AddItemColorField(color: String, processIntent: (AddNewItemIntent) -> Unit) {
     ColorFieldInternal(
-        color = color,
+        color = color.ifEmpty { stringResource(R.string.color_white) },
         processIntent = processIntent,
         intentFactory = { name, value -> AddNewItemIntent.ColorChanged(name, value) }
     )
@@ -114,9 +114,9 @@ fun ColorPickerRow(selectedColor: ColorItem, onColorSelected: (ColorItem) -> Uni
             expanded = showColorPicker,
             onDismissRequest = { showColorPicker = false }
         ) {
-            colorList.forEach { colorItem ->
+            colorListWithResId.forEach { colorItem ->
                 DropdownMenuItem(
-                    text = { Text(text = colorItem.name) },
+                    text = { Text(text = stringResource(id = colorItem.nameResId)) },
                     onClick = {
                         onColorSelected(colorItem)
                         showColorPicker = false

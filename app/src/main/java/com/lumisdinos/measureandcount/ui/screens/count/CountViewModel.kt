@@ -53,8 +53,8 @@ class CountViewModel @Inject constructor(
             is CountIntent.QuantityChanged -> handleChangedQuantity(intent.newQuantityAsString)
 
             is CountIntent.ColorChanged -> {
-                sortByColor(intent.colorName)
-                updateChipboardColor(intent.colorName, intent.color)
+                sortByColor(intent.colorNameResId)
+                updateChipboardColor(intent.colorNameResId, intent.color)
             }
 
             is CountIntent.RealSizeChanged -> updateRealSizeForSize(
@@ -751,7 +751,7 @@ class CountViewModel @Inject constructor(
     }
 
 
-    private fun sortByColor(colorName: String) {
+    private fun sortByColor(colorNameResId: Int) {
         //sort not found chipboard by colorName among those only with state = 0
         //and sorting logic is: for example colorName = "White"
         //a) first find a colorName with  "White" and place them on top (if more than one chipboard is found)
@@ -763,7 +763,7 @@ class CountViewModel @Inject constructor(
 
             val sortedChipboards = chipboardsToSort.sortedWith(
                 compareBy { chipboard ->
-                    if (chipboard.colorName == colorName) 0 else 1
+                    if (chipboard.colorName == context.getString(colorNameResId)) 0 else 1
                 }
             )
 
@@ -809,11 +809,11 @@ class CountViewModel @Inject constructor(
     }
 
 
-    private fun updateChipboardColor(newColorName: String, newColor: Int) {
+    private fun updateChipboardColor(colorNameResId: Int, newColor: Int) {
         _state.update { currentState ->
             if (currentState.chipboardToFind.state != 2) return@update currentState
             val updatedChipboard = currentState.chipboardToFind.copy(
-                colorName = newColorName,
+                colorName = context.getString(colorNameResId),
                 color = newColor
             )
             val updatedChipboard2 =

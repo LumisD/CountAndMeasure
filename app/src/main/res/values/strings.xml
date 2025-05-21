@@ -46,6 +46,7 @@
     <string name="what_is_unknown_question">What is Unknown"</string>
     <string name="field_disabled">Field disabled</string>
     <string name="background_color">backgroundColor</string>
+    <string name="choose_type_of_measurement">Choose a type of measurement</string>
     <string name="not_exceeding_target_quantity">Do not exceed target quantity</string>
     <string name="disabled_explanation">Due to other options selected, you cannot change this field at this time</string>
     <string name="what_is_found">Choose more suitable item in the list.\nThen press Found to mark the item as found</string>
@@ -72,4 +73,24 @@
     <string name="found_chipboards">Found chipboards</string>
     <string name="found_chipboards_with_mismatched_sizes">Found chipboards with mismatched sizes</string>
     <string name="no_title">no title</string>
+    <string name="color_white">White</string>
+    <string name="color_black">Black</string>
+    <string name="color_red">Red</string>
+    <string name="color_green">Green</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_cyan">Cyan</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_gray">Gray</string>
+    <string name="color_dark_gray">Dark Gray</string>
+    <string name="color_light_gray">Light Gray</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_purple">Purple</string>
+    <string name="color_pink">Pink</string>
+    <string name="color_brown">Brown</string>
+    <string name="color_teal">Teal</string>
+    <string name="color_lime">Lime</string>
+    <string name="color_indigo">Indigo</string>
+    <string name="color_amber">Amber</string>
+    <string name="color_deep_orange">Deep Orange</string>
 </resources>

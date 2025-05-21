@@ -45,7 +45,7 @@ fun NewScreen(navController: NavController) {
 @Composable
 fun TopBar() {
     Text(
-        text = "Choose a type of measurement",
+        text = stringResource(R.string.choose_type_of_measurement),
         modifier = Modifier.fillMaxWidth(),
         style = MaterialTheme.typography.titleLarge,
         textAlign = TextAlign.Center
@@ -79,7 +79,6 @@ fun ListItem(item: NewScreenType, navController: NavController, isLast: Boolean 
             .fillMaxWidth()
             .clickable {
                 val serializedItem = item.serialize()
-                Log.d("NewScreen", "serializedItem: $serializedItem")
                 navController.navigate(
                     Screen.AddNewItem.routeWithArgs(
                         itemType = serializedItem,

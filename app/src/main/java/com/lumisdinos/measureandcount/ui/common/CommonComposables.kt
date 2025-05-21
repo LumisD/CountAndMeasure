@@ -88,7 +88,7 @@ fun CommonButton(
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.onPrimary//Color.White
+            color = MaterialTheme.colorScheme.onPrimary
         )
     }
 }

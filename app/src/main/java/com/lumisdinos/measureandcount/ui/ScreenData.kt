@@ -29,26 +29,27 @@ val defaultScreenTypes = listOf(
     //NewScreenType() // empty, for custom
 )
 
-val colorList = listOf(
-    ColorItem("White", Color.White.toArgb()),
-    ColorItem("Black", Color.Black.toArgb()),
-    ColorItem("Red", Color.Red.toArgb()),
-    ColorItem("Green", Color.Green.toArgb()),
-    ColorItem("Blue", Color.Blue.toArgb()),
-    ColorItem("Yellow", Color.Yellow.toArgb()),
-    ColorItem("Cyan", Color.Cyan.toArgb()),
-    ColorItem("Magenta", Color.Magenta.toArgb()),
-    ColorItem("Gray", Color.Gray.toArgb()),
-    ColorItem("Dark Gray", Color.DarkGray.toArgb()),
-    ColorItem("Light Gray", Color.LightGray.toArgb()),
-    ColorItem("Orange", Color(0xFFFF9800).toArgb()),
-    ColorItem("Purple", Color(0xFF9C27B0).toArgb()),
-    ColorItem("Pink", Color(0xFFE91E63).toArgb()),
-    ColorItem("Brown", Color(0xFF795548).toArgb()),
-    ColorItem("Teal", Color(0xFF009688).toArgb()),
-    ColorItem("Lime", Color(0xFFCDDC39).toArgb()),
-    ColorItem("Indigo", Color(0xFF3F51B5).toArgb()),
-    ColorItem("Amber", Color(0xFFFFC107).toArgb()),
-    ColorItem("Deep Orange", Color(0xFFFF5722).toArgb())
+
+val colorListWithResId = listOf(
+    ColorItem(R.string.color_white, Color.White.toArgb()),
+    ColorItem(R.string.color_black, Color.Black.toArgb()),
+    ColorItem(R.string.color_red, Color.Red.toArgb()),
+    ColorItem(R.string.color_green, Color.Green.toArgb()),
+    ColorItem(R.string.color_blue, Color.Blue.toArgb()),
+    ColorItem(R.string.color_yellow, Color.Yellow.toArgb()),
+    ColorItem(R.string.color_cyan, Color.Cyan.toArgb()),
+    ColorItem(R.string.color_magenta, Color.Magenta.toArgb()),
+    ColorItem(R.string.color_gray, Color.Gray.toArgb()),
+    ColorItem(R.string.color_dark_gray, Color.DarkGray.toArgb()),
+    ColorItem(R.string.color_light_gray, Color.LightGray.toArgb()),
+    ColorItem(R.string.color_orange, Color(0xFFFF9800).toArgb()),
+    ColorItem(R.string.color_purple, Color(0xFF9C27B0).toArgb()),
+    ColorItem(R.string.color_pink, Color(0xFFE91E63).toArgb()),
+    ColorItem(R.string.color_brown, Color(0xFF795548).toArgb()),
+    ColorItem(R.string.color_teal, Color(0xFF009688).toArgb()),
+    ColorItem(R.string.color_lime, Color(0xFFCDDC39).toArgb()),
+    ColorItem(R.string.color_indigo, Color(0xFF3F51B5).toArgb()),
+    ColorItem(R.string.color_amber, Color(0xFFFFC107).toArgb()),
+    ColorItem(R.string.color_deep_orange, Color(0xFFFF5722).toArgb())
 )
 

@@ -47,6 +47,7 @@
     <string name="what_is_unknown_question">¿Qué significa Desconocido?</string>
     <string name="field_disabled">Campo deshabilitado</string>
     <string name="background_color">backgroundColor</string>
+    <string name="choose_type_of_measurement">Elige un tipo de medida</string>
     <string name="not_exceeding_target_quantity">No exceder la cantidad objetivo</string>
     <string name="disabled_explanation">Debido a otras opciones seleccionadas, no puedes cambiar este campo por ahora</string>
     <string name="what_is_found">Elige el elemento más adecuado en la lista.\nLuego pulsa Encontrado para marcar el elemento como encontrado</string>
@@ -73,4 +74,24 @@
     <string name="found_chipboards">Tableros encontrados</string>
     <string name="found_chipboards_with_mismatched_sizes">Tableros encontrados con tamaños distintos</string>
     <string name="no_title">sin título</string>
+    <string name="color_white">Blanco</string>
+    <string name="color_black">Negro</string>
+    <string name="color_red">Rojo</string>
+    <string name="color_green">Verde</string>
+    <string name="color_blue">Azul</string>
+    <string name="color_yellow">Amarillo</string>
+    <string name="color_cyan">Cian</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_gray">Gris</string>
+    <string name="color_dark_gray">Gris oscuro</string>
+    <string name="color_light_gray">Gris claro</string>
+    <string name="color_orange">Naranja</string>
+    <string name="color_purple">Púrpura</string>
+    <string name="color_pink">Rosa</string>
+    <string name="color_brown">Marrón</string>
+    <string name="color_teal">Verde azulado</string>
+    <string name="color_lime">Lima</string>
+    <string name="color_indigo">Índigo</string>
+    <string name="color_amber">Ámbar</string>
+    <string name="color_deep_orange">Naranja intenso</string>
 </resources>

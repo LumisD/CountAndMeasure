@@ -58,7 +58,10 @@ class AddNewItemViewModel @Inject constructor(
                     val updatedUnion = newUnion.copy(id = unionId)
                     currentState.copy(
                         unionOfChipboards = updatedUnion,
-                        newOrEditChipboard = currentState.newOrEditChipboard.copy(unionId = unionId)
+                        newOrEditChipboard = currentState.newOrEditChipboard.copy(
+                            unionId = unionId,
+                            colorName = context.getString(R.string.color_white)
+                        )
                     )
                 }
                 unionCreated = true
@@ -99,7 +102,7 @@ class AddNewItemViewModel @Inject constructor(
             )
 
             is AddNewItemIntent.ColorChanged -> updateChipboardColor(
-                intent.newColorName,
+                intent.newColorNameResId,
                 intent.newColor
             )
 
@@ -240,10 +243,10 @@ class AddNewItemViewModel @Inject constructor(
         _state.update { it.copy(unionOfChipboards = it.unionOfChipboards.copy(title = newTitle)) }
     }
 
-    private fun updateChipboardColor(newColorName: String, newColor: Int) {
+    private fun updateChipboardColor(newColorNameResId: Int, newColor: Int) {
         _state.update { currentState ->
             val updatedChipboard = currentState.newOrEditChipboard.copy(
-                colorName = newColorName,
+                colorName = context.getString(newColorNameResId),
                 color = newColor
             )
             val updatedChipboard2 =

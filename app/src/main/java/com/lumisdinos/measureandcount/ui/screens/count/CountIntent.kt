@@ -10,7 +10,7 @@ sealed interface CountIntent {
     data class SizeChanged(val newSizeAsString: String, val dimension: Int) : CountIntent
     data class RealSizeChanged(val newDiffAsString: String, val dimension: Int) : CountIntent
     data class QuantityChanged(val newQuantityAsString: String) : CountIntent
-    data class ColorChanged(val colorName: String, val color: Int) : CountIntent
+    data class ColorChanged(val colorNameResId: Int, val color: Int) : CountIntent
     data object SetFoundChipboard : CountIntent
     data object CreateUnknownChipboard : CountIntent
     data object PressToShareUnion : CountIntent
