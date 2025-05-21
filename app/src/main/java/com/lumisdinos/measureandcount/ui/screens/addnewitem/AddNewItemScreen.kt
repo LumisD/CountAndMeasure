@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
@@ -75,6 +76,7 @@ import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.DialogType
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.AddNewItemEffect
 import com.lumisdinos.measureandcount.ui.theme.Purple80
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -382,7 +384,9 @@ fun TopBar(title: String, processIntent: (AddNewItemIntent) -> Unit) {
 @Composable
 fun BannerAdView(adUnitId: String) {
     AndroidView(
-        modifier = Modifier.fillMaxWidth().height(100.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
         factory = { context ->
             AdView(context).apply {
                 setAdSize(AdSize.LARGE_BANNER)
@@ -403,20 +407,32 @@ fun CollectEffects(
     snackbarHostState: SnackbarHostState
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
 
                 is AddNewItemEffect.ShowEditConfirmationDialog -> {
+                    scope.launch {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                    }
                     dialogState.value = DialogType.Edit(effect.chipboard)
                 }
 
                 is AddNewItemEffect.ShowDeleteConfirmationDialog -> {
+                    scope.launch {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                    }
                     dialogState.value = DialogType.Delete(effect.chipboard)
                 }
 
                 is AddNewItemEffect.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(effect.message)
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = effect.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
                 }
 
                 is AddNewItemEffect.FlashAddItemArea -> {
