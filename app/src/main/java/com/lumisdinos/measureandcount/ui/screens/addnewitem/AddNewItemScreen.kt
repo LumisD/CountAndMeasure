@@ -416,14 +416,14 @@ fun CollectEffects(
                     scope.launch {
                         snackbarHostState.currentSnackbarData?.dismiss()
                     }
-                    dialogState.value = DialogType.Edit(effect.chipboard)
+                    dialogState.value = DialogType.Edit(effect.chipboard, effect.hasColor)
                 }
 
                 is AddNewItemEffect.ShowDeleteConfirmationDialog -> {
                     scope.launch {
                         snackbarHostState.currentSnackbarData?.dismiss()
                     }
-                    dialogState.value = DialogType.Delete(effect.chipboard)
+                    dialogState.value = DialogType.Delete(effect.chipboard, effect.hasColor)
                 }
 
                 is AddNewItemEffect.ShowSnackbar -> {

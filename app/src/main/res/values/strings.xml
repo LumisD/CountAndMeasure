@@ -55,8 +55,10 @@
     <string name="press_new_screen_create_chipboard_sheet_list">Press New screen to create a Chipboard Sheet List</string>
     <string name="this_list_not_contains_any_chipboards">This list does not contain any chipboards</string>
     <string name="not_exceeding_target_quantity_explanation">The quantity (%1$s) cannot exceed what is written (%2$s)</string>
-    <string name="are_you_sure_delete">Are you sure you want to delete\n%1$s (%2$s)?</string>
-    <string name="are_you_sure_edit">Are you sure you want to edit\n%1$s (%2$s)?\n(The item will be deleted from the list)</string>
+    <string name="are_you_sure_delete_no_color">Are you sure you want to delete\n%1$s?</string>
+    <string name="are_you_sure_delete_with_color">Are you sure you want to delete\n%1$s (%2$s)?</string>
+    <string name="are_you_sure_edit_no_color">Are you sure you want to edit\n%1$s?\n(The item will be deleted from the list)</string>
+    <string name="are_you_sure_edit_with_color">Are you sure you want to edit\n%1$s (%2$s)?\n(The item will be deleted from the list)</string>
     <string name="are_you_sure_select_not_found">Are you sure you want to select\n%1$s (%2$s)?\nto Find Area?\n(The item will remain in the list)</string>
     <string name="are_you_sure_remove_not_found">Are you sure you want to remove\n%1$s (%2$s)?\nfrom Find Area?\n(The item will remain in the list)</string>
     <string name="are_you_sure_select_unknown">Are you sure you want to select\n%1$s (%2$s)?\nto Find Area?\n(The item will be deleted from the list)</string>

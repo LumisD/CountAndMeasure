@@ -56,8 +56,10 @@
     <string name="press_new_screen_create_chipboard_sheet_list">Нажмите «Новый экран», чтобы создать список листов ДСП</string>
     <string name="this_list_not_contains_any_chipboards">Этот список не содержит листов ДСП</string>
     <string name="not_exceeding_target_quantity_explanation">Количество (%1$s) не может превышать указанное (%2$s)</string>
-    <string name="are_you_sure_delete">Вы уверены, что хотите удалить\n%1$s (%2$s)?</string>
-    <string name="are_you_sure_edit">Вы уверены, что хотите отредактировать\n%1$s (%2$s)?\n(Элемент будет удалён из списка)</string>
+    <string name="are_you_sure_delete_no_color">Вы уверены, что хотите удалить\n%1$s?</string>
+    <string name="are_you_sure_delete_with_color">Вы уверены, что хотите удалить\n%1$s (%2$s)?</string>
+    <string name="are_you_sure_edit_no_color">Вы уверены, что хотите отредактировать\n%1$s?\n(Элемент будет удалён из списка)</string>
+    <string name="are_you_sure_edit_with_color">Вы уверены, что хотите отредактировать\n%1$s (%2$s)?\n(Элемент будет удалён из списка)</string>
     <string name="are_you_sure_select_not_found">Вы уверены, что хотите выбрать\n%1$s (%2$s)?\nдля области поиска?\n(Элемент останется в списке)</string>
     <string name="are_you_sure_remove_not_found">Вы уверены, что хотите удалить\n%1$s (%2$s)?\nиз области поиска?\n(Элемент останется в списке)</string>
     <string name="are_you_sure_select_unknown">Вы уверены, что хотите выбрать\n%1$s (%2$s)?\nдля области поиска?\n(Элемент будет удалён из списка)</string>

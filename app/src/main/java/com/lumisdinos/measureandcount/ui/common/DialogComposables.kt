@@ -262,10 +262,13 @@ fun ChooseDialogTypes(
         when (dialog) {
             is AddNewItemDialogType.Delete -> {
                 title = stringResource(R.string.confirm_deletion)
-                text = stringResource(
-                    R.string.are_you_sure_delete,
+                text = if (dialog.hasColor) stringResource(
+                    R.string.are_you_sure_delete_with_color,
                     dialog.chipboard.chipboardAsString,
                     dialog.chipboard.colorName
+                ) else stringResource(
+                    R.string.are_you_sure_delete_no_color,
+                    dialog.chipboard.chipboardAsString
                 )
                 confirmText = stringResource(R.string.delete)
                 dismissText = stringResource(R.string.cancel)
@@ -277,10 +280,13 @@ fun ChooseDialogTypes(
 
             is AddNewItemDialogType.Edit -> {
                 title = stringResource(R.string.confirm_editing)
-                text = stringResource(
-                    R.string.are_you_sure_edit,
+                text = if (dialog.hasColor) stringResource(
+                    R.string.are_you_sure_edit_with_color,
                     dialog.chipboard.chipboardAsString,
                     dialog.chipboard.colorName
+                ) else stringResource(
+                    R.string.are_you_sure_edit_no_color,
+                    dialog.chipboard.chipboardAsString
                 )
                 confirmText = stringResource(R.string.edit)
                 dismissText = stringResource(R.string.cancel)

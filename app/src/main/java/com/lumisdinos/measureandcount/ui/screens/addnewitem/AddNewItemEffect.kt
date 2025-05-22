@@ -4,8 +4,8 @@ import android.content.Intent
 import com.lumisdinos.measureandcount.ui.screens.addnewitem.model.ChipboardUi
 
 sealed class AddNewItemEffect {
-    data class ShowDeleteConfirmationDialog(val chipboard: ChipboardUi) : AddNewItemEffect()
-    data class ShowEditConfirmationDialog(val chipboard: ChipboardUi) : AddNewItemEffect()
+    data class ShowDeleteConfirmationDialog(val chipboard: ChipboardUi, val hasColor: Boolean) : AddNewItemEffect()
+    data class ShowEditConfirmationDialog(val chipboard: ChipboardUi, val hasColor: Boolean) : AddNewItemEffect()
     data class ShowSnackbar(val message: String) : AddNewItemEffect()
     data object ShowRemoveUnionDialog : AddNewItemEffect()
     data object ShowShareUnionDialog : AddNewItemEffect()

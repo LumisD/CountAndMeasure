@@ -126,13 +126,23 @@ class AddNewItemViewModel @Inject constructor(
 
             is AddNewItemIntent.AskEditChipboard -> {
                 viewModelScope.launch {
-                    _effect.send(AddNewItemEffect.ShowEditConfirmationDialog(intent.chipboard))
+                    _effect.send(
+                        AddNewItemEffect.ShowEditConfirmationDialog(
+                            intent.chipboard,
+                            _state.value.unionOfChipboards.hasColor
+                        )
+                    )
                 }
             }
 
             is AddNewItemIntent.AskDeleteChipboard -> {
                 viewModelScope.launch {
-                    _effect.send(AddNewItemEffect.ShowDeleteConfirmationDialog(intent.chipboard))
+                    _effect.send(
+                        AddNewItemEffect.ShowDeleteConfirmationDialog(
+                            intent.chipboard,
+                            _state.value.unionOfChipboards.hasColor
+                        )
+                    )
                 }
             }
 

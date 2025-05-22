@@ -56,8 +56,10 @@
     <string name="press_new_screen_create_chipboard_sheet_list">Pulsa Nueva pantalla para crear una lista de tableros</string>
     <string name="this_list_not_contains_any_chipboards">Esta lista no contiene ningún tablero</string>
     <string name="not_exceeding_target_quantity_explanation">La cantidad (%1$s) no puede superar lo indicado (%2$s)</string>
-    <string name="are_you_sure_delete">¿Seguro que deseas eliminar\n%1$s (%2$s)?</string>
-    <string name="are_you_sure_edit">¿Seguro que deseas editar\n%1$s (%2$s)?\n(El elemento se eliminará de la lista)</string>
+    <string name="are_you_sure_delete_no_color">¿Seguro que deseas eliminar\n%1$s?</string>
+    <string name="are_you_sure_delete_with_color">¿Seguro que deseas eliminar\n%1$s (%2$s)?</string>
+    <string name="are_you_sure_edit_no_color">¿Seguro que deseas editar\n%1$s?\n(El elemento se eliminará de la lista)</string>
+    <string name="are_you_sure_edit_with_color">¿Seguro que deseas editar\n%1$s (%2$s)?\n(El elemento se eliminará de la lista)</string>
     <string name="are_you_sure_select_not_found">¿Seguro que deseas seleccionar\n%1$s (%2$s)?\n¿para el área de búsqueda?\n(El elemento permanecerá en la lista)</string>
     <string name="are_you_sure_remove_not_found">¿Seguro que deseas quitar\n%1$s (%2$s)?\ndel área de búsqueda?\n(El elemento permanecerá en la lista)</string>
     <string name="are_you_sure_select_unknown">¿Seguro que deseas seleccionar\n%1$s (%2$s)?\n¿para el área de búsqueda?\n(El elemento se eliminará de la lista)</string>
