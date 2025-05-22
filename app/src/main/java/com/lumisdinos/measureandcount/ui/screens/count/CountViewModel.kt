@@ -37,6 +37,7 @@ class CountViewModel @Inject constructor(
     val effect = _effect.receiveAsFlow()
 
     private var isInitialChipboardSetForCurrentUnion: Boolean = false
+    private var isProgrammaticScrollExpected = false
 
 
     fun processIntent(intent: CountIntent) {
@@ -110,7 +111,11 @@ class CountViewModel @Inject constructor(
                 }
             }
 
-            is CountIntent.ListScrolledByUser -> handleListScrolledByUser()
+            is CountIntent.ListScrolledByUser -> {
+                if (isProgrammaticScrollExpected) {
+                    isProgrammaticScrollExpected = false
+                } else handleListScrolledByUser()
+            }
 
             is CountIntent.ToggleFindAreaVisibility -> {
                 _state.update { it.copy(isFoundAreaOpen = !it.isFoundAreaOpen) }
@@ -299,6 +304,7 @@ class CountViewModel @Inject constructor(
             }
 
             _effect.send(CountEffect.FlashFindItemArea)
+            isProgrammaticScrollExpected = true
             _effect.send(CountEffect.ScrollToTop)
         }
     }
@@ -692,6 +698,7 @@ class CountViewModel @Inject constructor(
             while (_state.value === oldState || _state.value != newState) {
                 kotlinx.coroutines.delay(10)
             }
+            isProgrammaticScrollExpected = true
             _effect.send(CountEffect.ScrollToTop)
         }
     }
