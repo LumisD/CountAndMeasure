@@ -18,6 +18,7 @@ sealed interface CountIntent {
     data class PressOnItemInList(val chipboard: ChipboardUi) : CountIntent
     data class ShowWhatIs(val questionType: QuestionType) : CountIntent
     data class ActionConfirmed(val confirmationType: ConfirmationType) : CountIntent
+    data object ListScrolledByUser : CountIntent
     data object FieldDisabled : CountIntent
     data object ToggleFindAreaVisibility : CountIntent
     data object Back : CountIntent

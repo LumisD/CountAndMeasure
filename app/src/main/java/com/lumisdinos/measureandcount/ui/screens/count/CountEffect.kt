@@ -19,6 +19,7 @@ sealed class CountEffect {
     data object FlashFindItemArea : CountEffect()
     data object ScrollToTop : CountEffect()
     data class ShareUnion(val shareIntent: Intent): CountEffect()
+    data object HideKeyboard : CountEffect()
     data object NavigateToListsScreen : CountEffect()
     data object NavigateToNewScreen : CountEffect()
     data object NavigateBack : CountEffect()

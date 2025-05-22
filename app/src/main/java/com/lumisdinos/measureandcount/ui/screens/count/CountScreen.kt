@@ -43,6 +43,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +51,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -81,6 +84,9 @@ import com.lumisdinos.measureandcount.ui.theme.PrimaryBlue
 import com.lumisdinos.measureandcount.ui.theme.Purple80
 import com.lumisdinos.measureandcount.ui.theme.Yellowish
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 
 @Composable
@@ -100,8 +106,29 @@ fun CountScreen(
     val dialogState = remember { mutableStateOf<DialogType>(DialogType.None) }
     val shouldFlash = remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
-    CollectEffects(navController, dialogState, shouldFlash, listState, viewModel, snackbarHostState)
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .distinctUntilChanged()
+            .filter { isScrolling -> isScrolling }
+            .collectLatest {
+                viewModel.processIntent(CountIntent.ListScrolledByUser)
+            }
+    }
+
+    CollectEffects(
+        navController,
+        dialogState,
+        shouldFlash,
+        listState,
+        viewModel,
+        snackbarHostState,
+        onHideKeyboard = {
+        keyboardController?.hide()
+        focusManager.clearFocus()
+    })
     ChooseDialogType(dialogState, viewModel::processIntent)
 
     //Actual screen
@@ -539,7 +566,8 @@ fun CollectEffects(
     shouldFlash: MutableState<Boolean>,
     listState: LazyListState,
     viewModel: CountViewModel,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    onHideKeyboard: () -> Unit
 ) {
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -587,6 +615,10 @@ fun CollectEffects(
 
                 CountEffect.ScrollToTop -> {
                     listState.animateScrollToItem(0)
+                }
+
+                CountEffect.HideKeyboard -> {
+                    onHideKeyboard()
                 }
 
                 CountEffect.ShowShareUnionDialog -> {

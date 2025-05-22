@@ -110,6 +110,8 @@ class CountViewModel @Inject constructor(
                 }
             }
 
+            is CountIntent.ListScrolledByUser -> handleListScrolledByUser()
+
             is CountIntent.ToggleFindAreaVisibility -> {
                 _state.update { it.copy(isFoundAreaOpen = !it.isFoundAreaOpen) }
             }
@@ -572,6 +574,16 @@ class CountViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+
+    private fun handleListScrolledByUser() {
+        if (_state.value.isFoundAreaOpen) {
+            _state.update { it.copy(isFoundAreaOpen = false) }
+        }
+        viewModelScope.launch {
+            _effect.send(CountEffect.HideKeyboard)
         }
     }
 
