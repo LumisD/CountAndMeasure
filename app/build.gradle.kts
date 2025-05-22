@@ -26,13 +26,19 @@ android {
 
     buildTypes {
         debug {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             isDebuggable = true
             firebaseCrashlytics {
                 mappingFileUploadEnabled = false
             }
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
