@@ -96,4 +96,34 @@
     <string name="color_indigo">Índigo</string>
     <string name="color_amber">Ámbar</string>
     <string name="color_deep_orange">Naranja intenso</string>
+
+    <string name="privacy_policy">Política de privacidad</string>
+    <string name="privacy_policy_background_description">Fondo de la política de privacidad</string>
+    <string name="go_to_privacy_policy_description">Navegar a la pantalla de Política de privacidad</string>
+    <string name="privacy_policy_title">Política de privacidad de la aplicación para Android "Medir y contar"</string>
+    <string name="privacy_policy_description">Esta Política de Privacidad describe cómo la aplicación de Android “Medir y Contar”, disponible en Google Play, maneja los datos y la privacidad del usuario.</string>
+    <string name="privacy_policy_subtitle_1">1. Información que recopila la aplicación</string>
+    <string name="privacy_policy_text_1">"La aplicación "Measure and Count" no recopila información personal, datos de ubicación ni registros de servidor/HTTP de los usuarios.
+El único permiso requerido es el acceso a internet, que se utiliza para mostrar anuncios móviles de Google (AdMob) en la pantalla al introducir nuevos chips.
+La aplicación no recopila ningún identificador persistente (por ejemplo, ID de publicidad de Google o ID de dispositivo).</string>
+    <string name="privacy_policy_subtitle_2">2. Cómo utiliza la información la aplicación</string>
+    <string name="privacy_policy_text_2">La aplicación almacena las listas de chips que introduce el usuario. Estos datos se almacenan localmente en el dispositivo y solo se utilizan para:\n
+- Mostrar los chips guardados al usuario\n
+- Ayudar en la medición y verificación de piezas\n
+La aplicación no transmite estos datos a ningún servidor ni a terceros.</string>
+    <string name="privacy_policy_subtitle_3">3. Intercambio de información</string>
+    <string name="privacy_policy_text_3">La aplicación permite al usuario compartir manualmente listas de aglomerado con otras aplicaciones (por ejemplo, por mensajería o correo electrónico) en texto plano.
+La aplicación no comparte datos automáticamente.</string>
+    <string name="privacy_policy_subtitle_4">4. Servicios de terceros</string>
+    <string name="privacy_policy_text_4">Esta aplicación muestra anuncios proporcionados por Google AdMob. AdMob puede recopilar y utilizar ciertos datos, como identificadores de dispositivo, datos de ubicación (si están disponibles) y datos de interacción, para mostrar anuncios personalizados o no personalizados.
+Para obtener más información sobre cómo utiliza Google los datos, consulte la Política de privacidad de Google.</string>
+    <string name="privacy_policy_subtitle_5">5. Funciones de la aplicación</string>
+    <string name="privacy_policy_text_5">La aplicación "Medir y contar" ayuda a los usuarios a medir y contar aglomerado, madera y materiales similares. Sus funciones incluyen:\n
+- Crear una lista de tableros aglomerados con dimensiones, direcciones de veta y colores\n
+- Medir los tableros aglomerados recibidos y compararlos con la lista\n
+- Marcar tamaños, direcciones o colores incorrectos con notas opcionales\n
+- Generar un resumen de problemas que se puede compartir\n
+Esta aplicación está diseñada exclusivamente para este propósito y no realiza tareas adicionales en segundo plano ni recopila datos adicionales.</string>
+    <string name="privacy_policy_where_to_email">Si tiene alguna pregunta sobre esta Política de Privacidad, puede contactar con el desarrollador en simchenko-alexey@hotmail.com</string>
+    <string name="privacy_policy_link">Enlace a la <a href="https://sites.google.com/view/measureandcount/home">Política de privacidad</a></string>
 </resources>

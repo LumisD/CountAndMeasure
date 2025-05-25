@@ -1,6 +1,5 @@
 package com.lumisdinos.measureandcount.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,9 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,14 +62,43 @@ fun TopBar() {
 fun ListOfNewScreenTypes(navController: NavController) {
     LazyColumn {
         items(defaultScreenTypes) { item ->
+            ListItem(item = item, navController = navController)
             if (item != defaultScreenTypes.last()) {
-                ListItem(item = item, navController = navController)
                 HorizontalDivider(
                     thickness = 2.dp,
                     color = Color.Gray
                 )
-            } else {
-                ListItem(item = item, navController = navController, isLast = true)
+            }
+        }
+
+        item {
+            HorizontalDivider(
+                thickness = 2.dp,
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 1.dp)
+            )
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+                    .clickable {
+                        navController.navigate(Screen.PrivacyPolicy.route)
+                    },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(
+                    text = stringResource(R.string.privacy_policy),
+                    style = MaterialTheme.typography.titleLarge.copy(fontStyle = FontStyle.Italic)
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = stringResource(R.string.go_to_privacy_policy_description),
+                    modifier = Modifier.size(36.dp)
+                )
             }
         }
     }
@@ -73,7 +106,7 @@ fun ListOfNewScreenTypes(navController: NavController) {
 
 
 @Composable
-fun ListItem(item: NewScreenType, navController: NavController, isLast: Boolean = false) {
+fun ListItem(item: NewScreenType, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

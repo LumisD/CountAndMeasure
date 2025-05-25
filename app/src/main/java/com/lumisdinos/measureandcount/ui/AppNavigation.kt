@@ -31,6 +31,7 @@ import com.lumisdinos.measureandcount.R
 import com.lumisdinos.measureandcount.DEFAULT_UNION_ID
 import com.lumisdinos.measureandcount.ui.screens.count.CountScreen
 import com.lumisdinos.measureandcount.ui.screens.NewScreen
+import com.lumisdinos.measureandcount.ui.screens.PrivacyPolicyScreen
 import com.lumisdinos.measureandcount.ui.screens.lists.ListsScreen
 import com.lumisdinos.measureandcount.ui.theme.MainBg
 
@@ -70,6 +71,8 @@ sealed class Screen(val route: String) {
             }
         }
     }
+
+    data object PrivacyPolicy: Screen("privacy_policy")
 }
 
 
@@ -131,6 +134,9 @@ fun Navigation(
             )
         ) {
             AddNewItemScreen(navController, snackbarHostState)
+        }
+        composable(Screen.PrivacyPolicy.route) {
+            PrivacyPolicyScreen(navController)
         }
 
     }

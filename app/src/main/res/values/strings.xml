@@ -95,4 +95,34 @@
     <string name="color_indigo">Indigo</string>
     <string name="color_amber">Amber</string>
     <string name="color_deep_orange">Deep Orange</string>
+
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy_background_description">Privacy policy background</string>
+    <string name="go_to_privacy_policy_description">Navigate to Privacy Policy screen</string>
+    <string name="privacy_policy_title">Privacy Policy for the "Measure and Count" Android Application</string>
+    <string name="privacy_policy_description">This Privacy Policy describes how the Android application "Measure and Count", available on Google Play, handles user data and privacy.</string>
+    <string name="privacy_policy_subtitle_1">"1. Information the App Collects</string>
+    <string name="privacy_policy_text_1">"The "Measure and Count" app does not collect any personal information, location data, or server/HTTP logs from users.
+The only permission required is Internet access, which is used to display Google mobile ads (AdMob) on the screen for entering new chipboards.
+The app does not collect any persistent identifiers (e.g., Google Advertising ID, device ID).</string>
+    <string name="privacy_policy_subtitle_2">"2. How the App Uses Information</string>
+    <string name="privacy_policy_text_2">The app stores the lists of chipboards that the user enters. This data is stored locally on the device and is only used to:\n
+- Display the saved chipboards to the user\n
+- Assist with measuring and verifying parts\n
+The app does not transmit this data to any server or third party.</string>
+    <string name="privacy_policy_subtitle_3">3. Sharing of Information</string>
+    <string name="privacy_policy_text_3">The app allows the user to manually share chipboard lists with other apps (e.g., via messaging or email) in plain text format.
+No data is automatically shared by the app.</string>
+    <string name="privacy_policy_subtitle_4">4. Third-Party Services</string>
+    <string name="privacy_policy_text_4">This app displays advertisements provided by Google AdMob. AdMob may collect and use certain data, including device identifiers, location data (if available), and interaction data, to show personalized or non-personalized ads.
+For more details on how Google uses data, please refer to the Google Privacy Policy.</string>
+    <string name="privacy_policy_subtitle_5">5. What the App Does</string>
+    <string name="privacy_policy_text_5">The "Measure and Count" app helps users measure and count chipboards, wood, and similar materials. Its functionality includes:\n
+- Creating a list of chipboards with dimensions, grain directions, and colors\n
+- Measuring received chipboards and matching them to the list\n
+- Marking incorrect sizes, directions, or colors with optional notes\n
+- Generating a summary of issues that can be shared with others\n
+This app is designed solely for this purpose and does not perform any additional background tasks or collect extra data.</string>
+    <string name="privacy_policy_where_to_email">If you have any questions about this Privacy Policy, you can contact the developer at simchenko-alexey@hotmail.com</string>
+    <string name="privacy_policy_link">Link to <a href="https://sites.google.com/view/measureandcount/home">The Privacy Policy</a></string>
 </resources>
