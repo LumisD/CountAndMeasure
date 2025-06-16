@@ -1,4 +1,5 @@
 Google Play: https://play.google.com/store/apps/details?id=com.lumisdinos.measureandcount
+
 YouTube tutorial: https://www.youtube.com/watch?v=3PVrZ-hOJVY
 
 Application "Measure and Count".
