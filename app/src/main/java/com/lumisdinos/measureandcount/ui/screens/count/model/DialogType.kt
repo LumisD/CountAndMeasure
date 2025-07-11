@@ -2,7 +2,7 @@ package com.lumisdinos.measureandcount.ui.screens.count.model
 
 
 sealed class DialogType {
-    data class Uncheck(val chipboard: ChipboardUi) : DialogType()
+    data class Uncheck(val chipboard: ChipboardUi, val hasColor: Boolean) : DialogType()
     data class SelectNotFoundToFindArea(val chipboard: ChipboardUi) : DialogType()
     data class RemoveNotFoundFromFindArea(val chipboard: ChipboardUi) : DialogType()
     data class SelectUnknownToFindArea(val chipboard: ChipboardUi) : DialogType()

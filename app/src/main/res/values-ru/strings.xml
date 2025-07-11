@@ -63,7 +63,8 @@
     <string name="are_you_sure_select_not_found">Вы уверены, что хотите выбрать\n%1$s (%2$s)?\nдля области поиска?\n(Элемент останется в списке)</string>
     <string name="are_you_sure_remove_not_found">Вы уверены, что хотите удалить\n%1$s (%2$s)?\nиз области поиска?\n(Элемент останется в списке)</string>
     <string name="are_you_sure_select_unknown">Вы уверены, что хотите выбрать\n%1$s (%2$s)?\nдля области поиска?\n(Элемент будет удалён из списка)</string>
-    <string name="are_you_sure_uncheck">Вы уверены, что хотите установить\n%1$s (%2$s)?\nкак ещё не найденный?\n(Элемент останется в списке\nРеальные размеры будут очищены)</string>
+    <string name="are_you_sure_uncheck_with_color">Вы уверены, что хотите установить\n%1$s (%2$s)?\nкак ещё не найденный?\n(Элемент останется в списке\nРеальные размеры будут очищены)</string>
+    <string name="are_you_sure_uncheck_no_color">Вы уверены, что хотите установить\n%1$s?\nкак ещё не найденный?\n(Элемент останется в списке\nРеальные размеры будут очищены)</string>
     <string name="are_you_sure_delete_union">Вы уверены, что хотите удалить\n%1$s?</string>
     <string name="are_you_sure_delete_current_list_chipboards">Вы уверены, что хотите удалить текущий список листов ДСП?\n(Если вы выберете «Удалить», в любом случае этот список будет храниться ещё 30 дней перед окончательным удалением)</string>
     <string name="are_you_sure_share_current_list_chipboards">Вы уверены, что хотите отправить текущий список листов ДСП?</string>

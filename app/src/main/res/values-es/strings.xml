@@ -63,7 +63,8 @@
     <string name="are_you_sure_select_not_found">¿Seguro que deseas seleccionar\n%1$s (%2$s)?\n¿para el área de búsqueda?\n(El elemento permanecerá en la lista)</string>
     <string name="are_you_sure_remove_not_found">¿Seguro que deseas quitar\n%1$s (%2$s)?\ndel área de búsqueda?\n(El elemento permanecerá en la lista)</string>
     <string name="are_you_sure_select_unknown">¿Seguro que deseas seleccionar\n%1$s (%2$s)?\n¿para el área de búsqueda?\n(El elemento se eliminará de la lista)</string>
-    <string name="are_you_sure_uncheck">¿Seguro que deseas marcar\n%1$s (%2$s)?\ncomo aún no encontrado?\n(El elemento permanecerá en la lista\nLos tamaños reales estarán vacíos)</string>
+    <string name="are_you_sure_uncheck_with_color">¿Seguro que deseas marcar\n%1$s (%2$s)?\ncomo aún no encontrado?\n(El elemento permanecerá en la lista\nLos tamaños reales estarán vacíos)</string>
+    <string name="are_you_sure_uncheck_no_color">¿Seguro que deseas marcar\n%1$s?\ncomo aún no encontrado?\n(El elemento permanecerá en la lista\nLos tamaños reales estarán vacíos)</string>
     <string name="are_you_sure_delete_union">¿Seguro que deseas eliminar\n%1$s?</string>
     <string name="are_you_sure_delete_current_list_chipboards">¿Seguro que deseas eliminar la lista actual de tableros?\n(Si eliges Eliminar, esta lista se guardará durante 30 días antes de eliminarse permanentemente)</string>
     <string name="are_you_sure_share_current_list_chipboards">¿Seguro que deseas compartir la lista actual de tableros?</string>

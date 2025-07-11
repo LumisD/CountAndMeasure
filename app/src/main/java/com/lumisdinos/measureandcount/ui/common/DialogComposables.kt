@@ -64,10 +64,13 @@ fun ChooseDialogType(
         when (dialog) {
             is DialogType.Uncheck -> {
                 title = stringResource(R.string.confirm_uncheck)
-                text = stringResource(
-                    R.string.are_you_sure_uncheck,
+                text = if (dialog.hasColor) stringResource(
+                    R.string.are_you_sure_uncheck_with_color,
                     dialog.chipboard.chipboardAsString,
                     dialog.chipboard.colorName
+                ) else stringResource(
+                    R.string.are_you_sure_uncheck_no_color,
+                    dialog.chipboard.chipboardAsString
                 )
                 confirmText = stringResource(R.string.uncheck)
                 dismissText = stringResource(R.string.cancel)

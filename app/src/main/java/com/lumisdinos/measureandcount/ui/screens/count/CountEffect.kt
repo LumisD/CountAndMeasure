@@ -5,7 +5,7 @@ import com.lumisdinos.measureandcount.ui.screens.count.model.QuestionType
 import com.lumisdinos.measureandcount.ui.screens.count.model.ChipboardUi
 
 sealed class CountEffect {
-    data class ShowUncheckConfirmationDialog(val chipboard: ChipboardUi) : CountEffect()
+    data class ShowUncheckConfirmationDialog(val chipboard: ChipboardUi, val hasColor: Boolean) : CountEffect()
     data class ShowSelectNotFoundToFindAreaConfirmationDialog(val chipboard: ChipboardUi) : CountEffect()
     data class ShowRemoveNotFoundFromFindAreaConfirmationDialog(val chipboard: ChipboardUi) : CountEffect()
     data class ShowSelectUnknownToFindAreaConfirmationDialog(val chipboard: ChipboardUi) : CountEffect()

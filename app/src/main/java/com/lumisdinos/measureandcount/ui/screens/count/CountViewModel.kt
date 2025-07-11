@@ -411,7 +411,7 @@ class CountViewModel @Inject constructor(
 
             1 -> { // Found
                 viewModelScope.launch {
-                    _effect.send(CountEffect.ShowUncheckConfirmationDialog(chipboard))
+                    _effect.send(CountEffect.ShowUncheckConfirmationDialog(chipboard, _state.value.unionOfChipboards.hasColor))
                 }
             }
 

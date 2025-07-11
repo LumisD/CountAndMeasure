@@ -587,7 +587,7 @@ fun CollectEffects(
                 }
 
                 is CountEffect.ShowUncheckConfirmationDialog -> {
-                    dialogState.value = DialogType.Uncheck(effect.chipboard)
+                    dialogState.value = DialogType.Uncheck(effect.chipboard, effect.hasColor)
                 }
 
                 is CountEffect.ShowNotExceedingTargetQuantityDialog -> {
