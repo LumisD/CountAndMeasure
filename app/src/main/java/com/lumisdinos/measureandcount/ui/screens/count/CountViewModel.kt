@@ -857,7 +857,7 @@ class CountViewModel @Inject constructor(
             currentState.copy(
                 chipboardToFind = updatedChipboard2,
                 isUnknownButtonAvailable = setUnknownButnAvailbl,
-                isFoundButtonAvailable = newQuantityAsInt > 0
+                isFoundButtonAvailable = newQuantityAsInt > 0 && updatedChipboard2.state == 0
             )
         }
     }
